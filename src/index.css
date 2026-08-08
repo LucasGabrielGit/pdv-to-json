@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* ── shadcn/ui required tokens (dark theme) ── */
+    --background: oklch(0.13 0.02 265);
+    --foreground: oklch(0.97 0.01 265);
+    --card: oklch(0.17 0.025 270);
+    --card-foreground: oklch(0.97 0.01 265);
+    --popover: oklch(0.17 0.03 270);
+    --popover-foreground: oklch(0.97 0.01 265);
+    --primary: oklch(0.57 0.22 293);
+    --primary-foreground: oklch(0.99 0 0);
+    --secondary: oklch(0.22 0.03 270);
+    --secondary-foreground: oklch(0.97 0.01 265);
+    --muted: oklch(0.22 0.02 270);
+    --muted-foreground: oklch(0.62 0.04 265);
+    --accent: oklch(0.57 0.22 293);
+    --accent-foreground: oklch(0.99 0 0);
+    --destructive: oklch(0.62 0.22 25);
+    --destructive-foreground: oklch(0.99 0 0);
+    --border: oklch(0.3 0.05 270);
+    --input: oklch(0.22 0.03 270);
+    --ring: oklch(0.57 0.22 293);
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+
+    /* ── App custom tokens ── */
+    --app-bg: #0f0f1a;
+    --app-bg-card: #16213e;
+    --app-accent: #7c3aed;
+    --app-cyan: #06b6d4;
+    --app-glow: rgba(124, 58, 237, 0.3);
+    --app-text: #f1f5f9;
+    --app-muted: #94a3b8;
+    --app-border: rgba(124, 58, 237, 0.25);
+    --app-success: #10b981;
+    --app-error: #ef4444;
+    --app-warning: #f59e0b;
+  }
+
+  * {
+    box-sizing: border-box;
+    border-color: var(--border);
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--app-bg);
+    color: var(--app-text);
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: oklch(0.17 0.025 270);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--app-accent);
+    border-radius: 3px;
+  }
+
+  /* shadcn Select / Popover dark backgrounds */
+  [data-slot="select-content"],
+  [data-slot="select-popup"] {
+    background-color: #1a1a2e !important;
+    border: 1px solid rgba(124, 58, 237, 0.3);
+  }
+
+  [data-slot="select-item"]:hover,
+  [data-slot="select-item"]:focus {
+    background-color: rgba(124, 58, 237, 0.15) !important;
+    color: #f1f5f9 !important;
+  }
+}
+
+/* ── Sonner toasts ── */
+.toaster [data-sonner-toast] {
+  background: rgba(22, 33, 62, 0.97) !important;
+  border: 1px solid rgba(124, 58, 237, 0.35) !important;
+  color: #f1f5f9 !important;
+  backdrop-filter: blur(12px);
+}
