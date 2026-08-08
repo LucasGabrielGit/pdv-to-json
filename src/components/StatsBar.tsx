@@ -1,4 +1,5 @@
 import React from 'react'
+import { Badge } from '@/components/ui/badge'
 
 interface StatsBarProps {
   rowCount: number
@@ -8,29 +9,31 @@ interface StatsBarProps {
 
 const StatsBar: React.FC<StatsBarProps> = ({ rowCount, columnCount, headers }) => {
   return (
-    <div className="flex flex-wrap gap-3 mt-4 p-4 rounded-xl border"
-      style={{ background: 'rgba(124,58,237,0.08)', borderColor: 'var(--border-color)' }}>
-      <StatChip label="Rows" value={rowCount} color="var(--accent-primary)" />
-      <StatChip label="Columns" value={columnCount} color="var(--accent-secondary)" />
+    <div className="flex flex-wrap gap-3 mt-4 p-4 rounded-xl border border-[rgba(124,58,237,0.25)] bg-purple-500/8">
+      <StatChip label="Rows" value={rowCount} colorClass="text-purple-400 border-purple-500/30 bg-purple-500/10" />
+      <StatChip label="Columns" value={columnCount} colorClass="text-cyan-400 border-cyan-500/30 bg-cyan-500/10" />
       <div className="flex items-center gap-2 flex-1 min-w-0">
-        <span className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
           Headers:
         </span>
         <div className="flex flex-wrap gap-1">
           {headers.slice(0, 8).map((h) => (
-            <span
+            <Badge
               key={h}
-              className="text-xs px-2 py-0.5 rounded-full font-mono truncate max-w-[120px]"
-              style={{ background: 'rgba(6,182,212,0.15)', color: 'var(--accent-secondary)', border: '1px solid rgba(6,182,212,0.3)' }}
+              variant="outline"
+              className="text-xs font-mono truncate max-w-30 bg-cyan-500/15 text-cyan-400 border-cyan-500/30 font-normal py-0.5 px-2"
               title={h}
             >
               {h}
-            </span>
+            </Badge>
           ))}
           {headers.length > 8 && (
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{ color: 'var(--text-muted)', background: 'rgba(148,163,184,0.1)' }}>
+            <Badge
+              variant="outline"
+              className="text-xs text-slate-400 bg-white/5 border-white/10 font-normal py-0.5 px-2"
+            >
               +{headers.length - 8} more
-            </span>
+            </Badge>
           )}
         </div>
       </div>
@@ -38,11 +41,10 @@ const StatsBar: React.FC<StatsBarProps> = ({ rowCount, columnCount, headers }) =
   )
 }
 
-const StatChip: React.FC<{ label: string; value: number; color: string }> = ({ label, value, color }) => (
-  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-    style={{ background: `${color}18`, border: `1px solid ${color}40` }}>
-    <span className="text-lg font-bold" style={{ color }}>{value}</span>
-    <span className="text-xs uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{label}</span>
+const StatChip: React.FC<{ label: string; value: number; colorClass: string }> = ({ label, value, colorClass }) => (
+  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${colorClass}`}>
+    <span className="text-lg font-bold">{value}</span>
+    <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</span>
   </div>
 )
 

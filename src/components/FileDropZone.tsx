@@ -34,7 +34,7 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileContent, fileType = '
       }
       reader.readAsText(file)
     },
-    [onFileContent]
+    [fileType, onFileContent]
   )
 
   const handleDrop = useCallback(
@@ -62,14 +62,11 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileContent, fileType = '
   return (
     <div
       id="file-drop-zone"
-      className="relative flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-300 p-8"
-      style={{
-        borderColor: isDragging ? 'var(--accent-primary)' : 'var(--border-color)',
-        background: isDragging
-          ? 'rgba(124,58,237,0.1)'
-          : 'rgba(22,33,62,0.5)',
-        boxShadow: isDragging ? '0 0 30px var(--accent-glow)' : 'none',
-      }}
+      className={`relative flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-300 p-8 ${
+        isDragging
+          ? 'border-purple-500 bg-purple-500/10 shadow-lg shadow-purple-500/20'
+          : 'border-[rgba(124,58,237,0.25)] bg-[#16213e]/50 hover:border-purple-500/50 hover:bg-[#16213e]/80'
+      }`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -84,28 +81,25 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileContent, fileType = '
         onChange={handleInputChange}
       />
 
-      <div
-        className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl transition-transform duration-300"
-        style={{ background: 'rgba(124,58,237,0.15)', boxShadow: '0 0 20px var(--accent-glow)' }}
-      >
+      <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-purple-500/15 shadow-inner">
         {icon}
       </div>
 
       {fileName ? (
         <div className="text-center">
-          <p className="font-semibold" style={{ color: 'var(--accent-primary)' }}>
+          <p className="font-semibold text-purple-400">
             {fileName}
           </p>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-sm text-slate-400">
             Click or drag to replace
           </p>
         </div>
       ) : (
         <div className="text-center">
-          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>
-            Drop your <span style={{ color: 'var(--accent-secondary)' }}>{label}</span> file here
+          <p className="font-semibold text-slate-100">
+            Drop your <span className="text-cyan-400">{label}</span> file here
           </p>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-sm text-slate-400">
             or click to browse
           </p>
         </div>
