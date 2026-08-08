@@ -10,7 +10,7 @@
 
 export const ADS_CONFIG = {
   /** Your AdSense publisher ID — format: ca-pub-XXXXXXXXXXXXXXXX */
-  PUBLISHER_ID: 'ca-pub-XXXXXXXXXXXXXXXX',
+  PUBLISHER_ID: 'ca-pub-6240733470750177',
 
   slots: {
     /** Ad shown between the input and output sections inside the main card */
