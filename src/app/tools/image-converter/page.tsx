@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description:
       'Convert images between PNG, JPEG, and WebP formats instantly in your browser. 100% private — your images never leave your device.',
     url: 'https://pdv-to-json.vercel.app/tools/image-converter',
-    siteName: 'devkit.io',
+    siteName: 'dev-kit.tech',
     images: ['/og-image.svg'],
   },
   twitter: {

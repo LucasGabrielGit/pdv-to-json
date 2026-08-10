@@ -54,7 +54,7 @@ export function Sidebar() {
                 dk
               </div>
               <span className="text-lg font-bold tracking-tight text-foreground">
-                devkit<span className="text-primary">.io</span>
+                dev-kit<span className="text-primary">.tech</span>
               </span>
             </Link>
           )}

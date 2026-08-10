@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description:
       'Convert JSON to YAML or YAML to JSON instantly in your browser. 100% private — your data never leaves your device.',
     url: 'https://pdv-to-json.vercel.app/tools/json-yaml',
-    siteName: 'devkit.io',
+    siteName: 'dev-kit.tech',
     images: ['/og-image.svg'],
   },
   twitter: {

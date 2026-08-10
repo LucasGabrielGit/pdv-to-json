@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description:
       'Convert JSON to CSV or CSV to JSON instantly in your browser. 100% private — your data never leaves your device. Features nested object flattening and smart type casting.',
     url: 'https://pdv-to-json.vercel.app/tools/json-csv',
-    siteName: 'devkit.io',
+    siteName: 'dev-kit.tech',
     images: ['/og-image.svg'],
   },
   twitter: {

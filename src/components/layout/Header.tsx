@@ -34,7 +34,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           href="/"
           className="text-muted-foreground hover:text-foreground transition-colors"
         >
-          devkit
+          dev-kit.tech
         </Link>
         {currentTool && (
           <>

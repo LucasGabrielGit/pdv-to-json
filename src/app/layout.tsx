@@ -4,17 +4,19 @@ import Script from 'next/script'
 import './globals.css'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://pdv-to-json.vercel.app'),
+  metadataBase: new URL('https://dev-kit.tech'),
   title: {
-    default: 'devkit.io — Free Developer Tools, 100% Client-Side & Private',
-    template: '%s | devkit.io',
+    default: 'dev-kit.tech — Free Developer Tools, 100% Client-Side & Private',
+    template: '%s | dev-kit.tech',
   },
   description:
-    'Free, browser-based developer tools. Convert JSON to CSV, YAML, Base64, test Regex, decode JWT, and more — all 100% client-side. Your data never leaves your device.',
+    'Free, browser-based developer tools. Convert JSON to CSV, YAML, Base64, Images, test Regex, decode JWT, and more — all 100% client-side. Your data never leaves your device.',
   keywords: [
     'developer tools',
     'json converter',
     'csv converter',
+    'yaml converter',
+    'image converter',
     'base64',
     'regex tester',
     'jwt decoder',
@@ -26,15 +28,15 @@ export const metadata: Metadata = {
   robots: 'index, follow',
   openGraph: {
     type: 'website',
-    siteName: 'devkit.io',
-    title: 'devkit.io — Free Developer Tools, 100% Client-Side & Private',
+    siteName: 'dev-kit.tech',
+    title: 'dev-kit.tech — Free Developer Tools, 100% Client-Side & Private',
     description:
       'Free, browser-based developer tools. Convert JSON to CSV, test Regex, decode JWT — all processed locally in your browser.',
     images: ['/og-image.svg'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'devkit.io — Free Developer Tools',
+    title: 'dev-kit.tech — Free Developer Tools',
     description:
       'Free, browser-based developer tools. 100% client-side. Your data never leaves your device.',
     images: ['/og-image.svg'],
@@ -58,46 +60,35 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <AppShell>{children}</AppShell>
-
-        {/* Google AdSense */}
+        {/* Google AdSense Script */}
         <Script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6240733470750177"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
 
-        {/* Structured Data */}
-        <Script
-          id="schema-org"
+        {/* Structured Data (Schema.org WebSite & Organization) */}
+        <script
           type="application/ld+json"
-          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@type': 'WebApplication',
-              name: 'devkit.io',
-              url: 'https://devkit.io',
+              '@type': 'WebSite',
+              name: 'dev-kit.tech',
+              url: 'https://dev-kit.tech',
               description:
-                'Free, browser-based developer tools platform with JSON/CSV conversion, regex testing, JWT decoding and more — all 100% client-side.',
-              applicationCategory: 'DeveloperApplication',
-              operatingSystem: 'All',
-              offers: {
-                '@type': 'Offer',
-                price: '0',
-                priceCurrency: 'USD',
+                'Free & 100% private client-side developer tools platform.',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://dev-kit.tech/search?q={search_term_string}',
+                'query-input': 'required name=search_term_string',
               },
-              featureList: [
-                'Bidirectional JSON to CSV & CSV to JSON conversion',
-                '100% Client-side local data processing',
-                'Nested object dot-notation flattening',
-                'Type casting and custom delimiters',
-                'One-click CSV & JSON file downloads',
-              ],
             }),
           }}
         />
+
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   )

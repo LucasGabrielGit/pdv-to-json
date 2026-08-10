@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description:
       'Encode text to Base64 or decode Base64 strings in real-time. 100% private — your data never leaves your device.',
     url: 'https://pdv-to-json.vercel.app/tools/base64',
-    siteName: 'devkit.io',
+    siteName: 'dev-kit.tech',
     images: ['/og-image.svg'],
   },
   twitter: {
