@@ -1,36 +1,35 @@
-# JSON ↔ CSV Converter
+# ⚡ dev-kit.tech
 
-> A fast, elegant, bidirectional converter between JSON and CSV — running entirely in your browser. No data ever leaves your machine.
+> **Free, High-Performance & 100% Private Developer Tools Platform.**
+> Built with **Next.js 15 (App Router)**, **React 19**, **TypeScript**, and **Tailwind CSS v4**. All processing runs 100% client-side inside your browser — zero data ever leaves your device.
 
-🔗 **Live demo:** [json-to-csv-umber.vercel.app](https://json-to-csv-umber.vercel.app)
+🔗 **Live Platform:** [dev-kit.tech](https://dev-kit.tech) (also hosted on Vercel)
 
 ---
 
-## ✨ Features
+## 🛠️ Active Tools
 
-| Feature | Details |
-|---|---|
-| 🔄 **Bidirectional** | Convert JSON → CSV **and** CSV → JSON with a single toggle |
-| 🗂️ **Nested objects** | JSON nested objects are flattened with dot-notation (`address.city`) and re-expanded on the way back |
-| 🔢 **Type casting** | CSV → JSON automatically detects numbers, booleans and nulls |
-| 📁 **File & text input** | Drag-and-drop file upload or paste text directly |
-| 🔧 **Custom delimiter** | Comma, semicolon, tab or pipe |
-| 📋 **Copy & download** | One-click copy to clipboard or download the output file |
-| 🔒 **100% client-side** | All processing happens in the browser — zero server calls |
-| 🔔 **Rich feedback** | Sonner toast notifications for every action |
+| Tool | Status | Key Features |
+|---|---|---|
+| 🔄 **JSON ↔ CSV** | ✅ Active | Bidirectional conversion, nested object flattening (`address.city`), and smart type casting. |
+| 📜 **JSON ↔ YAML** | ✅ Active | Bidirectional JSON ↔ YAML, 2 or 4 space indentation, and key alphabetization. |
+| 🔑 **Base64 Encoder / Decoder** | ✅ Active | Real-time conversion, URL-safe mode, automatic MIME & magic byte detection, HTML `<img src="...">` & CSS `url(...)` Data URI extraction, and live previews for Images, PDFs, and Audio. |
+| 🖼️ **Image Converter** | ✅ Active | PNG ↔ JPEG ↔ WebP 100% client-side HTML5 Canvas conversion, compression quality slider (10–100%), resolution scaling (25–100%), and file size savings calculation. |
+| 🛠️ **Regex Tester** | ⏳ Coming Soon | Live regular expression tester with regex syntax highlighting & cheat sheet. |
+| 🔓 **JWT Decoder** | ⏳ Coming Soon | Instant JWT payload & header decoder with token expiration checking. |
 
 ---
 
 ## 🖥️ Tech Stack
 
-- **[Vite](https://vitejs.dev/)** — lightning-fast dev server and build tool
-- **[React 19](https://react.dev/)** + **TypeScript** — UI and type safety
-- **[Tailwind CSS v4](https://tailwindcss.com/)** — utility-first styling
-- **[shadcn/ui](https://ui.shadcn.com/)** (base-nova style) — accessible component primitives
-- **[@base-ui/react](https://base-ui.com/)** — headless UI primitives used by shadcn
-- **[Sonner](https://sonner.emilkowal.ski/)** — toast notification system
-- **[Lucide React](https://lucide.dev/)** — icon library
-- **[Vercel](https://vercel.com/)** — deployment
+- **[Next.js 15 (App Router)](https://nextjs.org/)** — React framework with file-based routing and static generation
+- **[React 19](https://react.dev/)** + **TypeScript** — UI library and strict type safety
+- **[Tailwind CSS v4](https://tailwindcss.com/)** — Utility-first CSS framework with modern CSS variables
+- **[shadcn/ui](https://ui.shadcn.com/)** — Accessible UI primitives
+- **[js-yaml](https://github.com/nodeca/js-yaml)** — Client-side YAML parser & dumper
+- **[Sonner](https://sonner.emilkowal.ski/)** — Smooth toast notification system
+- **[Lucide React](https://lucide.dev/)** — Icon library
+- **[Vercel](https://vercel.com/)** — Zero-config deployment & edge network
 
 ---
 
@@ -39,31 +38,29 @@
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) v20+
-- [pnpm](https://pnpm.io/) v8+
+- [pnpm](https://pnpm.io/) v9+
 
-### Install
+### Installation
 
 ```bash
-git clone https://github.com/your-username/json-to-csv.git
-cd json-to-csv
+git clone https://github.com/LucasGabrielGit/pdv-to-json.git
+cd pdv-to-json
 pnpm install
 ```
 
-### Run locally
+### Run Locally
 
 ```bash
 pnpm dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Build for production
+### Build for Production
 
 ```bash
 pnpm build
 ```
-
-The output is placed in the `dist/` directory.
 
 ---
 
@@ -71,78 +68,46 @@ The output is placed in the `dist/` directory.
 
 ```
 src/
+├── app/                        # Next.js App Router
+│   ├── layout.tsx              # Root layout shell & SEO metadata
+│   ├── page.tsx                # Platform homepage with tool grid
+│   └── tools/                  # Dedicated tool page routes
+│       ├── json-csv/
+│       ├── json-yaml/
+│       ├── base64/
+│       └── image-converter/
 ├── components/
-│   ├── ui/             # shadcn/ui component library (auto-generated)
-│   ├── AdSense.tsx     # Google AdSense ad unit component
-│   ├── Converter.tsx   # Main converter UI
-│   ├── FileDropZone.tsx# Drag-and-drop file upload
-│   └── StatsBar.tsx    # Conversion stats (rows, columns, headers)
-├── config/
-│   └── ads.ts          # AdSense publisher ID & slot IDs
+│   ├── converter/              # Shared tool headers & privacy banner
+│   ├── layout/                 # Sidebar, Header, Footer, AppShell
+│   ├── tools/                  # Individual interactive tool components
+│   │   ├── JsonYamlConverter.tsx
+│   │   ├── Base64Converter.tsx
+│   │   └── ImageConverter.tsx
+│   ├── ui/                     # shadcn/ui components
+│   ├── AdSense.tsx             # Google AdSense ad unit component
+│   └── FileDropZone.tsx        # Universal drag & drop file uploader
 ├── lib/
-│   └── utils.ts        # Tailwind class merge utility (cn)
-├── utils/
-│   ├── jsonToCsv.ts    # JSON → CSV conversion logic
-│   └── csvToJson.ts    # CSV → JSON conversion logic
-├── App.tsx
-├── main.tsx
-└── index.css           # Global styles + shadcn/ui design tokens
+│   ├── tools-registry.ts       # Central tool registry (sidebar & grid)
+│   └── utils.ts                # Tailwind class merger (cn)
+└── utils/                      # Core conversion engines
+    ├── jsonToCsv.ts
+    ├── csvToJson.ts
+    ├── yamlConverter.ts
+    ├── base64Converter.ts
+    └── imageConverter.ts
 ```
 
 ---
 
-## 🔄 How conversion works
+## 🔒 Privacy & Security
 
-### JSON → CSV
-
-1. Parses the JSON input (array of objects or a single object)
-2. Flattens nested objects using dot-notation keys (`address.city`)
-3. Collects the union of all keys across rows as headers
-4. Builds CSV lines, escaping cells that contain commas, newlines or quotes
-
-### CSV → JSON
-
-1. Splits rows correctly, respecting quoted multi-line fields
-2. Parses each row's cells against the header row
-3. Optionally casts values to native types (numbers, booleans, `null`)
-4. Optionally expands dot-notation headers back into nested objects
-
----
-
-## 💰 AdSense
-
-Ad configuration lives in [`src/config/ads.ts`](src/config/ads.ts):
-
-```ts
-export const ADS_CONFIG = {
-  PUBLISHER_ID: 'ca-pub-XXXXXXXXXXXXXXXX', // ← your AdSense publisher ID
-  slots: {
-    betweenIO: 'XXXXXXXXXX',               // ← ad unit slot ID
-  },
-  enabled: true, // set to false to disable during development
-}
-```
-
-> **Note:** AdSense will not load on `localhost`. Deploy to a verified domain first.
-
----
-
-## 🌐 Deploy to Vercel
-
-The project includes a [`vercel.json`](vercel.json) for zero-config deploys.
-
-```bash
-# First time (login + create project)
-vercel deploy --prod
-
-# Subsequent deploys
-vercel deploy --prod
-```
-
-Or connect the GitHub repository in the [Vercel dashboard](https://vercel.com) for automatic deploys on every push.
+`dev-kit.tech` is built with a strict **Privacy-First Architecture**:
+- All conversions, file reads, image processing, and encoding run **100% locally in your browser memory**.
+- **No data is transmitted to external servers**.
+- Safe for processing sensitive credentials, private JSON configs, images, and API keys.
 
 ---
 
 ## 📄 License
 
-MIT — feel free to use, modify and distribute.
+MIT — feel free to use, modify, and distribute.
