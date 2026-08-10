@@ -13,6 +13,8 @@ import {
   Zap,
   ShieldCheck,
   Settings2,
+  FileCode,
+  Image as ImageIcon,
 } from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
@@ -45,6 +47,7 @@ export default function Base64Converter() {
   const [inputMode, setInputMode] = useState<InputMode>('text')
   const [inputText, setInputText] = useState('')
   const [urlSafe, setUrlSafe] = useState(false)
+  const [includeDataPrefix, setIncludeDataPrefix] = useState(true)
   const [liveMode, setLiveMode] = useState(true)
   const [result, setResult] = useState<Base64Result | null>(null)
   const [copied, setCopied] = useState(false)
@@ -62,19 +65,53 @@ export default function Base64Converter() {
     setActiveTab('text')
   }
 
-  const convert = (text: string, currentMode: Mode = mode, isUrlSafe: boolean = urlSafe) => {
+  const convert = (
+    text: string,
+    currentMode: Mode = mode,
+    isUrlSafe: boolean = urlSafe,
+    withDataPrefix: boolean = includeDataPrefix
+  ) => {
     if (!text.trim()) {
       setResult(null)
       return
     }
 
     try {
-      const res =
-        currentMode === 'encode'
-          ? encodeBase64(text, { urlSafe: isUrlSafe })
-          : decodeBase64(text, { urlSafe: isUrlSafe })
+      if (currentMode === 'encode') {
+        let textToEncode = text
+        let prefix = ''
 
-      setResult(res)
+        // Check if text is a Data URL uploaded from FileDropZone
+        if (text.startsWith('data:')) {
+          if (withDataPrefix) {
+            setResult({
+              output: text,
+              charCount: text.length,
+              byteSize: Math.round((text.length * 3) / 4),
+            })
+            return
+          } else {
+            // Strip data URI prefix
+            const commaIdx = text.indexOf(',')
+            if (commaIdx !== -1) {
+              const rawB64 = text.substring(commaIdx + 1)
+              setResult({
+                output: rawB64,
+                charCount: rawB64.length,
+                byteSize: Math.round((rawB64.length * 3) / 4),
+              })
+              return
+            }
+          }
+        }
+
+        const res = encodeBase64(textToEncode, { urlSafe: isUrlSafe })
+        setResult(res)
+      } else {
+        // Decode mode
+        const res = decodeBase64(text, { urlSafe: isUrlSafe })
+        setResult(res)
+      }
     } catch (e) {
       if (!liveMode) {
         toast.error('Conversion failed', {
@@ -106,10 +143,11 @@ export default function Base64Converter() {
     }, 100)
   }
 
-  const handleFileContent = (content: string) => {
-    setInputText(content)
+  const handleFileContent = (dataUrlOrText: string, filename: string) => {
+    setInputText(dataUrlOrText)
     setInputMode('text')
-    convert(content, mode)
+    convert(dataUrlOrText, mode)
+    toast.success(`Uploaded ${filename}`)
   }
 
   const handleLoadExample = () => {
@@ -129,6 +167,23 @@ export default function Base64Converter() {
 
   const handleDownload = () => {
     if (!result?.output) return
+
+    // If output is a Data URI (like Image, PDF, etc.), download as actual binary file
+    if (result.output.startsWith('data:')) {
+      const match = result.output.match(/^data:(.*?);base64,/)
+      const mime = match ? match[1] : 'application/octet-stream'
+      let ext = mime.split('/')[1] || 'bin'
+      if (ext.includes('+')) ext = ext.split('+')[0]
+      if (ext === 'svg+xml') ext = 'svg'
+
+      const a = document.createElement('a')
+      a.href = result.output
+      a.download = `file.${ext}`
+      a.click()
+      toast.success(`Downloaded file.${ext}`)
+      return
+    }
+
     const ext = isEncode ? 'b64' : 'txt'
     const blob = new Blob([result.output], { type: 'text/plain;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
@@ -152,6 +207,8 @@ export default function Base64Converter() {
     toast.info(`Switched to Base64 ${next === 'encode' ? 'Encode' : 'Decode'}`)
   }
 
+  const isImageDataUri = result?.output?.startsWith('data:image/')
+
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-8">
       {/* ── Header ── */}
@@ -159,8 +216,8 @@ export default function Base64Converter() {
         title={isEncode ? 'Base64 Encoder' : 'Base64 Decoder'}
         description={
           isEncode
-            ? 'Encode string text or binary data into Base64 format instantly with UTF-8 & URL-safe support.'
-            : 'Decode Base64 strings back to clean UTF-8 text with instant error checking.'
+            ? 'Encode text, images, PDFs, or binary files into Base64 format instantly with UTF-8 & URL-safe support.'
+            : 'Decode Base64 strings or Data URIs back to clean text, images, or files with live preview.'
         }
         badgeText="Real-time Base64 Tool"
       />
@@ -242,7 +299,7 @@ export default function Base64Converter() {
                 }`}
                 onClick={() => setActiveTab('file')}
               >
-                📁 Upload File
+                📁 Upload Any File (Image, PDF, etc.)
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -252,7 +309,7 @@ export default function Base64Converter() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  {isEncode ? 'Plain Text Input' : 'Base64 String Input'}
+                  {isEncode ? 'Plain Text / String Input' : 'Base64 String / Data URI Input'}
                 </Label>
                 <Button
                   size="xs"
@@ -268,8 +325,8 @@ export default function Base64Converter() {
                 onChange={(e) => handleInputChange(e.target.value)}
                 placeholder={
                   isEncode
-                    ? 'Enter plain text to encode into Base64...'
-                    : 'Paste Base64 string to decode...'
+                    ? 'Enter text to encode into Base64...'
+                    : 'Paste Base64 string or data:image/... Data URI to decode...'
                 }
                 className="h-56 font-mono text-sm resize-y leading-relaxed bg-black/35 text-slate-100 border border-[rgba(124,58,237,0.25)]"
                 spellCheck={false}
@@ -277,6 +334,8 @@ export default function Base64Converter() {
             </div>
           ) : (
             <FileDropZone
+              fileType="any"
+              readAsDataURL={true}
               onFileContent={handleFileContent}
             />
           )}
@@ -297,6 +356,21 @@ export default function Base64Converter() {
                 <Settings2 className="size-3.5 text-purple-400" />
                 <span>URL-Safe Base64 (replace + / with - _)</span>
               </label>
+
+              {isEncode && (
+                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer hover:text-white transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={includeDataPrefix}
+                    onChange={(e) => {
+                      setIncludeDataPrefix(e.target.checked)
+                      if (liveMode && inputText) convert(inputText, mode, urlSafe, e.target.checked)
+                    }}
+                    className="rounded border-purple-500/30 bg-black/40 text-purple-600 focus:ring-purple-500"
+                  />
+                  <span>Include Data URI prefix (data:*/*;base64,...)</span>
+                </label>
+              )}
 
               <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer hover:text-white transition-colors">
                 <input
@@ -337,7 +411,7 @@ export default function Base64Converter() {
           <div ref={outputRef} className="space-y-3 pt-2">
             <div className="flex items-center justify-between">
               <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                {isEncode ? 'Base64 Result' : 'Decoded Text Output'}
+                {isEncode ? 'Base64 Result' : 'Decoded Output'}
               </Label>
 
               {result && (
@@ -392,6 +466,21 @@ export default function Base64Converter() {
                 </div>
               )}
             </div>
+
+            {/* Live Image Preview (if output is an Image Data URI) */}
+            {isImageDataUri && (
+              <div className="mt-4 p-4 rounded-2xl bg-black/40 border border-purple-500/30 flex flex-col items-center gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-purple-400 uppercase tracking-wider">
+                  <ImageIcon className="size-4" />
+                  <span>Image Preview</span>
+                </div>
+                <img
+                  src={result?.output}
+                  alt="Base64 Preview"
+                  className="max-h-64 max-w-full rounded-xl object-contain border border-white/10 shadow-xl bg-black/50 p-1"
+                />
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -2,24 +2,45 @@
 
 import React, { useCallback, useRef, useState } from 'react'
 
-interface FileDropZoneProps {
-  onFileContent: (content: string, filename: string) => void
-  fileType?: 'json' | 'csv'
+export interface FileDropZoneProps {
+  onFileContent: (content: string, filename: string, file: File) => void
+  fileType?: 'json' | 'csv' | 'yaml' | 'any'
+  readAsDataURL?: boolean
 }
 
-const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileContent, fileType = 'json' }) => {
+const FileDropZone: React.FC<FileDropZoneProps> = ({
+  onFileContent,
+  fileType = 'json',
+  readAsDataURL = false,
+}) => {
   const [isDragging, setIsDragging] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const accept = fileType === 'csv' ? '.csv,text/csv' : '.json,application/json'
-  const label = fileType === 'csv' ? '.csv' : '.json'
-  const icon = fileType === 'csv' ? '📊' : '📂'
+  let accept = '.json,application/json'
+  let label = '.json'
+  let icon = '📂'
+
+  if (fileType === 'csv') {
+    accept = '.csv,text/csv'
+    label = '.csv'
+    icon = '📊'
+  } else if (fileType === 'yaml') {
+    accept = '.yaml,.yml,text/yaml,application/x-yaml'
+    label = '.yaml / .yml'
+    icon = '📜'
+  } else if (fileType === 'any') {
+    accept = '*/*'
+    label = 'any file (Image, PDF, JSON, etc.)'
+    icon = '📁'
+  }
 
   const handleFile = useCallback(
     (file: File) => {
       const isValidJson = file.name.endsWith('.json') || file.type === 'application/json'
       const isValidCsv = file.name.endsWith('.csv') || file.type === 'text/csv'
+      const isValidYaml = file.name.endsWith('.yaml') || file.name.endsWith('.yml')
+
       if (fileType === 'json' && !isValidJson) {
         alert('Please upload a .json file.')
         return
@@ -28,15 +49,25 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileContent, fileType = '
         alert('Please upload a .csv file.')
         return
       }
+      if (fileType === 'yaml' && !isValidYaml) {
+        alert('Please upload a .yaml or .yml file.')
+        return
+      }
+
       const reader = new FileReader()
       reader.onload = (e) => {
         const content = e.target?.result as string
         setFileName(file.name)
-        onFileContent(content, file.name)
+        onFileContent(content, file.name, file)
       }
-      reader.readAsText(file)
+
+      if (readAsDataURL || fileType === 'any') {
+        reader.readAsDataURL(file)
+      } else {
+        reader.readAsText(file)
+      }
     },
-    [fileType, onFileContent]
+    [fileType, readAsDataURL, onFileContent]
   )
 
   const handleDrop = useCallback(
@@ -89,7 +120,7 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileContent, fileType = '
 
       {fileName ? (
         <div className="text-center">
-          <p className="font-semibold text-purple-400">
+          <p className="font-semibold text-purple-400 truncate max-w-xs">
             {fileName}
           </p>
           <p className="text-sm text-slate-400">
@@ -99,7 +130,7 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileContent, fileType = '
       ) : (
         <div className="text-center">
           <p className="font-semibold text-slate-100">
-            Drop your <span className="text-cyan-400">{label}</span> file here
+            Drop <span className="text-cyan-400">{label}</span> here
           </p>
           <p className="text-sm text-slate-400">
             or click to browse
