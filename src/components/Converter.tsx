@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useRef } from 'react'
 import { toast } from 'sonner'
 import AdSense from '@/components/AdSense'
@@ -241,7 +243,7 @@ const Converter: React.FC = () => {
                     ? '[\n  { "name": "Alice", "age": 30 },\n  { "name": "Bob", "age": 25 }\n]'
                     : 'name,age,city\nAlice,30,São Paulo\nBob,25,Rio de Janeiro'
                 }
-                className="h-64 font-mono text-sm resize-y leading-relaxed bg-black/35 text-slate-100 border border-[rgba(124,58,237,0.25)] placeholder:text-slate-500"
+                className="h-64 font-mono text-sm resize-y leading-relaxed bg-black/35 text-slate-100 border border-[rgba(124,58,237,0.25)]"
                 spellCheck={false}
               />
             </div>

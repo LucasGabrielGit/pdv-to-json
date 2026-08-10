@@ -71,6 +71,16 @@
   --ring: #7c3aed;
   --radius: 0.75rem;
 
+  /* ── Sidebar tokens ── */
+  --sidebar: #0d0d1a;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #7c3aed;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(124, 58, 237, 0.15);
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: rgba(124, 58, 237, 0.15);
+  --sidebar-ring: #7c3aed;
+
   /* ── App custom legacy tokens ── */
   --app-bg: #0f0f1a;
   --app-bg-card: #16213e;

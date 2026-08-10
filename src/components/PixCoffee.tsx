@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Coffee, Copy, Check, QrCode } from 'lucide-react'
