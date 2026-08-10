@@ -15,6 +15,27 @@ export interface Base64Result {
 }
 
 /**
+ * Extracts Data URI or Base64 payload if wrapped in HTML tags (<img src="...">), CSS (url(...)), or quotes
+ */
+export function extractDataUriOrBase64(input: string): string {
+  let str = input.trim()
+
+  // 1. Extract embedded data: URI from HTML tags (<img src="data:...">), CSS url("data:..."), etc.
+  const dataUriMatch = str.match(/data:([a-zA-Z0-9-]+\/[a-zA-Z0-9-+.]+)?;base64,([A-Za-z0-9+/=_-]+)/)
+  if (dataUriMatch) {
+    return dataUriMatch[0]
+  }
+
+  // 2. Extract Base64 payload if string is quoted
+  const quotedMatch = str.match(/^["']([A-Za-z0-9+/=_-]+)["']$/)
+  if (quotedMatch) {
+    return quotedMatch[1]
+  }
+
+  return str
+}
+
+/**
  * Detects MIME type and category from raw Base64 string or Data URI
  */
 export function detectBase64Type(input: string): {
@@ -23,7 +44,7 @@ export function detectBase64Type(input: string): {
   dataUri?: string
   rawBase64: string
 } {
-  const trimmed = input.trim()
+  const trimmed = extractDataUriOrBase64(input)
 
   // 1. Data URI pattern
   const dataUriMatch = trimmed.match(/^data:([^;]+);base64,([\s\S]*)$/)
@@ -86,13 +107,14 @@ export function encodeBase64(
     return { output: '', charCount: 0, byteSize: 0 }
   }
 
-  // Check if text is already a Data URI
+  const extracted = extractDataUriOrBase64(text)
+
   let rawB64 = ''
   let detectedMime = customMime || 'text/plain'
   let category: Base64Result['fileCategory'] = 'text'
 
-  if (text.startsWith('data:')) {
-    const typeInfo = detectBase64Type(text)
+  if (extracted.startsWith('data:')) {
+    const typeInfo = detectBase64Type(extracted)
     rawB64 = typeInfo.rawBase64
     detectedMime = typeInfo.mimeType
     category = typeInfo.category
@@ -140,13 +162,13 @@ export function decodeBase64(
   options: Base64Options = {}
 ): Base64Result {
   const { urlSafe = false } = options
-  let cleanInput = base64Text.trim()
+  const extracted = extractDataUriOrBase64(base64Text)
 
-  if (!cleanInput) {
+  if (!extracted) {
     return { output: '', charCount: 0, byteSize: 0 }
   }
 
-  const typeInfo = detectBase64Type(cleanInput)
+  const typeInfo = detectBase64Type(extracted)
   let payloadToDecode = typeInfo.rawBase64
 
   if (urlSafe) {
@@ -159,7 +181,7 @@ export function decodeBase64(
   // If input is binary (Image, PDF, Zip), return Data URI as decoded output for rich preview & download
   if (typeInfo.category !== 'text') {
     return {
-      output: typeInfo.dataUri || cleanInput,
+      output: typeInfo.dataUri || extracted,
       charCount: payloadToDecode.length,
       byteSize: Math.round((payloadToDecode.length * 3) / 4),
       mimeType: typeInfo.mimeType,
