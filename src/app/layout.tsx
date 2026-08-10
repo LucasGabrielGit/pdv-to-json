@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { AppShell } from '@/components/layout/AppShell'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import Script from 'next/script'
 import './globals.css'
 
@@ -89,6 +90,7 @@ export default function RootLayout({
         />
 
         <AppShell>{children}</AppShell>
+        <SpeedInsights />
       </body>
     </html>
   )
