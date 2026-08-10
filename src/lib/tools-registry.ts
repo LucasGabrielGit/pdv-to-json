@@ -82,7 +82,7 @@ export const tools: Tool[] = [
     href: '/tools/image-converter',
     icon: Image,
     category: 'converters',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['png', 'jpeg', 'webp', 'image', 'converter'],
   },
   {
