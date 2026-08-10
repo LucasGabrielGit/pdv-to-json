@@ -15,6 +15,7 @@ import {
   Settings2,
   FileCode,
   Image as ImageIcon,
+  FileText,
 } from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
@@ -208,6 +209,7 @@ export default function Base64Converter() {
   }
 
   const isImageDataUri = result?.output?.startsWith('data:image/')
+  const isPdfDataUri = result?.output?.startsWith('data:application/pdf')
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-8">
@@ -230,11 +232,10 @@ export default function Base64Converter() {
         <Button
           variant={isEncode ? 'default' : 'outline'}
           onClick={() => handleModeChange('encode')}
-          className={`gap-2 font-medium transition-all ${
-            isEncode
-              ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25'
-              : 'border-purple-500/30 text-slate-300 hover:text-white hover:border-purple-500/60'
-          }`}
+          className={`gap-2 font-medium transition-all ${isEncode
+            ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25'
+            : 'border-purple-500/30 text-slate-300 hover:text-white hover:border-purple-500/60'
+            }`}
         >
           <Binary className="size-4" />
           Encode to Base64
@@ -253,11 +254,10 @@ export default function Base64Converter() {
         <Button
           variant={!isEncode ? 'default' : 'outline'}
           onClick={() => handleModeChange('decode')}
-          className={`gap-2 font-medium transition-all ${
-            !isEncode
-              ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25'
-              : 'border-purple-500/30 text-slate-300 hover:text-white hover:border-purple-500/60'
-          }`}
+          className={`gap-2 font-medium transition-all ${!isEncode
+            ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25'
+            : 'border-purple-500/30 text-slate-300 hover:text-white hover:border-purple-500/60'
+            }`}
         >
           <Binary className="size-4" />
           Decode from Base64
@@ -281,22 +281,20 @@ export default function Base64Converter() {
             <TabsList className="h-auto gap-1 p-1 rounded-xl bg-black/30 border border-white/5">
               <TabsTrigger
                 value="text"
-                className={`px-5 py-2 rounded-lg transition-all ${
-                  activeTab === 'text'
-                    ? 'bg-white text-zinc-900 font-semibold shadow-md'
-                    : 'text-slate-400 hover:text-white'
-                }`}
+                className={`px-5 py-2 rounded-lg transition-all ${activeTab === 'text'
+                  ? 'bg-white text-zinc-900 font-semibold shadow-md'
+                  : 'text-slate-400 hover:text-white'
+                  }`}
                 onClick={() => setActiveTab('text')}
               >
                 ✏️ Paste Text
               </TabsTrigger>
               <TabsTrigger
                 value="file"
-                className={`px-5 py-2 rounded-lg transition-all ${
-                  activeTab === 'file'
-                    ? 'bg-white text-zinc-900 font-semibold shadow-md'
-                    : 'text-slate-400 hover:text-white'
-                }`}
+                className={`px-5 py-2 rounded-lg transition-all ${activeTab === 'file'
+                  ? 'bg-white text-zinc-900 font-semibold shadow-md'
+                  : 'text-slate-400 hover:text-white'
+                  }`}
                 onClick={() => setActiveTab('file')}
               >
                 📁 Upload Any File (Image, PDF, etc.)
@@ -481,6 +479,7 @@ export default function Base64Converter() {
                 />
               </div>
             )}
+
           </div>
         </CardContent>
       </Card>
