@@ -72,7 +72,7 @@ export const tools: Tool[] = [
     href: '/tools/base64',
     icon: Binary,
     category: 'converters',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['base64', 'encode', 'decode', 'binary'],
   },
   {

@@ -98,6 +98,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
 
   body {
@@ -136,12 +137,4 @@
     background-color: rgba(124, 58, 237, 0.2) !important;
     color: #ffffff !important;
   }
-}
-
-/* ── Sonner toast styling ── */
-.toaster [data-sonner-toast] {
-  background: rgba(22, 33, 62, 0.97) !important;
-  border: 1px solid rgba(124, 58, 237, 0.35) !important;
-  color: #f1f5f9 !important;
-  backdrop-filter: blur(12px);
 }

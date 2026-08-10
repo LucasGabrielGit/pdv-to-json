@@ -37,7 +37,7 @@ export function Sidebar() {
       {/* Sidebar panel */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 md:relative md:z-auto',
+          'fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 md:sticky md:top-0 md:z-30 shrink-0',
           collapsed
             ? '-translate-x-full md:translate-x-0 md:w-16'
             : 'w-64 translate-x-0'
