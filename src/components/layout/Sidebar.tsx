@@ -109,23 +109,6 @@ export function Sidebar() {
             )
           })}
         </nav>
-
-        <Separator className="bg-sidebar-border" />
-
-        {/* Bottom section */}
-        {!collapsed && (
-          <div className="shrink-0 p-4">
-            <a
-              href="https://github.com/LucasGabrielGit/pdv-to-json"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ExternalLink className="size-3.5" />
-              GitHub Repository
-            </a>
-          </div>
-        )}
       </aside>
     </>
   )

@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
 import { Footer } from './Footer'
+import { Analytics } from '@vercel/analytics/next'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -50,6 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </main>
 
           <Footer />
+          <Analytics />
         </div>
       </div>
       <Toaster />
