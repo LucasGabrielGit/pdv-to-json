@@ -23,6 +23,7 @@ import {
   type YamlConversionResult,
 } from '@/utils/yamlConverter'
 import FileDropZone from '@/components/FileDropZone'
+import { ToolHeader } from '@/components/converter/ToolHeader'
 
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -189,40 +190,15 @@ export default function JsonYamlConverter() {
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-8">
       {/* ── Header ── */}
-      <div className="text-center mb-8">
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
-          <Badge
-            variant="outline"
-            className="gap-1.5 border-purple-500/40 bg-purple-500/10 text-purple-400 font-medium py-1 px-3"
-          >
-            <Zap className="size-3.5" />
-            Instant Online Converter
-          </Badge>
-          <Badge
-            variant="outline"
-            className="gap-1.5 border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-medium py-1 px-3"
-          >
-            <ShieldCheck className="size-3.5" />
-            100% Client-Side Privacy
-          </Badge>
-        </div>
-
-        <h1
-          className="text-4xl md:text-6xl font-black mb-3 tracking-tight"
-          style={{
-            background: 'linear-gradient(135deg, #f1f5f9 0%, #7c3aed 50%, #06b6d4 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          {isJsonToYaml ? 'JSON → YAML Converter' : 'YAML → JSON Converter'}
-        </h1>
-        <p className="text-base text-slate-300 max-w-lg mx-auto leading-relaxed">
-          {isJsonToYaml
+      <ToolHeader
+        title={isJsonToYaml ? 'JSON → YAML Converter' : 'YAML → JSON Converter'}
+        description={
+          isJsonToYaml
             ? 'Convert JSON data or config files to clean, formatted YAML instantly in your browser.'
-            : 'Convert YAML configuration files back to structured JSON with instant formatting.'}
-        </p>
-      </div>
+            : 'Convert YAML configuration files back to structured JSON with instant formatting.'
+        }
+        badgeText="Instant Online Converter"
+      />
 
       {/* ── Privacy Banner ── */}
       <PrivacyBanner />
