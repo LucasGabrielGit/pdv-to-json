@@ -62,7 +62,7 @@ export const tools: Tool[] = [
     href: '/tools/json-yaml',
     icon: FileCode,
     category: 'converters',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['json', 'yaml', 'yml', 'converter', 'config'],
   },
   {
