@@ -114,7 +114,7 @@ export const tools: Tool[] = [
     href: '/tools/regex-tester',
     icon: Regex,
     category: 'utilities',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['regex', 'regular expression', 'test', 'match', 'pattern'],
   },
   {
