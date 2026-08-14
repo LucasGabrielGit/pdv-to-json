@@ -164,7 +164,7 @@ export const tools: Tool[] = [
     href: '/tools/timestamp-converter',
     icon: Clock,
     category: 'utilities',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['timestamp', 'unix', 'epoch', 'iso', 'date'],
   },
   {
@@ -184,7 +184,7 @@ export const tools: Tool[] = [
     href: '/tools/cron-builder',
     icon: Calendar,
     category: 'utilities',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['cron', 'schedule', 'job', 'expression', 'crontab'],
   },
 
