@@ -171,10 +171,10 @@ export const tools: Tool[] = [
     id: 'color-palette',
     name: 'Color Palette',
     description: 'Generate harmonious palettes and convert between HEX, RGB, HSL, Oklch.',
-    href: '/tools/color-palette',
+    href: '/tools/color-converter',
     icon: Palette,
     category: 'utilities',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['color', 'palette', 'hex', 'rgb', 'hsl', 'oklch'],
   },
   {
