@@ -144,7 +144,7 @@ export const tools: Tool[] = [
     href: '/tools/uuid-generator',
     icon: Fingerprint,
     category: 'utilities',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['uuid', 'ulid', 'generate', 'unique id'],
   },
   {
