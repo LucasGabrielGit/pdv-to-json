@@ -66,6 +66,12 @@ export default function ColorConverter() {
     toast.success(`Selected color ${hex}`)
   }
 
+  const handleRandomColor = () => {
+    const randomHex = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
+    setColorInput(randomHex)
+    toast.success(`Generated random color ${randomHex.toUpperCase()}`)
+  }
+
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-8">
       {/* ── Header ── */}
@@ -80,10 +86,23 @@ export default function ColorConverter() {
 
       {/* ── Presets Quick Bar ── */}
       <div className="mb-6 p-4 rounded-2xl bg-[#16213e]/80 border border-purple-500/20 backdrop-blur-md">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-purple-400 mb-2.5">
-          <Palette className="size-4" />
-          <span>Preset Brand Colors</span>
+        <div className="flex items-center justify-between gap-2 mb-2.5">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-purple-400">
+            <Palette className="size-4" />
+            <span>Preset Brand Colors</span>
+          </div>
+
+          <Button
+            size="xs"
+            variant="outline"
+            onClick={handleRandomColor}
+            className="bg-purple-500/10 text-purple-300 border-purple-500/30 hover:bg-purple-500/20 transition-all text-xs gap-1.5"
+          >
+            <Sparkles className="size-3.5 text-purple-400" />
+            Random Color
+          </Button>
         </div>
+
         <div className="flex flex-wrap items-center gap-2">
           {COLOR_PRESETS.map((preset) => (
             <button
@@ -116,22 +135,32 @@ export default function ColorConverter() {
               className="relative h-44 rounded-2xl border border-white/10 shadow-2xl flex flex-col justify-between p-4 overflow-hidden transition-all duration-300"
               style={{ backgroundColor: result.hex }}
             >
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center gap-2">
                 <Badge className="bg-black/60 text-white border-0 backdrop-blur-md text-xs font-mono">
                   {result.hex.toUpperCase()}
                 </Badge>
 
-                {/* Native Color Picker trigger */}
-                <label className="cursor-pointer bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-2 rounded-xl border border-white/20 transition-all flex items-center gap-1.5 text-xs font-semibold">
-                  <Wand2 className="size-3.5" />
-                  <span>Pick Color</span>
-                  <input
-                    type="color"
-                    value={result.hex}
-                    onChange={handleColorPickerChange}
-                    className="opacity-0 absolute size-0 overflow-hidden"
-                  />
-                </label>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={handleRandomColor}
+                    title="Generate Random Color"
+                    className="cursor-pointer bg-black/50 hover:bg-black/70 backdrop-blur-md text-white p-2 rounded-xl border border-white/20 transition-all"
+                  >
+                    <Sparkles className="size-3.5 text-purple-300" />
+                  </button>
+
+                  {/* Native Color Picker trigger */}
+                  <label className="cursor-pointer bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-2 rounded-xl border border-white/20 transition-all flex items-center gap-1.5 text-xs font-semibold">
+                    <Wand2 className="size-3.5" />
+                    <span>Pick Color</span>
+                    <input
+                      type="color"
+                      value={result.hex}
+                      onChange={handleColorPickerChange}
+                      className="opacity-0 absolute size-0 overflow-hidden"
+                    />
+                  </label>
+                </div>
               </div>
 
               {/* Text Sample Contrast Overlay */}
