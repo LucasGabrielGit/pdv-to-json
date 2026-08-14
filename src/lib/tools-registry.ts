@@ -154,7 +154,7 @@ export const tools: Tool[] = [
     href: '/tools/diff-viewer',
     icon: Diff,
     category: 'utilities',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['diff', 'compare', 'text', 'code', 'merge'],
   },
   {
