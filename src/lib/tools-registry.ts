@@ -124,7 +124,7 @@ export const tools: Tool[] = [
     href: '/tools/jwt-decoder',
     icon: Key,
     category: 'utilities',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['jwt', 'token', 'decode', 'auth', 'bearer'],
   },
   {
