@@ -134,7 +134,7 @@ export const tools: Tool[] = [
     href: '/tools/hash-generator',
     icon: Hash,
     category: 'utilities',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['hash', 'md5', 'sha', 'sha256', 'checksum'],
   },
   {
