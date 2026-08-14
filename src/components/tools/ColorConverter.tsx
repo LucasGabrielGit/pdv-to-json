@@ -31,6 +31,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 const COLOR_PRESETS = [
   { name: 'Purple Accent', hex: '#7c3aed' },
@@ -92,15 +93,22 @@ export default function ColorConverter() {
             <span>Preset Brand Colors</span>
           </div>
 
-          <Button
-            size="xs"
-            variant="outline"
-            onClick={handleRandomColor}
-            className="bg-purple-500/10 text-purple-300 border-purple-500/30 hover:bg-purple-500/20 transition-all text-xs gap-1.5"
-          >
-            <Sparkles className="size-3.5 text-purple-400" />
-            Random Color
-          </Button>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button
+                size="xs"
+                variant="outline"
+                onClick={handleRandomColor}
+                className="bg-purple-500/10 text-purple-300 border-purple-500/30 hover:bg-purple-500/20 transition-all text-xs gap-1.5"
+              >
+                <Sparkles className="size-3.5 text-purple-400" />
+                Random Color
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Generate Random Color</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -190,11 +198,10 @@ export default function ColorConverter() {
               {/* WCAG Contrast Accessibility Badges */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div
-                  className={`p-3 rounded-xl border flex items-center justify-between ${
-                    result.isWcagWhiteAa
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                      : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
-                  }`}
+                  className={`p-3 rounded-xl border flex items-center justify-between ${result.isWcagWhiteAa
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                    : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     {result.isWcagWhiteAa ? (
@@ -208,11 +215,10 @@ export default function ColorConverter() {
                 </div>
 
                 <div
-                  className={`p-3 rounded-xl border flex items-center justify-between ${
-                    result.isWcagBlackAa
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                      : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
-                  }`}
+                  className={`p-3 rounded-xl border flex items-center justify-between ${result.isWcagBlackAa
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                    : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     {result.isWcagBlackAa ? (
