@@ -104,7 +104,7 @@ export const tools: Tool[] = [
     href: '/tools/json-formatter',
     icon: FileJson,
     category: 'utilities',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['json', 'format', 'validate', 'minify', 'prettify'],
   },
   {
