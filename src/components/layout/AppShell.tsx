@@ -54,7 +54,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Analytics />
         </div>
       </div>
-      <Toaster />
+      <Toaster position='top-right' />
     </TooltipProvider>
   )
 }
