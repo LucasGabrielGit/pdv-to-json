@@ -92,7 +92,7 @@ export const tools: Tool[] = [
     href: '/tools/markdown-html',
     icon: FileText,
     category: 'converters',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['markdown', 'html', 'converter', 'preview'],
   },
 
