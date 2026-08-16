@@ -1,45 +1,41 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { toast } from 'sonner'
-import {
-  BrainCircuit,
-  Copy,
-  Check,
-  Sparkles,
-  ShieldCheck,
-  Zap,
-  Lock,
-  Key,
-  CreditCard,
-  Code2,
-  Bug,
-  Lightbulb,
-  FileCode,
-  RotateCcw,
-  CheckCircle2,
-  AlertTriangle,
-} from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
-
 import {
+  BrainCircuit,
+  Bug,
+  Check,
+  Code2,
+  Copy,
+  CreditCard,
+  FileCode,
+  Key,
+  Lightbulb,
+  RotateCcw,
+  Sparkles,
+  Zap
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+
+import { ToolHeader } from '@/components/converter/ToolHeader'
+import {
+  canConsumeCredit,
+  consumeCredit,
   getUserCredits,
   setCustomApiKey,
-  consumeCredit,
-  canConsumeCredit,
   type UserCredits,
 } from '@/utils/creditsManager'
-import { ToolHeader } from '@/components/converter/ToolHeader'
 
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+import { Textarea } from '@/components/ui/textarea'
 
 const LANGUAGES = [
   'typescript',
@@ -236,11 +232,10 @@ export default function CodeAnalyzer() {
                 <button
                   key={lang}
                   onClick={() => setLanguage(lang)}
-                  className={`px-3 py-1.5 rounded-xl border text-xs font-mono capitalize transition-all ${
-                    language === lang
+                  className={`px-3 py-1.5 rounded-xl border text-xs font-mono capitalize transition-all ${language === lang
                       ? 'bg-purple-600 text-white border-purple-500 font-semibold shadow-md'
                       : 'bg-black/30 border-white/5 text-slate-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   {lang}
                 </button>
@@ -297,13 +292,12 @@ export default function CodeAnalyzer() {
               <div className="p-5 rounded-2xl bg-black/40 border border-purple-500/30 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div
-                    className={`size-16 rounded-2xl flex items-center justify-center font-mono text-2xl font-extrabold border shadow-lg ${
-                      analysisResult.score >= 80
+                    className={`size-16 rounded-2xl flex items-center justify-center font-mono text-2xl font-extrabold border shadow-lg ${analysisResult.score >= 80
                         ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                         : analysisResult.score >= 50
-                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                        : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                    }`}
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                          : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                      }`}
                   >
                     {analysisResult.score}
                   </div>
