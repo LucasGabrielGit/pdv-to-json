@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: Request) {
   try {
     const body = await req.json()
@@ -13,7 +15,12 @@ export async function POST(req: Request) {
       )
     }
 
-    const apiKey = customApiKey || process.env.GEMINI_API_KEY
+    const apiKey = (
+      customApiKey ||
+      process.env.GEMINI_API_KEY ||
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
+      ''
+    ).trim()
 
     if (!apiKey) {
       return NextResponse.json(
