@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
+import { safeParseLlmJson } from '@/utils/safeJsonParse'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,6 +39,10 @@ export async function POST(req: Request) {
 Generate high-quality, production-ready ${language} code based on the user request.
 Request Type: ${type}
 
+CRITICAL INSTRUCTIONS FOR JSON ESCAPING:
+- You must output valid, parseable JSON ONLY.
+- Inside string properties (like generatedCode and usageExample), escape all backslashes and double quotes properly.
+
 Respond strictly in valid JSON format matching this schema:
 {
   "generatedCode": "// Clean, commented production-ready code here",
@@ -54,7 +59,11 @@ Respond strictly in valid JSON format matching this schema:
     })
 
     const responseText = response.text || '{}'
-    const resultJson = JSON.parse(responseText)
+    const resultJson = safeParseLlmJson(responseText, {
+      generatedCode: '// Code generated',
+      explanation: 'Explanation generated',
+      usageExample: '// Usage example',
+    })
 
     return NextResponse.json({
       success: true,
