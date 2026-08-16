@@ -150,13 +150,13 @@ export default function CronBuilder() {
               </div>
             </div>
 
-            <div className="flex items-center rounded-2xl bg-black/40 border border-purple-500/30 overflow-hidden p-2 focus-within:border-purple-500 transition-all">
+            <div className="flex items-center rounded-2xl bg-black/40 border border-purple-500/30 overflow-hidden p-2 transition-all">
               <input
                 type="text"
                 value={expression}
                 onChange={(e) => setExpression(e.target.value)}
                 placeholder="*/5 * * * *"
-                className="w-full bg-transparent font-mono text-xl text-purple-300 placeholder:text-slate-600 focus:outline-none px-3"
+                className="w-full bg-transparent font-mono text-xl text-purple-300 focus:outline-none px-3"
                 spellCheck={false}
               />
             </div>

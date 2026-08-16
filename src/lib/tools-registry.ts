@@ -196,7 +196,7 @@ export const tools: Tool[] = [
     href: '/tools/code-analyzer',
     icon: BrainCircuit,
     category: 'ai',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['code', 'analyze', 'ai', 'lint', 'review', 'quality'],
   },
   {
@@ -206,7 +206,7 @@ export const tools: Tool[] = [
     href: '/tools/code-generator',
     icon: Sparkles,
     category: 'ai',
-    status: 'coming-soon',
+    status: 'active',
     keywords: ['code', 'generate', 'ai', 'prompt', 'create'],
   },
 ]

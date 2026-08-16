@@ -179,11 +179,10 @@ export default function RegexTester() {
                   </Badge>
                   <Badge
                     variant="outline"
-                    className={`text-xs font-mono ${
-                      result.totalMatches > 0
-                        ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
-                        : 'border-slate-500/30 text-slate-400'
-                    }`}
+                    className={`text-xs font-mono ${result.totalMatches > 0
+                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
+                      : 'border-slate-500/30 text-slate-400'
+                      }`}
                   >
                     {result.totalMatches} {result.totalMatches === 1 ? 'match' : 'matches'}
                   </Badge>
@@ -191,14 +190,14 @@ export default function RegexTester() {
               )}
             </div>
 
-            <div className="flex items-center rounded-2xl bg-black/40 border border-purple-500/30 overflow-hidden p-1.5 focus-within:border-purple-500 transition-all">
+            <div className="flex items-center rounded-2xl bg-black/40 border border-purple-500/30 overflow-hidden p-1.5 transition-all">
               <span className="text-purple-400 font-mono text-lg font-bold px-3 select-none">/</span>
               <input
                 type="text"
                 value={pattern}
                 onChange={(e) => setPattern(e.target.value)}
                 placeholder="[a-zA-Z0-9]+"
-                className="w-full bg-transparent font-mono text-base text-purple-200 placeholder:text-slate-600 focus:outline-none"
+                className="w-full bg-transparent font-mono text-base text-purple-200 focus:outline-none"
                 spellCheck={false}
               />
               <span className="text-purple-400 font-mono text-lg font-bold px-2 select-none">/</span>
@@ -212,11 +211,10 @@ export default function RegexTester() {
                       key={f.flag}
                       onClick={() => toggleFlag(f.flag)}
                       title={`${f.label} (${f.flag}): ${f.desc}`}
-                      className={`size-7 rounded-lg font-mono text-xs font-bold transition-all ${
-                        isActive
-                          ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
-                          : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
-                      }`}
+                      className={`size-7 rounded-lg font-mono text-xs font-bold transition-all ${isActive
+                        ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                        : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                        }`}
                     >
                       {f.flag}
                     </button>
@@ -344,7 +342,7 @@ export default function RegexTester() {
 
             {/* TAB 2: HIGHLIGHTED TEXT PREVIEW */}
             <TabsContent value="highlight" className="mt-0">
-              <div className="p-4 rounded-2xl bg-black/40 border border-purple-500/20 font-mono text-sm leading-relaxed whitespace-pre-wrap break-words max-h-80 overflow-y-auto text-slate-300">
+              <div className="p-4 rounded-2xl bg-black/40 border border-purple-500/20 font-mono text-sm leading-relaxed whitespace-pre-wrap wrap-break-word max-h-80 overflow-y-auto text-slate-300">
                 {highlightedParts.map((part, i) =>
                   part.isMatch ? (
                     <mark
