@@ -29,6 +29,7 @@ import {
 } from '@/utils/creditsManager'
 
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+import CodeEditor from '@/components/CodeEditor'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -260,12 +261,11 @@ export default function CodeAnalyzer() {
               </Button>
             </div>
 
-            <Textarea
+            <CodeEditor
               value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="Paste code snippet here for AI review..."
-              className="h-52 font-mono text-sm resize-y leading-relaxed bg-black/40 text-slate-100 border border-purple-500/30"
-              spellCheck={false}
+              onChange={(v) => setCode(v || '')}
+              language={language}
+              height="260px"
             />
           </div>
 
@@ -359,9 +359,12 @@ export default function CodeAnalyzer() {
                       {copiedKey === 'refactored' ? 'Copied' : 'Copy Code'}
                     </Button>
                   </div>
-                  <pre className="p-3.5 rounded-xl bg-black/60 font-mono text-xs text-emerald-300 overflow-x-auto leading-relaxed border border-white/5">
-                    {analysisResult.refactoredCode}
-                  </pre>
+                  <CodeEditor
+                    value={analysisResult.refactoredCode}
+                    language={language}
+                    height="200px"
+                    readOnly
+                  />
                 </div>
               )}
 
@@ -387,9 +390,12 @@ export default function CodeAnalyzer() {
                       {copiedKey === 'unitTest' ? 'Copied' : 'Copy Tests'}
                     </Button>
                   </div>
-                  <pre className="p-3.5 rounded-xl bg-black/60 font-mono text-xs text-purple-300 overflow-x-auto leading-relaxed border border-white/5">
-                    {analysisResult.unitTestCode}
-                  </pre>
+                  <CodeEditor
+                    value={analysisResult.unitTestCode}
+                    language={language}
+                    height="200px"
+                    readOnly
+                  />
                 </div>
               )}
             </div>

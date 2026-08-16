@@ -35,6 +35,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+import CodeEditor from '@/components/CodeEditor'
 
 const TYPES = [
   { id: 'full', label: 'Full Module / Function' },
@@ -327,9 +328,12 @@ export default function CodeGenerator() {
                     {copiedKey === 'generated' ? 'Copied' : 'Copy Code'}
                   </Button>
                 </div>
-                <pre className="p-4 rounded-xl bg-black/60 font-mono text-xs text-emerald-300 overflow-x-auto leading-relaxed border border-white/5 select-all">
-                  {generatorResult.generatedCode}
-                </pre>
+                <CodeEditor
+                  value={generatorResult.generatedCode}
+                  language={language}
+                  height="220px"
+                  readOnly
+                />
               </div>
 
               {/* Explanation Card */}
@@ -367,9 +371,12 @@ export default function CodeGenerator() {
                       {copiedKey === 'usage' ? 'Copied' : 'Copy Usage'}
                     </Button>
                   </div>
-                  <pre className="p-3.5 rounded-xl bg-black/60 font-mono text-xs text-purple-300 overflow-x-auto leading-relaxed border border-white/5">
-                    {generatorResult.usageExample}
-                  </pre>
+                  <CodeEditor
+                    value={generatorResult.usageExample}
+                    language={language}
+                    height="180px"
+                    readOnly
+                  />
                 </div>
               )}
             </div>
