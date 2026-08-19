@@ -122,3 +122,58 @@ export function addPurchasedCredits(amount: number): UserCredits {
   }
   return credits
 }
+
+/**
+ * Cloud sync with Supabase profile if available
+ */
+export async function syncUserCreditsWithCloud(supabaseClient: {
+  auth: { getUser: () => Promise<{ data: { user: { id: string } | null } }> }
+  from: (table: string) => {
+    select: (cols: string) => {
+      eq: (col: string, val: string) => {
+        single: () => Promise<{
+          data: {
+            free_credits_remaining: number
+            purchased_credits: number
+            is_pro: boolean
+            user_custom_api_key?: string
+          } | null
+        }>
+      }
+    }
+    update: (data: Record<string, unknown>) => {
+      eq: (col: string, val: string) => Promise<{ error: unknown }>
+    }
+  }
+}): Promise<UserCredits> {
+  const local = getUserCredits()
+  if (typeof window === 'undefined') return local
+
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser()
+    if (!user) return local
+
+    const { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('free_credits_remaining, purchased_credits, is_pro, user_custom_api_key')
+      .eq('id', user.id)
+      .single()
+
+    if (profile) {
+      const synced: UserCredits = {
+        freeCreditsRemaining: profile.free_credits_remaining,
+        purchasedCredits: profile.purchased_credits,
+        isProSubscriber: profile.is_pro,
+        lastDailyResetDate: local.lastDailyResetDate,
+        userCustomApiKey: profile.user_custom_api_key || local.userCustomApiKey,
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(synced))
+      return synced
+    }
+  } catch {
+    // Fallback to local storage if offline or unconfigured
+  }
+
+  return local
+}
+

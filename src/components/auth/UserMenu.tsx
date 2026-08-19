@@ -1,0 +1,216 @@
+'use client'
+
+import React, { useState, useEffect, useRef } from 'react'
+import { toast } from 'sonner'
+import {
+  User as UserIcon,
+  LogOut,
+  Zap,
+  ShieldCheck,
+  Crown,
+  Key,
+  ChevronDown,
+  Sparkles,
+} from 'lucide-react'
+import type { User } from '@supabase/supabase-js'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
+
+import { AuthModal } from './AuthModal'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+
+interface ProfileData {
+  free_credits_remaining: number
+  purchased_credits: number
+  is_pro: boolean
+  user_custom_api_key?: string
+}
+
+export function UserMenu() {
+  const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<ProfileData | null>(null)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  const supabase = createClient()
+
+  // Fetch user and profile
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setIsLoading(false)
+      return
+    }
+
+    async function loadUser() {
+      try {
+        const { data: { user: currentUser } } = await supabase.auth.getUser()
+        setUser(currentUser)
+
+        if (currentUser) {
+          const { data: prof } = await supabase
+            .from('profiles')
+            .select('free_credits_remaining, purchased_credits, is_pro, user_custom_api_key')
+            .eq('id', currentUser.id)
+            .single()
+
+          if (prof) {
+            setProfile(prof)
+          }
+        }
+      } catch {
+        // Ignore auth error in offline or unconfigured env
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        const sessionUser = session?.user ?? null
+        setUser(sessionUser)
+        if (sessionUser) {
+          const { data: prof } = await supabase
+            .from('profiles')
+            .select('free_credits_remaining, purchased_credits, is_pro, user_custom_api_key')
+            .eq('id', sessionUser.id)
+            .single()
+
+          if (prof) setProfile(prof)
+        } else {
+          setProfile(null)
+        }
+      }
+    )
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [menuOpen])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+    setProfile(null)
+    setMenuOpen(false)
+    toast.success('Signed out successfully.')
+  }
+
+  const totalCredits = (profile?.free_credits_remaining ?? 5) + (profile?.purchased_credits ?? 0)
+  const isPro = profile?.is_pro ?? false
+
+  return (
+    <>
+      <div ref={menuRef} className="relative">
+        {!user ? (
+          <button
+            onClick={() => setAuthModalOpen(true)}
+            className="flex items-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 px-3 py-1.5 text-xs font-semibold text-purple-300 hover:text-purple-200 transition-all shadow-sm cursor-pointer"
+          >
+            <UserIcon className="size-3.5 text-purple-400" />
+            <span>Sign In</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center gap-2 rounded-xl border border-purple-500/30 bg-[#16213e] hover:border-purple-500/50 p-1.5 pr-2.5 transition-all cursor-pointer shadow-sm"
+          >
+            {/* Avatar */}
+            <div className="size-7 rounded-lg bg-linear-to-tr from-purple-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xs uppercase shadow-sm">
+              {user.email ? user.email[0] : 'U'}
+            </div>
+
+            {/* Credit chip */}
+            <div className="hidden sm:flex items-center gap-1 text-[11px] font-semibold text-purple-300">
+              {isPro ? (
+                <span className="flex items-center gap-1 text-amber-300 font-bold">
+                  <Crown className="size-3 text-amber-400" /> Pro
+                </span>
+              ) : (
+                <span className="flex items-center gap-1">
+                  <Zap className="size-3 text-purple-400" /> {totalCredits} Credits
+                </span>
+              )}
+            </div>
+
+            <ChevronDown className="size-3 text-slate-400" />
+          </button>
+        )}
+
+        {/* Dropdown Menu */}
+        {menuOpen && user && (
+          <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-purple-500/30 bg-[#16213e] p-3 shadow-2xl shadow-purple-950/60 space-y-3 z-50 animate-in fade-in zoom-in-95 duration-100">
+            {/* User Info */}
+            <div className="px-2 py-1 space-y-1">
+              <p className="text-[11px] uppercase tracking-wider text-slate-400 font-mono">
+                Signed in as
+              </p>
+              <p className="text-xs font-semibold text-white truncate">
+                {user.email}
+              </p>
+            </div>
+
+            <div className="border-t border-purple-500/20" />
+
+            {/* Credits Overview */}
+            <div className="rounded-xl bg-black/40 p-3 border border-purple-500/20 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400 flex items-center gap-1.5">
+                  <Zap className="size-3.5 text-purple-400" /> AI Credits
+                </span>
+                <span className="font-mono font-bold text-white">
+                  {totalCredits} left
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400 flex items-center gap-1.5">
+                  <Crown className="size-3.5 text-amber-400" /> Plan
+                </span>
+                <Badge
+                  variant="outline"
+                  className={
+                    isPro
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]'
+                      : 'bg-purple-500/20 text-purple-300 border-purple-500/30 text-[10px]'
+                  }
+                >
+                  {isPro ? 'Pro Member' : 'Free Tier'}
+                </Badge>
+              </div>
+            </div>
+
+            <div className="border-t border-purple-500/20" />
+
+            {/* Sign out button */}
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+            >
+              <LogOut className="size-3.5" />
+              Sign Out
+            </button>
+          </div>
+        )}
+      </div>
+
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+    </>
+  )
+}

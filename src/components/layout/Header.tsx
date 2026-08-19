@@ -2,10 +2,12 @@
 
 import React from 'react'
 import Link from 'next/link'
+
 import { usePathname } from 'next/navigation'
 import { Menu, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { tools } from '@/lib/tools-registry'
+import { UserMenu } from '@/components/auth/UserMenu'
 
 interface HeaderProps {
   onMenuClick: () => void
@@ -51,7 +53,7 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Search button trigger */}
+      {/* Right actions: Search & User */}
       <div className="flex items-center gap-2">
         <button
           onClick={onSearchClick}
@@ -74,8 +76,11 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
         >
           <Search className="size-4" />
         </Button>
+
+        <UserMenu />
       </div>
     </header>
   )
 }
+
 
