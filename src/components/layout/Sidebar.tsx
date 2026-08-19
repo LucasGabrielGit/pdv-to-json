@@ -19,7 +19,12 @@ import {
 } from '@/lib/tools-registry'
 import { cn } from '@/lib/utils'
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
 
@@ -28,26 +33,29 @@ export function Sidebar() {
       {/* Mobile overlay */}
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity md:hidden',
-          collapsed ? 'pointer-events-none opacity-0' : 'opacity-100'
+          'fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity md:hidden',
+          isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
         )}
-        onClick={() => setCollapsed(true)}
+        onClick={onClose}
+        aria-hidden={!isOpen}
       />
 
       {/* Sidebar panel */}
       <aside
         className={cn(
           'fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 md:sticky md:top-0 md:z-30 shrink-0',
-          collapsed
-            ? '-translate-x-full md:translate-x-0 md:w-16'
-            : 'w-64 translate-x-0'
+          // Mobile state
+          isOpen ? 'translate-x-0 w-64 shadow-2xl' : '-translate-x-full md:translate-x-0',
+          // Desktop collapsed state
+          collapsed ? 'md:w-16' : 'md:w-64'
         )}
       >
         {/* Logo area */}
         <div className="flex h-16 items-center justify-between px-4 shrink-0">
-          {!collapsed && (
+          {(!collapsed || isOpen) && (
             <Link
               href="/"
+              onClick={onClose}
               className="flex items-center gap-2 transition-opacity hover:opacity-80"
             >
               <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-black text-sm">
@@ -58,13 +66,15 @@ export function Sidebar() {
               </span>
             </Link>
           )}
-          {collapsed && (
+          {collapsed && !isOpen && (
             <Link href="/" className="mx-auto">
               <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-black text-sm">
                 dk
               </div>
             </Link>
           )}
+
+          {/* Desktop collapse toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -76,6 +86,16 @@ export function Sidebar() {
             ) : (
               <PanelLeftClose className="size-4" />
             )}
+          </Button>
+
+          {/* Mobile close button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 text-muted-foreground hover:text-foreground md:hidden shrink-0"
+            onClick={onClose}
+          >
+            <PanelLeftClose className="size-5" />
           </Button>
         </div>
 
@@ -89,7 +109,7 @@ export function Sidebar() {
 
             return (
               <div key={cat.id}>
-                {!collapsed && (
+                {(!collapsed || isOpen) && (
                   <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
                     {cat.emoji} {cat.label}
                   </p>
@@ -101,7 +121,8 @@ export function Sidebar() {
                       key={tool.id}
                       tool={tool}
                       isActive={pathname === tool.href}
-                      collapsed={collapsed}
+                      collapsed={collapsed && !isOpen}
+                      onNavigate={onClose}
                     />
                   ))}
                 </ul>
@@ -119,9 +140,10 @@ interface SidebarItemProps {
   tool: Tool
   isActive: boolean
   collapsed: boolean
+  onNavigate?: () => void
 }
 
-function SidebarItem({ tool, isActive, collapsed }: SidebarItemProps) {
+function SidebarItem({ tool, isActive, collapsed, onNavigate }: SidebarItemProps) {
   const Icon = tool.icon
   const isComingSoon = tool.status === 'coming-soon'
 
@@ -164,7 +186,9 @@ function SidebarItem({ tool, isActive, collapsed }: SidebarItemProps) {
 
   return (
     <li>
-      <Link href={tool.href}>{content}</Link>
+      <Link href={tool.href} onClick={onNavigate}>
+        {content}
+      </Link>
     </li>
   )
 }
@@ -186,3 +210,4 @@ export function SidebarMobileTrigger({
     </Button>
   )
 }
+

@@ -6,20 +6,28 @@ import { Toaster } from '@/components/ui/sonner'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
 import { Footer } from './Footer'
+import { CommandPalette } from './CommandPalette'
 import { Analytics } from '@vercel/analytics/next'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [commandOpen, setCommandOpen] = useState(false)
 
   return (
     <TooltipProvider>
       <div className="flex min-h-screen">
         {/* Sidebar */}
-        <Sidebar />
+        <Sidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
 
         {/* Main content area */}
         <div className="flex flex-1 flex-col min-w-0">
-          <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+          <Header
+            onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+            onSearchClick={() => setCommandOpen(true)}
+          />
 
           {/* Page content */}
           <main
@@ -54,7 +62,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Analytics />
         </div>
       </div>
-      <Toaster position='top-right' />
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+      <Toaster position="top-right" />
     </TooltipProvider>
   )
 }
+

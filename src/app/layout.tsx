@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { AppShell } from '@/components/layout/AppShell'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Script from 'next/script'
+import { ADS_CONFIG } from '@/config/ads'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -33,14 +34,12 @@ export const metadata: Metadata = {
     title: 'dev-kit.tech — Free Developer Tools, 100% Client-Side & Private',
     description:
       'Free, browser-based developer tools. Convert JSON to CSV, test Regex, decode JWT — all processed locally in your browser.',
-    images: ['/og-image.svg'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'dev-kit.tech — Free Developer Tools',
     description:
       'Free, browser-based developer tools. 100% client-side. Your data never leaves your device.',
-    images: ['/og-image.svg'],
   },
 }
 
@@ -61,13 +60,15 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {/* Google AdSense Script */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6240733470750177"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+        {/* Google AdSense Script — loaded only when enabled */}
+        {ADS_CONFIG.enabled && ADS_CONFIG.PUBLISHER_ID && (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADS_CONFIG.PUBLISHER_ID}`}
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        )}
 
         {/* Structured Data (Schema.org WebSite & Organization) */}
         <script
@@ -95,3 +96,4 @@ export default function RootLayout({
     </html>
   )
 }
+

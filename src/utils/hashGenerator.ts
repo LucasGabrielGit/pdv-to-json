@@ -84,7 +84,7 @@ function md5(string: string): string {
     for (lCount = 0; lCount <= 3; lCount++) {
       lByte = (lValue >>> (lCount * 8)) & 255
       WordToHexValue_temp = '0' + lByte.toString(16)
-      WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length - 2, 2)
+      WordToHexValue += WordToHexValue_temp.slice(-2)
     }
     return WordToHexValue
   }

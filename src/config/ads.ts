@@ -10,13 +10,13 @@
 
 export const ADS_CONFIG = {
   /** Your AdSense publisher ID — format: ca-pub-XXXXXXXXXXXXXXXX */
-  PUBLISHER_ID: 'ca-pub-6240733470750177',
+  PUBLISHER_ID: "ca-pub-6240733470750177",
 
   slots: {
     /** Ad shown between the input and output sections inside the main card */
-    betweenIO: 'XXXXXXXXXX',
+    betweenIO: "XXXXXXXXXX",
   },
 
   /** Set to false to globally disable ads (e.g. in development) */
-  enabled: true,
-} as const
+  enabled: false,
+} as const;

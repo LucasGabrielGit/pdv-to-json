@@ -59,7 +59,6 @@ const Converter: React.FC = () => {
   const [result, setResult] = useState<ConversionResult | CsvConversionResult | null>(null)
   const [copied, setCopied] = useState(false)
   const [isConverting, setIsConverting] = useState(false)
-  const [activeTab, setActiveTab] = useState<'text' | 'file'>('text')
 
   const outputRef = useRef<HTMLDivElement>(null)
 
@@ -80,36 +79,33 @@ const Converter: React.FC = () => {
     setInputText('')
     setResult(null)
     setInputMode('text')
-    setActiveTab('text')
   }
 
   const convert = (text: string, dir: Direction = direction) => {
     setResult(null)
     setIsConverting(true)
 
-    setTimeout(() => {
-      try {
-        const res = dir === 'json-to-csv'
-          ? jsonToCsv(text, delimiter)
-          : csvToJson(text, { delimiter, expandNested, castTypes })
+    try {
+      const res = dir === 'json-to-csv'
+        ? jsonToCsv(text, delimiter)
+        : csvToJson(text, { delimiter, expandNested, castTypes })
 
-        setResult(res)
-        toast.success('Conversion successful', {
-          description: `${res.rowCount} rows · ${res.columnCount} columns`,
-        })
+      setResult(res)
+      toast.success('Conversion successful', {
+        description: `${res.rowCount} rows · ${res.columnCount} columns`,
+      })
 
-        setTimeout(() => {
-          outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }, 100)
-      } catch (e) {
-        toast.error('Conversion failed', {
-          description: (e as Error).message,
-          duration: 6000,
-        })
-      } finally {
-        setIsConverting(false)
-      }
-    }, 50)
+      setTimeout(() => {
+        outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 50)
+    } catch (e) {
+      toast.error('Conversion failed', {
+        description: (e as Error).message,
+        duration: 6000,
+      })
+    } finally {
+      setIsConverting(false)
+    }
   }
 
   const handleConvert = () => {
@@ -196,27 +192,28 @@ const Converter: React.FC = () => {
               <TabsTrigger
                 id="tab-text"
                 value="text"
-                className={`px-5 py-2 rounded-full transition-all ${activeTab === 'text'
-                  ? 'text-zinc-900 font-semibold shadow-md'
-                  : 'text-slate-400 hover:text-white'
-                  }`}
-                onClick={() => setActiveTab('text')}
+                className={`px-5 py-2 rounded-xl transition-all ${
+                  inputMode === 'text'
+                    ? 'bg-purple-600 text-white font-semibold shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
               >
                 ✏️ Paste Text
               </TabsTrigger>
               <TabsTrigger
                 id="tab-file"
                 value="file"
-                className={`px-5 py-2 rounded-lg transition-all ${activeTab === 'file'
-                  ? 'bg-white text-zinc-900 font-semibold shadow-md'
-                  : 'text-slate-400 hover:text-white'
-                  }`}
-                onClick={() => setActiveTab('file')}
+                className={`px-5 py-2 rounded-xl transition-all ${
+                  inputMode === 'file'
+                    ? 'bg-purple-600 text-white font-semibold shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
               >
                 📁 Upload File
               </TabsTrigger>
             </TabsList>
           </Tabs>
+
 
           {inputMode === 'text' ? (
             <div className="space-y-2">

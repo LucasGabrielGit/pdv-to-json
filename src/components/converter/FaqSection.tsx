@@ -6,27 +6,27 @@ export const FaqSection: React.FC = () => {
   const faqs = [
     {
       icon: <ShieldCheck className="size-5 text-emerald-400" />,
-      question: 'Os meus dados estão seguros ao converter arquivos JSON ou CSV?',
+      question: 'Are my files and data secure when converting JSON or CSV?',
       answer:
-        'Sim, 100%! Diferente de outras ferramentas online, toda a conversão acontece exclusivamente dentro do seu navegador via JavaScript client-side. Nenhum arquivo ou texto é enviado para qualquer servidor externo.',
+        'Yes, 100%! Unlike many online converters, all processing runs entirely within your browser via client-side JavaScript. None of your data or files are ever sent to any remote server.',
     },
     {
       icon: <Layers className="size-5 text-purple-400" />,
-      question: 'Como funciona o tratamento de objetos e arrays aninhados (Nested JSON)?',
+      question: 'How does nested JSON object flattening work?',
       answer:
-        'Nossa ferramenta achata automaticamente objetos JSON aninhados em colunas com notação de ponto (ex: address.city, user.profile.name). Ao converter de CSV de volta para JSON, a opção "Expand nested" reconstrói os objetos originais perfeitamente.',
+        'Our converter automatically flattens nested JSON objects into dot-notation columns (e.g. address.city, user.profile.name). When converting CSV back to JSON, the "Expand nested" option accurately reconstructs the original nested structures.',
     },
     {
       icon: <Zap className="size-5 text-cyan-400" />,
-      question: 'Existe limite de tamanho para os arquivos JSON ou CSV?',
+      question: 'Is there a file size limit for JSON or CSV conversions?',
       answer:
-        'Como o processamento utiliza a memória ram local do seu dispositivo, você pode converter arquivos grandes com milhares de linhas sem filas de espera ou limites artificiais colocados por servidores.',
+        'Because data is processed using your local machine memory, you can convert large datasets with thousands of rows without queue delays or artificial server upload caps.',
     },
     {
       icon: <FileSpreadsheet className="size-5 text-lime-400" />,
-      question: 'Posso abrir o arquivo CSV gerado no Microsoft Excel ou Google Sheets?',
+      question: 'Can I open the generated CSV in Microsoft Excel or Google Sheets?',
       answer:
-        'Com certeza. Você pode escolher o delimitador ideal (vírgula `,`, ponto e vírgula `;`, tab `\\t` ou pipe `|`) para garantir compatibilidade perfeita com Excel, Google Sheets, bancos de dados PostgreSQL/MySQL ou scripts Python.',
+        'Absolutely. You can choose custom delimiters (comma `,`, semicolon `;`, tab `\\t`, or pipe `|`) to ensure seamless compatibility with Excel, Google Sheets, PostgreSQL, MySQL, or Python scripts.',
     },
   ]
 
@@ -34,10 +34,10 @@ export const FaqSection: React.FC = () => {
     <div className="w-full max-w-5xl mx-auto px-4 mt-14 mb-8">
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">
-          Perguntas Frequentes &amp; Recursos
+          Frequently Asked Questions
         </h2>
         <p className="text-sm text-slate-400 max-w-lg mx-auto">
-          Tudo o que você precisa saber sobre o conversor JSON ↔ CSV mais rápido e seguro da web.
+          Everything you need to know about the fastest, private JSON ↔ CSV converter.
         </p>
       </div>
 
@@ -66,3 +66,4 @@ export const FaqSection: React.FC = () => {
     </div>
   )
 }
+

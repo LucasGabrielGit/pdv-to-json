@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { generatePixPayload } from '@/utils/pixPayload'
 
-const RAW_PIX_KEY = '(99) 98155-5572'
+const RAW_PIX_KEY = process.env.NEXT_PUBLIC_PIX_KEY || '(99) 98155-5572'
 const PIX_PAYLOAD = generatePixPayload(RAW_PIX_KEY)
+
 
 export default function PixCoffee() {
   const [copiedKey, setCopiedKey] = useState(false)
