@@ -1,5 +1,8 @@
+import type { SupabaseClient } from '@supabase/supabase-js'
+
 export interface UserCredits {
   freeCreditsRemaining: number
+
   purchasedCredits: number
   isProSubscriber: boolean
   lastDailyResetDate: string // YYYY-MM-DD
@@ -126,28 +129,12 @@ export function addPurchasedCredits(amount: number): UserCredits {
 /**
  * Cloud sync with Supabase profile if available
  */
-export async function syncUserCreditsWithCloud(supabaseClient: {
-  auth: { getUser: () => Promise<{ data: { user: { id: string } | null } }> }
-  from: (table: string) => {
-    select: (cols: string) => {
-      eq: (col: string, val: string) => {
-        single: () => Promise<{
-          data: {
-            free_credits_remaining: number
-            purchased_credits: number
-            is_pro: boolean
-            user_custom_api_key?: string
-          } | null
-        }>
-      }
-    }
-    update: (data: Record<string, unknown>) => {
-      eq: (col: string, val: string) => Promise<{ error: unknown }>
-    }
-  }
-}): Promise<UserCredits> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function syncUserCreditsWithCloud(supabaseClient: SupabaseClient<any, any, any>): Promise<UserCredits> {
   const local = getUserCredits()
   if (typeof window === 'undefined') return local
+
+
 
   try {
     const { data: { user } } = await supabaseClient.auth.getUser()

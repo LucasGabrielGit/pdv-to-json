@@ -14,8 +14,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { GoogleIcon } from "@/assets/google-icon";
 import { GithubIcon } from "@/assets/github-icon";
+import { GoogleIcon } from "@/assets/google-icon";
 
 interface AuthModalProps {
   open: boolean;
@@ -146,7 +146,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 className="w-full flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-all shadow-sm cursor-pointer disabled:opacity-50"
               >
                 <GoogleIcon />
-                Continue with Google
+                <span>Continue with Google</span>
               </button>
 
               <button
@@ -156,7 +156,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 className="w-full flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition-all shadow-sm cursor-pointer disabled:opacity-50"
               >
                 <GithubIcon />
-                Continue with GitHub
+                <span>Continue with GitHub</span>
               </button>
             </div>
 

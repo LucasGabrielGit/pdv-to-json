@@ -25,8 +25,10 @@ import {
   consumeCredit,
   getUserCredits,
   setCustomApiKey,
+  syncUserCreditsWithCloud,
   type UserCredits,
 } from '@/utils/creditsManager'
+import { createClient } from '@/lib/supabase/client'
 
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
 import CodeEditor from '@/components/CodeEditor'
@@ -36,7 +38,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Textarea } from '@/components/ui/textarea'
 
 const LANGUAGES = [
   'typescript',
@@ -84,6 +85,7 @@ export default function CodeAnalyzer() {
   } | null>(null)
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
+  const supabase = createClient()
 
   useEffect(() => {
     const creds = getUserCredits()
@@ -91,7 +93,16 @@ export default function CodeAnalyzer() {
     if (creds.userCustomApiKey) {
       setCustomKeyInput(creds.userCustomApiKey)
     }
+
+    // Sync with cloud if authenticated
+    syncUserCreditsWithCloud(supabase).then((synced) => {
+      setUserCredits(synced)
+      if (synced.userCustomApiKey) {
+        setCustomKeyInput(synced.userCustomApiKey)
+      }
+    })
   }, [])
+
 
   const handleSaveApiKey = () => {
     setCustomApiKey(customKeyInput)

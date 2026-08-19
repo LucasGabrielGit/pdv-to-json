@@ -23,8 +23,10 @@ import {
   setCustomApiKey,
   consumeCredit,
   canConsumeCredit,
+  syncUserCreditsWithCloud,
   type UserCredits,
 } from '@/utils/creditsManager'
+import { createClient } from '@/lib/supabase/client'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 
 import { Button } from '@/components/ui/button'
@@ -78,6 +80,7 @@ export default function CodeGenerator() {
   } | null>(null)
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
+  const supabase = createClient()
 
   useEffect(() => {
     const creds = getUserCredits()
@@ -85,7 +88,16 @@ export default function CodeGenerator() {
     if (creds.userCustomApiKey) {
       setCustomKeyInput(creds.userCustomApiKey)
     }
+
+    // Sync with cloud if authenticated
+    syncUserCreditsWithCloud(supabase).then((synced) => {
+      setUserCredits(synced)
+      if (synced.userCustomApiKey) {
+        setCustomKeyInput(synced.userCustomApiKey)
+      }
+    })
   }, [])
+
 
   const handleSaveApiKey = () => {
     setCustomApiKey(customKeyInput)
