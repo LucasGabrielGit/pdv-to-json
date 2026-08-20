@@ -64,7 +64,7 @@ export async function GET(req: Request) {
           ? session.subscription
           : (session.subscription as any)?.id
 
-      await supabaseAdmin
+      const { error: updateErr } = await supabaseAdmin
         .from('profiles')
         .update({
           is_pro: true,
@@ -73,6 +73,14 @@ export async function GET(req: Request) {
           subscription_status: 'active',
         })
         .eq('id', userId)
+
+      if (updateErr) {
+        // Fallback if stripe columns not yet migrated
+        await supabaseAdmin
+          .from('profiles')
+          .update({ is_pro: true })
+          .eq('id', userId)
+      }
 
       return NextResponse.json({
         success: true,
@@ -88,13 +96,21 @@ export async function GET(req: Request) {
         const currentCredits = profile.purchased_credits || 0
         const newCredits = currentCredits + creditAmount
 
-        await supabaseAdmin
+        const { error: updateErr } = await supabaseAdmin
           .from('profiles')
           .update({
             purchased_credits: newCredits,
             stripe_customer_id: (session.customer as any)?.id || (session.customer as string),
           })
           .eq('id', userId)
+
+        if (updateErr) {
+          // Fallback if stripe_customer_id column not yet migrated
+          await supabaseAdmin
+            .from('profiles')
+            .update({ purchased_credits: newCredits })
+            .eq('id', userId)
+        }
 
         return NextResponse.json({
           success: true,
@@ -103,6 +119,7 @@ export async function GET(req: Request) {
           message: `Successfully credited ${creditAmount} AI credits!`,
         })
       }
+
 
       return NextResponse.json({
         success: true,
