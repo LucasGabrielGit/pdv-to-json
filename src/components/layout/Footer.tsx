@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { ShieldCheck, Heart } from 'lucide-react'
+import { LogoIcon } from './Logo'
 
 export function Footer() {
   return (
@@ -10,10 +11,14 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
           <Link
             href="/"
-            className="font-bold text-foreground hover:text-primary transition-colors text-sm"
+            className="font-bold text-foreground hover:text-primary transition-colors text-sm flex items-center gap-2"
           >
-            dev-kit<span className="text-primary">.tech</span>
+            <LogoIcon size={18} />
+            <span>
+              dev-kit<span className="text-primary">.tech</span>
+            </span>
           </Link>
+
           <span className="hidden sm:inline text-muted-foreground/30">•</span>
           <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
             <ShieldCheck className="size-3.5" /> 100% Client-Side &amp; Private

@@ -8,6 +8,7 @@ import { Menu, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { tools } from '@/lib/tools-registry'
 import { UserMenu } from '@/components/auth/UserMenu'
+import { LogoIcon } from './Logo'
 
 interface HeaderProps {
   onMenuClick: () => void
@@ -33,13 +34,15 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
       </Button>
 
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm">
+      <nav className="flex items-center gap-2 text-sm">
         <Link
           href="/"
-          className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+          className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1.5"
         >
-          dev-kit.tech
+          <LogoIcon size={20} />
+          <span>dev-kit.tech</span>
         </Link>
+
         {currentTool && (
           <>
             <span className="text-muted-foreground/40">/</span>

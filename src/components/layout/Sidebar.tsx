@@ -19,6 +19,8 @@ import {
 } from '@/lib/tools-registry'
 import { cn } from '@/lib/utils'
 
+import { Logo, LogoIcon } from './Logo'
+
 interface SidebarProps {
   isOpen?: boolean
   onClose?: () => void
@@ -56,23 +58,17 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <Link
               href="/"
               onClick={onClose}
-              className="flex items-center gap-2 transition-opacity hover:opacity-80"
+              className="flex items-center gap-2 transition-opacity hover:opacity-90"
             >
-              <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-black text-sm">
-                dk
-              </div>
-              <span className="text-lg font-bold tracking-tight text-foreground">
-                dev-kit<span className="text-primary">.tech</span>
-              </span>
+              <Logo variant="full" size="md" />
             </Link>
           )}
           {collapsed && !isOpen && (
-            <Link href="/" className="mx-auto">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-black text-sm">
-                dk
-              </div>
+            <Link href="/" className="mx-auto hover:opacity-90 transition-opacity">
+              <LogoIcon size={32} />
             </Link>
           )}
+
 
           {/* Desktop collapse toggle */}
           <Button

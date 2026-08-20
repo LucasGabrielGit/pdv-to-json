@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react'
-import { toast } from 'sonner'
+import React, { useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import {
   User as UserIcon,
   LogOut,
@@ -11,110 +11,117 @@ import {
   Key,
   ChevronDown,
   Sparkles,
-} from 'lucide-react'
-import type { User } from '@supabase/supabase-js'
-import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
+} from "lucide-react";
+import type { User } from "@supabase/supabase-js";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
-import { AuthModal } from './AuthModal'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { AuthModal } from "./AuthModal";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface ProfileData {
-  free_credits_remaining: number
-  purchased_credits: number
-  is_pro: boolean
-  user_custom_api_key?: string
+  free_credits_remaining: number;
+  purchased_credits: number;
+  is_pro: boolean;
+  user_custom_api_key?: string;
 }
 
 export function UserMenu() {
-  const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<ProfileData | null>(null)
-  const [authModalOpen, setAuthModalOpen] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  const supabase = createClient()
+  const supabase = createClient();
 
   // Fetch user and profile
   useEffect(() => {
     if (!isSupabaseConfigured()) {
-      setIsLoading(false)
-      return
+      setIsLoading(false);
+      return;
     }
 
     async function loadUser() {
       try {
-        const { data: { user: currentUser } } = await supabase.auth.getUser()
-        setUser(currentUser)
+        const {
+          data: { user: currentUser },
+        } = await supabase.auth.getUser();
+        setUser(currentUser);
 
         if (currentUser) {
           const { data: prof } = await supabase
-            .from('profiles')
-            .select('free_credits_remaining, purchased_credits, is_pro, user_custom_api_key')
-            .eq('id', currentUser.id)
-            .single()
+            .from("profiles")
+            .select(
+              "free_credits_remaining, purchased_credits, is_pro, user_custom_api_key",
+            )
+            .eq("id", currentUser.id)
+            .single();
 
           if (prof) {
-            setProfile(prof)
+            setProfile(prof);
           }
         }
       } catch {
         // Ignore auth error in offline or unconfigured env
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
 
-    loadUser()
+    loadUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        const sessionUser = session?.user ?? null
-        setUser(sessionUser)
-        if (sessionUser) {
-          const { data: prof } = await supabase
-            .from('profiles')
-            .select('free_credits_remaining, purchased_credits, is_pro, user_custom_api_key')
-            .eq('id', sessionUser.id)
-            .single()
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const sessionUser = session?.user ?? null;
+      setUser(sessionUser);
+      if (sessionUser) {
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select(
+            "free_credits_remaining, purchased_credits, is_pro, user_custom_api_key",
+          )
+          .eq("id", sessionUser.id)
+          .single();
 
-          if (prof) setProfile(prof)
-        } else {
-          setProfile(null)
-        }
+        if (prof) setProfile(prof);
+      } else {
+        setProfile(null);
       }
-    )
+    });
 
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
-
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
+        setMenuOpen(false);
       }
     }
     if (menuOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener("mousedown", handleClickOutside);
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [menuOpen])
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
-    setProfile(null)
-    setMenuOpen(false)
-    toast.success('Signed out successfully.')
-  }
+    await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
+    setMenuOpen(false);
+    toast.success("Signed out successfully.");
+  };
 
-  const totalCredits = (profile?.free_credits_remaining ?? 5) + (profile?.purchased_credits ?? 0)
-  const isPro = profile?.is_pro ?? false
+  const totalCredits =
+    (profile?.free_credits_remaining ?? 5) + (profile?.purchased_credits ?? 0);
+  const isPro = profile?.is_pro ?? false;
 
   return (
     <>
@@ -133,9 +140,12 @@ export function UserMenu() {
             className="flex items-center gap-2 rounded-xl border border-purple-500/30 bg-[#16213e] hover:border-purple-500/50 p-1.5 pr-2.5 transition-all cursor-pointer shadow-sm"
           >
             {/* Avatar */}
-            <div className="size-7 rounded-lg bg-linear-to-tr from-purple-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xs uppercase shadow-sm">
-              {user.email ? user.email[0] : 'U'}
-            </div>
+            <Avatar>
+              <AvatarImage src={user.user_metadata.avatar_url} />
+              <AvatarFallback className="uppercase">
+                {user.email ? user.email[0] : "U"}
+              </AvatarFallback>
+            </Avatar>
 
             {/* Credit chip */}
             <div className="hidden sm:flex items-center gap-1 text-[11px] font-semibold text-purple-300">
@@ -145,7 +155,8 @@ export function UserMenu() {
                 </span>
               ) : (
                 <span className="flex items-center gap-1">
-                  <Zap className="size-3 text-purple-400" /> {totalCredits} Credits
+                  <Zap className="size-3 text-purple-400" /> {totalCredits}{" "}
+                  Credits
                 </span>
               )}
             </div>
@@ -187,11 +198,11 @@ export function UserMenu() {
                   variant="outline"
                   className={
                     isPro
-                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]'
-                      : 'bg-purple-500/20 text-purple-300 border-purple-500/30 text-[10px]'
+                      ? "bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]"
+                      : "bg-purple-500/20 text-purple-300 border-purple-500/30 text-[10px]"
                   }
                 >
-                  {isPro ? 'Pro Member' : 'Free Tier'}
+                  {isPro ? "Pro Member" : "Free Tier"}
                 </Badge>
               </div>
             </div>
@@ -212,5 +223,5 @@ export function UserMenu() {
 
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </>
-  )
+  );
 }
