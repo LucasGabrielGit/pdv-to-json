@@ -21,7 +21,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PricingModal } from "@/components/pricing/PricingModal";
 import Link from "next/link";
 
-
 interface ProfileData {
   free_credits_remaining: number;
   purchased_credits: number;
@@ -39,7 +38,6 @@ export function UserMenu() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const supabase = createClient();
-
 
   // Fetch user and profile
   useEffect(() => {
@@ -133,7 +131,7 @@ export function UserMenu() {
         {!user ? (
           <button
             onClick={() => setAuthModalOpen(true)}
-            className="flex items-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 px-3 py-1.5 text-xs font-semibold text-purple-300 hover:text-purple-200 transition-all shadow-sm cursor-pointer"
+            className="flex items-center h-8.5 gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 px-3 text-xs font-semibold text-purple-300 hover:text-purple-200 transition-all shadow-xs cursor-pointer"
           >
             <UserIcon className="size-3.5 text-purple-400" />
             <span>Sign In</span>
@@ -141,18 +139,18 @@ export function UserMenu() {
         ) : (
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex items-center gap-2 rounded-xl border border-purple-500/30 bg-[#16213e] hover:border-purple-500/50 p-1.5 pr-2.5 transition-all cursor-pointer shadow-sm"
+            className="flex items-center h-8.5 gap-2 rounded-full border border-purple-500/30 bg-[#16213e] hover:border-purple-500/50 pl-1.5 pr-2.5 transition-all cursor-pointer shadow-xs"
           >
             {/* Avatar */}
-            <Avatar>
+            <Avatar size="sm" className="size-6">
               <AvatarImage src={user.user_metadata.avatar_url} />
-              <AvatarFallback className="uppercase">
+              <AvatarFallback className="uppercase text-[10px]">
                 {user.email ? user.email[0] : "U"}
               </AvatarFallback>
             </Avatar>
 
             {/* Credit chip */}
-            <div className="hidden sm:flex items-center gap-1 text-[11px] font-semibold text-purple-300">
+            <div className="flex items-center gap-1 text-[11px] font-semibold text-purple-300">
               {isPro ? (
                 <span className="flex items-center gap-1 text-amber-300 font-bold">
                   <Crown className="size-3 text-amber-400" /> Pro
@@ -165,9 +163,10 @@ export function UserMenu() {
               )}
             </div>
 
-            <ChevronDown className="size-3 text-slate-400" />
+            <ChevronDown className="size-3 text-slate-400 shrink-0" />
           </button>
         )}
+
 
         {/* Dropdown Menu */}
         {menuOpen && user && (
@@ -255,4 +254,3 @@ export function UserMenu() {
     </>
   );
 }
-
