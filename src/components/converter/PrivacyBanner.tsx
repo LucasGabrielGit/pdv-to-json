@@ -11,23 +11,23 @@ export const PrivacyBanner: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2 font-bold text-sm text-emerald-300">
-              <span>100% Privado &amp; Seguro</span>
+              <span>100% Private &amp; Secure</span>
               <span className="hidden sm:inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300">
-                Zero Servidores
+                Zero Servers
               </span>
             </div>
             <p className="text-xs text-emerald-400/90 font-medium">
-              Seus dados não saem do seu navegador. Todo o processamento é feito localmente no seu dispositivo.
+              Your data never leaves your browser. All processing happens 100% locally on your device.
             </p>
           </div>
         </div>
 
         <div className="hidden lg:flex items-center gap-4 text-xs text-emerald-300/80 font-medium">
           <span className="flex items-center gap-1.5">
-            <Lock className="size-3.5 text-emerald-400" /> Sem uploads
+            <Lock className="size-3.5 text-emerald-400" /> No uploads
           </span>
           <span className="flex items-center gap-1.5">
-            <Cpu className="size-3.5 text-emerald-400" /> Processamento local
+            <Cpu className="size-3.5 text-emerald-400" /> Client-side processing
           </span>
         </div>
       </div>

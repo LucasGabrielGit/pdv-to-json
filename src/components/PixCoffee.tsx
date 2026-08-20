@@ -11,7 +11,6 @@ import { generatePixPayload } from '@/utils/pixPayload'
 const RAW_PIX_KEY = process.env.NEXT_PUBLIC_PIX_KEY || '(99) 98155-5572'
 const PIX_PAYLOAD = generatePixPayload(RAW_PIX_KEY)
 
-
 export default function PixCoffee() {
   const [copiedKey, setCopiedKey] = useState(false)
   const [copiedPayload, setCopiedPayload] = useState(false)
@@ -19,14 +18,14 @@ export default function PixCoffee() {
   const handleCopyKey = () => {
     navigator.clipboard.writeText(RAW_PIX_KEY)
     setCopiedKey(true)
-    toast.success('Chave PIX copiada para a área de transferência!')
+    toast.success('PIX Key copied to clipboard!')
     setTimeout(() => setCopiedKey(false), 2500)
   }
 
   const handleCopyPayload = () => {
     navigator.clipboard.writeText(PIX_PAYLOAD)
     setCopiedPayload(true)
-    toast.success('Código PIX Copia e Cola copiado com sucesso!')
+    toast.success('PIX Copy & Paste code copied successfully!')
     setTimeout(() => setCopiedPayload(false), 2500)
   }
 
@@ -48,22 +47,22 @@ export default function PixCoffee() {
             <div className="flex-1 text-center md:text-left space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase bg-amber-500/10 text-amber-400 border border-amber-500/20">
                 <Coffee className="w-3.5 h-3.5" />
-                <span>Apoie o projeto</span>
+                <span>Support the Project</span>
               </div>
 
               <div className="space-y-1">
                 <h3 className="text-xl md:text-2xl font-bold text-foreground tracking-tight flex items-center justify-center md:justify-start gap-2">
-                  Pague-me um café! <span className="text-2xl">☕</span>
+                  Buy Me a Coffee! <span className="text-2xl">☕</span>
                 </h3>
                 <p className="text-sm text-muted-foreground max-w-md">
-                  Gostou da ferramenta e ela te ajudou a economizar tempo? Considere fazer uma pequena contribuição via PIX!
+                  Enjoying the free developer tools and saving time? Consider supporting dev-kit.tech with a quick tip or coffee!
                 </p>
               </div>
 
               {/* PIX Key display and copy actions */}
               <div className="pt-2 space-y-3">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-background/60 border border-border font-mono text-sm text-amber-300 select-all">
-                  <span className="text-xs text-muted-foreground">Chave PIX:</span>
+                  <span className="text-xs text-muted-foreground">PIX Key (BR):</span>
                   <span className="font-semibold">{RAW_PIX_KEY}</span>
                 </div>
 
@@ -75,7 +74,7 @@ export default function PixCoffee() {
                     className="gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 border-amber-500/30 transition-all cursor-pointer"
                   >
                     {copiedKey ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                    <span>{copiedKey ? 'Chave Copiada!' : 'Copiar Chave PIX'}</span>
+                    <span>{copiedKey ? 'Key Copied!' : 'Copy PIX Key'}</span>
                   </Button>
 
                   <Button
@@ -83,10 +82,10 @@ export default function PixCoffee() {
                     variant="ghost"
                     size="sm"
                     className="gap-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all cursor-pointer"
-                    title="Copiar código PIX para leitura no app do banco"
+                    title="Copy PIX code for mobile banking app"
                   >
                     {copiedPayload ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <QrCode className="w-3.5 h-3.5" />}
-                    <span>{copiedPayload ? 'Copia e Cola Copiado!' : 'PIX Copia e Cola'}</span>
+                    <span>{copiedPayload ? 'Code Copied!' : 'PIX Copy & Paste'}</span>
                   </Button>
                 </div>
               </div>
@@ -101,7 +100,7 @@ export default function PixCoffee() {
                 includeMargin={false}
               />
               <span className="mt-2 text-[10px] font-medium tracking-wider uppercase text-gray-500">
-                Escaneie para pagar
+                Scan with Banking App
               </span>
             </div>
           </div>

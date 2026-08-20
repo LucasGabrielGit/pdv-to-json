@@ -30,8 +30,8 @@ const EXAMPLE_JSON = `[
     "name": "Alice",
     "role": "Engineer",
     "address": {
-      "city": "São Paulo",
-      "country": "Brazil"
+      "city": "San Francisco",
+      "country": "United States"
     }
   },
   {
@@ -39,15 +39,16 @@ const EXAMPLE_JSON = `[
     "name": "Bob",
     "role": "Designer",
     "address": {
-      "city": "Rio de Janeiro",
-      "country": "Brazil"
+      "city": "New York",
+      "country": "United States"
     }
   }
 ]`
 
 const EXAMPLE_CSV = `id,name,role,address.city,address.country
-1,Alice,Engineer,São Paulo,Brazil
-2,Bob,Designer,Rio de Janeiro,Brazil`
+1,Alice,Engineer,San Francisco,United States
+2,Bob,Designer,New York,United States`
+
 
 const Converter: React.FC = () => {
   const [direction, setDirection] = useState<Direction>('json-to-csv')
@@ -238,8 +239,9 @@ const Converter: React.FC = () => {
                 placeholder={
                   isJsonToCsv
                     ? '[\n  { "name": "Alice", "age": 30 },\n  { "name": "Bob", "age": 25 }\n]'
-                    : 'name,age,city\nAlice,30,São Paulo\nBob,25,Rio de Janeiro'
+                    : 'name,age,city\nAlice,30,San Francisco\nBob,25,New York'
                 }
+
                 className="h-64 font-mono text-sm resize-y leading-relaxed bg-black/35 text-slate-100 border border-[rgba(124,58,237,0.25)]"
                 spellCheck={false}
               />
