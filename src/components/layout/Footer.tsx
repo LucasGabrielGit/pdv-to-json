@@ -39,13 +39,14 @@ export function Footer() {
           <Link href="/tools/regex-tester" className="hover:text-foreground transition-colors">
             Regex
           </Link>
-          <Link href="/tools/hash-generator" className="hover:text-foreground transition-colors">
-            Hashes
+          <Link href="/privacy" className="hover:text-foreground transition-colors text-slate-400">
+            Privacy Policy
           </Link>
-          <Link href="/tools/code-analyzer" className="hover:text-foreground transition-colors">
-            AI Review
+          <Link href="/terms" className="hover:text-foreground transition-colors text-slate-400">
+            Terms of Service
           </Link>
         </div>
+
 
         {/* Credits */}
         <div className="text-muted-foreground/60 text-center sm:text-right">
