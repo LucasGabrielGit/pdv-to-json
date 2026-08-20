@@ -1,9 +1,14 @@
+'use client'
+
 import React from 'react'
 import Link from 'next/link'
 import { ShieldCheck, Heart } from 'lucide-react'
+import { useTranslation } from '@/contexts/I18nContext'
 import { LogoIcon } from './Logo'
 
 export function Footer() {
+  const { t } = useTranslation()
+
   return (
     <footer className="mt-auto border-t border-border/30 bg-black/20 backdrop-blur-sm py-8 px-4">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
@@ -21,17 +26,17 @@ export function Footer() {
 
           <span className="hidden sm:inline text-muted-foreground/30">•</span>
           <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
-            <ShieldCheck className="size-3.5" /> 100% Client-Side &amp; Private
+            <ShieldCheck className="size-3.5" /> {t.common.privacyGuaranteeTitle}
           </span>
         </div>
 
         {/* Quick Links */}
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 font-medium">
           <Link href="/pricing" className="text-purple-400 hover:text-purple-300 transition-colors font-bold">
-            Pricing &amp; Plans
+            {t.common.pricing}
           </Link>
           <Link href="/search" className="hover:text-foreground transition-colors">
-            Search
+            {t.sidebar.searchTools}
           </Link>
           <Link href="/tools/json-csv" className="hover:text-foreground transition-colors">
             JSON ↔ CSV
@@ -43,21 +48,21 @@ export function Footer() {
             Regex
           </Link>
           <Link href="/privacy" className="hover:text-foreground transition-colors text-slate-400">
-            Privacy Policy
+            {t.footer.privacyPolicy}
           </Link>
           <Link href="/terms" className="hover:text-foreground transition-colors text-slate-400">
-            Terms of Service
+            {t.footer.termsOfService}
           </Link>
         </div>
 
-
-
         {/* Credits */}
         <div className="text-muted-foreground/60 text-center sm:text-right">
-          Built with <Heart className="inline size-3 text-rose-500 fill-rose-500 mx-0.5" /> for developers.
+          {t.footer.builtWithLove} <Heart className="inline size-3 text-rose-500 fill-rose-500 mx-0.5" /> {t.footer.forDevelopers}
         </div>
       </div>
     </footer>
   )
 }
+
+
 

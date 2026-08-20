@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { I18nProvider } from '@/contexts/I18nContext'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from '@/components/ui/sonner'
 import { Sidebar } from './Sidebar'
@@ -14,7 +15,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [commandOpen, setCommandOpen] = useState(false)
 
   return (
-    <TooltipProvider>
+    <I18nProvider>
+      <TooltipProvider>
+
       <div className="flex min-h-screen">
         {/* Sidebar */}
         <Sidebar
@@ -65,6 +68,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
       <Toaster position="top-right" />
     </TooltipProvider>
+    </I18nProvider>
   )
 }
+
 

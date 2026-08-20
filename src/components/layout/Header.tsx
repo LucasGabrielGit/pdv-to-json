@@ -6,9 +6,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Search, Sparkles } from "lucide-react";
 
+import { useTranslation } from "@/contexts/I18nContext";
 import { Button } from "@/components/ui/button";
 import { tools } from "@/lib/tools-registry";
 import { UserMenu } from "@/components/auth/UserMenu";
+import { LanguageSelector } from "./LanguageSelector";
 import { LogoIcon } from "./Logo";
 
 interface HeaderProps {
@@ -18,6 +20,7 @@ interface HeaderProps {
 
 export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const currentTool = tools.find((t) => t.href === pathname);
 
@@ -57,17 +60,17 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Right actions: Search, Pricing & User */}
+      {/* Right actions: Search, Pricing, Language & User */}
       <div className="flex items-center gap-2">
         <button
           onClick={onSearchClick}
           className="hidden sm:flex items-center h-8.5 gap-2 rounded-full border border-purple-500/20 bg-muted/40 hover:bg-muted/70 hover:border-purple-500/40 px-3 text-xs text-muted-foreground transition-all cursor-pointer shadow-sm"
-          title="Search tools (⌘K / Ctrl+K)"
+          title={`Search tools (${t.common.searchKbd})`}
         >
           <Search className="size-3.5 text-purple-400" />
-          <span>Search tools...</span>
+          <span>{t.common.search}</span>
           <kbd className="ml-2 text-[10px] rounded border border-border/60 bg-black/40 px-1.5 py-0.5 font-mono text-muted-foreground">
-            ⌘ + K
+            {t.common.searchKbd}
           </kbd>
         </button>
 
@@ -76,12 +79,14 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
           className="hidden sm:flex items-center h-8.5 gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 px-3 text-xs font-semibold text-purple-300 hover:text-white transition-all shadow-xs"
         >
           <Sparkles className="size-3 text-purple-400" />
-          <span>Pricing</span>
+          <span>{t.common.pricing}</span>
         </Link>
+
+        <LanguageSelector />
 
         <UserMenu />
       </div>
-
     </header>
+
   );
 }

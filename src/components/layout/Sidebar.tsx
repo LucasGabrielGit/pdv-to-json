@@ -18,8 +18,9 @@ import {
   type Tool,
 } from '@/lib/tools-registry'
 import { cn } from '@/lib/utils'
-
+import { useTranslation } from '@/contexts/I18nContext'
 import { Logo, LogoIcon } from './Logo'
+
 
 interface SidebarProps {
   isOpen?: boolean
@@ -29,6 +30,16 @@ interface SidebarProps {
 export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
+  const { t } = useTranslation()
+
+  const categoryTranslationMap: Record<string, string> = {
+    converters: t.sidebar.categories.converters,
+    developer: t.sidebar.categories.developer,
+    formatters: t.sidebar.categories.formatters,
+    generators: t.sidebar.categories.generators,
+    ai: t.sidebar.categories.ai,
+  }
+
 
   return (
     <>
@@ -107,9 +118,10 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               <div key={cat.id}>
                 {(!collapsed || isOpen) && (
                   <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                    {cat.emoji} {cat.label}
+                    {cat.emoji} {categoryTranslationMap[cat.id] || cat.label}
                   </p>
                 )}
+
 
                 <ul className="space-y-0.5">
                   {catTools.map((tool) => (

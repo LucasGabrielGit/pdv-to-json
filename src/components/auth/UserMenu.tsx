@@ -19,6 +19,7 @@ import { AuthModal } from "./AuthModal";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PricingModal } from "@/components/pricing/PricingModal";
+import { useTranslation } from "@/contexts/I18nContext";
 import Link from "next/link";
 
 interface ProfileData {
@@ -29,6 +30,7 @@ interface ProfileData {
 }
 
 export function UserMenu() {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -38,6 +40,7 @@ export function UserMenu() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const supabase = createClient();
+
 
   // Fetch user and profile
   useEffect(() => {
@@ -134,7 +137,7 @@ export function UserMenu() {
             className="flex items-center h-8.5 gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 px-3 text-xs font-semibold text-purple-300 hover:text-purple-200 transition-all shadow-xs cursor-pointer"
           >
             <UserIcon className="size-3.5 text-purple-400" />
-            <span>Sign In</span>
+            <span>{t.common.signIn}</span>
           </button>
         ) : (
           <button
@@ -158,7 +161,7 @@ export function UserMenu() {
               ) : (
                 <span className="flex items-center gap-1">
                   <Zap className="size-3 text-purple-400" /> {totalCredits}{" "}
-                  Credits
+                  {t.common.credits}
                 </span>
               )}
             </div>
@@ -167,16 +170,12 @@ export function UserMenu() {
           </button>
         )}
 
-
         {/* Dropdown Menu */}
         {menuOpen && user && (
           <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-purple-500/30 bg-[#16213e] p-3 shadow-2xl shadow-purple-950/60 space-y-3 z-50 animate-in fade-in zoom-in-95 duration-100">
             {/* User Info */}
             <div className="px-2 py-1 space-y-1">
               <p className="text-[11px] uppercase tracking-wider text-slate-400 font-mono">
-                Signed in as
-              </p>
-              <p className="text-xs font-semibold text-white truncate">
                 {user.email}
               </p>
             </div>
@@ -187,10 +186,10 @@ export function UserMenu() {
             <div className="rounded-xl bg-black/40 p-3 border border-purple-500/20 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400 flex items-center gap-1.5">
-                  <Zap className="size-3.5 text-purple-400" /> AI Credits
+                  <Zap className="size-3.5 text-purple-400" /> {t.common.credits}
                 </span>
                 <span className="font-mono font-bold text-white">
-                  {totalCredits} left
+                  {isPro ? t.common.unlimited : `${totalCredits}`}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
@@ -205,7 +204,7 @@ export function UserMenu() {
                       : "bg-purple-500/20 text-purple-300 border-purple-500/30 text-[10px]"
                   }
                 >
-                  {isPro ? "Pro Member" : "Free Tier"}
+                  {isPro ? t.common.proMember : t.common.freeTier}
                 </Badge>
               </div>
             </div>
@@ -220,7 +219,7 @@ export function UserMenu() {
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 p-2 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
               >
                 <Sparkles className="size-3.5" />
-                {isPro ? "Buy Additional Credits" : "Upgrade to Pro"}
+                {isPro ? t.common.buyCredits : t.common.upgradeToPro}
               </button>
 
               <Link
@@ -228,7 +227,7 @@ export function UserMenu() {
                 onClick={() => setMenuOpen(false)}
                 className="block text-center text-[11px] text-slate-400 hover:text-white py-1 transition-colors"
               >
-                View Full Pricing &amp; Plans →
+                {t.common.viewAllPricing}
               </Link>
             </div>
 
@@ -240,10 +239,11 @@ export function UserMenu() {
               className="w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
             >
               <LogOut className="size-3.5" />
-              Sign Out
+              {t.common.signOut}
             </button>
           </div>
         )}
+
       </div>
 
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />

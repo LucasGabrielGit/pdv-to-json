@@ -1,7 +1,12 @@
+'use client'
+
 import React from 'react'
 import { ShieldCheck, Lock, Cpu } from 'lucide-react'
+import { useTranslation } from '@/contexts/I18nContext'
 
 export const PrivacyBanner: React.FC = () => {
+  const { t } = useTranslation()
+
   return (
     <div className="w-full max-w-5xl mx-auto px-4 mb-6">
       <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 px-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 backdrop-blur-md shadow-lg shadow-emerald-950/20 text-emerald-400">
@@ -11,26 +16,27 @@ export const PrivacyBanner: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2 font-bold text-sm text-emerald-300">
-              <span>100% Private &amp; Secure</span>
+              <span>{t.common.privacyGuaranteeTitle}</span>
               <span className="hidden sm:inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300">
-                Zero Servers
+                Client-Side
               </span>
             </div>
             <p className="text-xs text-emerald-400/90 font-medium">
-              Your data never leaves your browser. All processing happens 100% locally on your device.
+              {t.common.privacyGuaranteeDesc}
             </p>
           </div>
         </div>
 
         <div className="hidden lg:flex items-center gap-4 text-xs text-emerald-300/80 font-medium">
           <span className="flex items-center gap-1.5">
-            <Lock className="size-3.5 text-emerald-400" /> No uploads
+            <Lock className="size-3.5 text-emerald-400" /> No server uploads
           </span>
           <span className="flex items-center gap-1.5">
-            <Cpu className="size-3.5 text-emerald-400" /> Client-side processing
+            <Cpu className="size-3.5 text-emerald-400" /> In-browser memory
           </span>
         </div>
       </div>
     </div>
   )
 }
+
