@@ -98,10 +98,28 @@ export function UserMenu() {
       }
     });
 
+    const handleCreditsUpdated = async () => {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select(
+            "free_credits_remaining, purchased_credits, is_pro, user_custom_api_key",
+          )
+          .eq("id", currentUser.id)
+          .single();
+        if (prof) setProfile(prof);
+      }
+    };
+
+    window.addEventListener('devkit_credits_updated', handleCreditsUpdated);
+
     return () => {
       subscription.unsubscribe();
+      window.removeEventListener('devkit_credits_updated', handleCreditsUpdated);
     };
   }, []);
+
 
   // Close dropdown on outside click
   useEffect(() => {

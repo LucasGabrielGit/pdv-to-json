@@ -19,8 +19,10 @@ import {
 } from 'lucide-react'
 import { STRIPE_PLANS, type PlanKey } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/client'
+import { syncUserCreditsWithCloud } from '@/utils/creditsManager'
 import { useTranslation } from '@/contexts/I18nContext'
 import { AuthModal } from '@/components/auth/AuthModal'
+
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -49,6 +51,7 @@ function PricingContent() {
 
 
   const isSuccess = searchParams.get('success') === 'true'
+  const sessionId = searchParams.get('session_id')
   const isCanceled = searchParams.get('canceled') === 'true'
 
   useEffect(() => {
@@ -68,14 +71,44 @@ function PricingContent() {
   }, [])
 
   useEffect(() => {
-    if (isSuccess) {
-      toast.success('Payment successful! Your credits/membership have been applied.', {
+    if (isSuccess && sessionId) {
+      // Call verify-session to immediately apply credits/Pro to user
+      fetch(`/api/checkout/verify-session?session_id=${sessionId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            toast.success(
+              data.message || 'Payment verified! Your credits have been credited.',
+              { duration: 6000 }
+            )
+            // Trigger a quick reload of user session/profile and sync credits
+            syncUserCreditsWithCloud(supabase).then(() => {
+              window.dispatchEvent(new Event('devkit_credits_updated'))
+            })
+            supabase.auth.getUser().then(({ data: u }) => {
+              setUser(u.user)
+              if (data.isPro) setIsPro(true)
+            })
+          } else {
+            console.warn('Session verify note:', data.error)
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to verify session:', err)
+        })
+    } else if (isSuccess) {
+      syncUserCreditsWithCloud(supabase).then(() => {
+        window.dispatchEvent(new Event('devkit_credits_updated'))
+      })
+      toast.success('Payment received! Your profile has been updated.', {
         duration: 6000,
       })
     } else if (isCanceled) {
       toast.info('Checkout was cancelled.')
     }
-  }, [isSuccess, isCanceled])
+  }, [isSuccess, sessionId, isCanceled])
+
+
 
   const handleCheckout = async (planKey: PlanKey) => {
     if (!user) {
