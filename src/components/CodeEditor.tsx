@@ -11,7 +11,9 @@ interface CodeEditorProps {
   height?: string
   readOnly?: boolean
   className?: string
+  placeholder?: string
 }
+
 
 export default function CodeEditor({
   value,

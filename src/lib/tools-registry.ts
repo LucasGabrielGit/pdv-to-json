@@ -14,6 +14,11 @@ import {
   FileText,
   BrainCircuit,
   Sparkles,
+  Code2,
+  Terminal,
+  Link2,
+  Database,
+  Layers,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -66,6 +71,26 @@ export const tools: Tool[] = [
     keywords: ['json', 'yaml', 'yml', 'converter', 'config'],
   },
   {
+    id: 'svg-to-jsx',
+    name: 'SVG to JSX / React',
+    description: 'Transform raw SVG code or icons into clean, typed React components (TSX / JSX).',
+    href: '/tools/svg-to-jsx',
+    icon: Code2,
+    category: 'converters',
+    status: 'active',
+    keywords: ['svg', 'jsx', 'tsx', 'react', 'icon', 'component', 'svgr'],
+  },
+  {
+    id: 'curl-converter',
+    name: 'cURL to Code',
+    description: 'Convert cURL commands into Fetch, Axios, Python, Go, PHP, and Rust code.',
+    href: '/tools/curl-converter',
+    icon: Terminal,
+    category: 'converters',
+    status: 'active',
+    keywords: ['curl', 'fetch', 'axios', 'python', 'api', 'http', 'requests', 'go', 'rust'],
+  },
+  {
     id: 'base64',
     name: 'Base64 Encode/Decode',
     description: 'Encode or decode Base64 strings instantly in your browser.',
@@ -97,6 +122,36 @@ export const tools: Tool[] = [
   },
 
   // ── Utilities ──
+  {
+    id: 'sql-formatter',
+    name: 'SQL Formatter',
+    description: 'Format, beautify, and minify SQL queries for PostgreSQL, MySQL, SQLite, and BigQuery.',
+    href: '/tools/sql-formatter',
+    icon: Database,
+    category: 'utilities',
+    status: 'active',
+    keywords: ['sql', 'format', 'beautify', 'minify', 'postgres', 'mysql', 'sqlite', 'query'],
+  },
+  {
+    id: 'url-encoder',
+    name: 'URL Encoder / Parser',
+    description: 'Encode, decode, and visually edit query string parameters with live table preview.',
+    href: '/tools/url-encoder',
+    icon: Link2,
+    category: 'utilities',
+    status: 'active',
+    keywords: ['url', 'encode', 'decode', 'uri', 'query', 'params', 'querystring'],
+  },
+  {
+    id: 'mock-data',
+    name: 'Mock Data Generator',
+    description: 'Generate realistic fake datasets with custom schemas exported to JSON, CSV, or SQL.',
+    href: '/tools/mock-data',
+    icon: Layers,
+    category: 'utilities',
+    status: 'active',
+    keywords: ['mock', 'data', 'fake', 'generator', 'faker', 'schema', 'json', 'csv', 'sql'],
+  },
   {
     id: 'json-formatter',
     name: 'JSON Formatter',
@@ -190,6 +245,16 @@ export const tools: Tool[] = [
 
   // ── AI-Powered ──
   {
+    id: 'ai-sql',
+    name: 'AI SQL Generator',
+    description: 'Generate complex queries, joins, and index optimizations from natural language.',
+    href: '/tools/ai-sql',
+    icon: Database,
+    category: 'ai',
+    status: 'active',
+    keywords: ['sql', 'ai', 'query', 'generate', 'database', 'postgres', 'index', 'join'],
+  },
+  {
     id: 'code-analyzer',
     name: 'Code Analyzer',
     description: 'Paste code and get AI-powered quality analysis, suggestions, and security tips.',
@@ -210,6 +275,7 @@ export const tools: Tool[] = [
     keywords: ['code', 'generate', 'ai', 'prompt', 'create'],
   },
 ]
+
 
 /** Get tools filtered by category */
 export function getToolsByCategory(category: ToolCategory): Tool[] {

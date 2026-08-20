@@ -7,7 +7,9 @@ export interface ToolHeaderProps {
   description: string
   badgeText?: string
   privacyText?: string
+  category?: string
 }
+
 
 export function ToolHeader({
   title,
