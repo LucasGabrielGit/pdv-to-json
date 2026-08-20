@@ -14,9 +14,11 @@ import {
   Lightbulb,
   RotateCcw,
   Sparkles,
-  Zap
+  Zap,
+  UploadCloud,
+  FileUp,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { ToolHeader } from '@/components/converter/ToolHeader'
@@ -45,11 +47,36 @@ const LANGUAGES = [
   'python',
   'sql',
   'html',
+  'css',
+  'go',
+  'rust',
   'java',
   'csharp',
-  'rust',
-  'go',
+  'php',
+  'yaml',
 ]
+
+const EXTENSION_MAP: Record<string, string> = {
+  ts: 'typescript',
+  tsx: 'typescript',
+  js: 'javascript',
+  jsx: 'javascript',
+  py: 'python',
+  sql: 'sql',
+  html: 'html',
+  css: 'css',
+  go: 'go',
+  rs: 'rust',
+  java: 'java',
+  cs: 'csharp',
+  php: 'php',
+  yaml: 'yaml',
+  yml: 'yaml',
+  json: 'json',
+  sh: 'bash',
+  md: 'markdown',
+}
+
 
 const SAMPLE_CODE = `async function getUserData(userId) {
   const res = await fetch('/api/users?id=' + userId);
@@ -85,6 +112,7 @@ export default function CodeAnalyzer() {
   } | null>(null)
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -102,6 +130,30 @@ export default function CodeAnalyzer() {
       }
     })
   }, [])
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const ext = file.name.split('.').pop()?.toLowerCase() || ''
+    const detected = EXTENSION_MAP[ext]
+
+    if (detected && LANGUAGES.includes(detected)) {
+      setLanguage(detected)
+    }
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      if (content) {
+        setCode(content)
+        toast.success(`Loaded ${file.name}${detected ? ` (${detected})` : ''}`)
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
+
 
 
   const handleSaveApiKey = () => {
@@ -257,19 +309,37 @@ export default function CodeAnalyzer() {
 
           {/* Code Input Textarea */}
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap justify-between items-center gap-2">
               <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Code Snippet to Review
               </Label>
-              <Button
-                size="xs"
-                variant="ghost"
-                onClick={() => setCode(SAMPLE_CODE)}
-                className="text-purple-300 hover:bg-purple-500/10 text-xs"
-              >
-                <Sparkles className="size-3 mr-1 text-purple-400" />
-                Load Sample Code
-              </Button>
+              <div className="flex items-center gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".ts,.tsx,.js,.jsx,.py,.sql,.html,.css,.go,.rs,.java,.cs,.cpp,.c,.php,.yaml,.yml,.sh,.md"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+                <Button
+                  size="xs"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-purple-500/30 text-cyan-300 hover:bg-cyan-500/10 text-xs gap-1.5"
+                >
+                  <FileUp className="size-3" />
+                  Upload Code File (.ts, .tsx, .py, etc.)
+                </Button>
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  onClick={() => setCode(SAMPLE_CODE)}
+                  className="text-purple-300 hover:bg-purple-500/10 text-xs"
+                >
+                  <Sparkles className="size-3 mr-1 text-purple-400" />
+                  Load Sample
+                </Button>
+              </div>
             </div>
 
             <CodeEditor
@@ -279,6 +349,7 @@ export default function CodeAnalyzer() {
               height="260px"
             />
           </div>
+
 
           {/* Action Submit Button */}
           <div className="flex justify-end">

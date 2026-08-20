@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+
 import { toast } from 'sonner'
 import {
   Code2,
@@ -40,6 +41,34 @@ export default function SvgToJsxConverter() {
   const [jsxOutput, setJsxOutput] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const baseName = file.name.replace(/\.svg$/i, '')
+    const cleanCompName =
+      baseName
+        .split(/[^a-zA-Z0-9]/)
+        .filter(Boolean)
+        .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+        .join('') || 'SvgIcon'
+
+    setComponentName(cleanCompName)
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      if (content) {
+        setSvgInput(content)
+        toast.success(`Loaded ${file.name}`)
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
+
 
   // Live Conversion
   useEffect(() => {
@@ -155,7 +184,22 @@ export default function SvgToJsxConverter() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".svg,image/svg+xml"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-xs border-purple-500/30 text-cyan-300 hover:bg-cyan-500/10 gap-1.5"
+              >
+                <Code2 className="size-3.5" /> Upload .svg
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -183,6 +227,7 @@ export default function SvgToJsxConverter() {
                 {copied ? 'Copied!' : 'Copy Component'}
               </Button>
             </div>
+
           </div>
         </CardContent>
       </Card>

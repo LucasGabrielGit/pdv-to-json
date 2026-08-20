@@ -35,6 +35,24 @@ export default function SqlFormatter() {
   const [indentSpaces, setIndentSpaces] = useState('2')
   const [dialect, setDialect] = useState<SqlFormatterOptions['dialect']>('postgresql')
   const [copied, setCopied] = useState(false)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      if (content) {
+        setInputSql(content)
+        toast.success(`Loaded ${file.name}`)
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
+
 
   useEffect(() => {
     const res = formatSql(inputSql, {
@@ -127,7 +145,22 @@ export default function SqlFormatter() {
             </label>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".sql,text/plain"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="text-xs border-purple-500/30 text-cyan-300 hover:bg-cyan-500/10 gap-1.5"
+            >
+              <Database className="size-3.5" /> Upload .sql
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -154,6 +187,7 @@ export default function SqlFormatter() {
               {copied ? 'Copied!' : 'Copy SQL'}
             </Button>
           </div>
+
         </CardContent>
       </Card>
 

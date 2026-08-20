@@ -376,10 +376,12 @@ export default function Base64Converter() {
           ) : (
             <FileDropZone
               fileType="any"
+              customLabel="any document, image, or file to encode into Base64"
               readAsDataURL={true}
               onFileContent={handleFileContent}
             />
           )}
+
 
           {/* Options & Format Bar */}
           <div className="my-6 p-4 rounded-2xl bg-black/25 border border-white/5 flex flex-wrap items-center justify-between gap-4">

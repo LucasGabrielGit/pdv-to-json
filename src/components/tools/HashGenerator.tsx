@@ -227,10 +227,12 @@ export default function HashGenerator() {
             /* File Drop Zone */
             <div className="space-y-3">
               <FileDropZone
-                fileType="any"
+                fileType="checksum"
+                customLabel="any file (ZIP, PDF, EXE, ISO, etc.) to compute checksum"
                 readAsDataURL={false}
                 onFileContent={handleFileSelect}
               />
+
 
               {selectedFile && (
                 <div className="p-3.5 rounded-xl bg-black/40 border border-purple-500/30 flex items-center justify-between text-xs text-slate-300">

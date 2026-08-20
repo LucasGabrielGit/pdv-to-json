@@ -150,11 +150,12 @@ export default function ImageConverter() {
           {/* Upload Area */}
           {!selectedFile ? (
             <FileDropZone
-              fileType="any"
-              readAsDataURL={false}
+              fileType="image"
+              readAsDataURL={true}
               onFileContent={handleFileSelect}
             />
           ) : (
+
             <div className="p-4 rounded-2xl bg-black/40 border border-purple-500/30 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4 min-w-0">
                 {previewUrl && (

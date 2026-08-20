@@ -309,9 +309,10 @@ export default function JsonYamlConverter() {
           ) : (
             <FileDropZone
               onFileContent={handleFileContent}
-              fileType={isJsonToYaml ? 'json' : 'csv'}
+              fileType={isJsonToYaml ? 'json' : 'yaml'}
             />
           )}
+
 
           {/* Options & Action Row */}
           <div className="my-6 p-4 rounded-2xl bg-black/25 border border-white/5 flex flex-wrap items-center justify-between gap-4">
