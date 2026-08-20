@@ -4,7 +4,8 @@ import React from 'react'
 import Link from 'next/link'
 
 import { usePathname } from 'next/navigation'
-import { Menu, Search } from 'lucide-react'
+import { Menu, Search, Sparkles } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import { tools } from '@/lib/tools-registry'
 import { UserMenu } from '@/components/auth/UserMenu'
@@ -70,19 +71,18 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
           </kbd>
         </button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8 text-muted-foreground hover:text-foreground sm:hidden"
-          onClick={onSearchClick}
-          aria-label="Search tools"
+        <Link
+          href="/pricing"
+          className="hidden sm:flex items-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 px-3 py-1.5 text-xs font-semibold text-purple-300 hover:text-white transition-all shadow-xs"
         >
-          <Search className="size-4" />
-        </Button>
+          <Sparkles className="size-3 text-purple-400" />
+          <span>Pricing</span>
+        </Link>
 
         <UserMenu />
       </div>
     </header>
+
   )
 }
 

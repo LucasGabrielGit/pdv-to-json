@@ -27,7 +27,9 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+import { PricingModal } from '@/components/pricing/PricingModal'
 import CodeEditor from '@/components/CodeEditor'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
@@ -63,7 +65,9 @@ export default function AiSqlGenerator() {
   })
   const [customKeyInput, setCustomKeyInput] = useState('')
   const [showKeyModal, setShowKeyModal] = useState(false)
+  const [showPricingModal, setShowPricingModal] = useState(false)
   const [copied, setCopied] = useState(false)
+
 
   const supabase = createClient()
 
@@ -162,16 +166,28 @@ export default function AiSqlGenerator() {
               : `AI Credits Remaining: ${userCredits.freeCreditsRemaining + userCredits.purchasedCredits}`}
           </span>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowKeyModal(true)}
-          className="h-7 text-xs border-purple-500/30 text-purple-300 hover:bg-purple-500/20 gap-1.5"
-        >
-          <Key className="size-3" />
-          {userCredits.userCustomApiKey ? 'Change Gemini Key' : 'Add Own Key (Free)'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowKeyModal(true)}
+            className="h-7 text-xs border-purple-500/30 text-purple-300 hover:bg-purple-500/20 gap-1.5"
+          >
+            <Key className="size-3" />
+            {userCredits.userCustomApiKey ? 'Change Gemini Key' : 'Add Own Key (Free)'}
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={() => setShowPricingModal(true)}
+            className="h-7 text-xs bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold gap-1.5 shadow-xs"
+          >
+            <Sparkles className="size-3" />
+            Buy Credits / Upgrade
+          </Button>
+        </div>
       </div>
+
 
       {/* Main Form */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -344,6 +360,14 @@ export default function AiSqlGenerator() {
           </div>
         </div>
       )}
+
+      {/* Pricing Modal */}
+      <PricingModal
+        isOpen={showPricingModal}
+        onClose={() => setShowPricingModal(false)}
+      />
     </div>
   )
 }
+
+

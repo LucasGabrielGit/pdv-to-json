@@ -37,7 +37,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+import { PricingModal } from '@/components/pricing/PricingModal'
 import CodeEditor from '@/components/CodeEditor'
+
 
 const TYPES = [
   { id: 'full', label: 'Full Module / Function' },
@@ -444,75 +446,12 @@ export default function CodeGenerator() {
         </div>
       )}
 
-      {/* ── Credits & Access Modal ── */}
-      {showCreditsModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#16213e] border border-purple-500/40 rounded-3xl p-6 max-w-lg w-full space-y-5 shadow-2xl">
-            <div className="flex justify-between items-center">
-              <h3 className="font-bold text-white text-base flex items-center gap-2">
-                <Zap className="size-4 text-purple-400" />
-                AI Credits &amp; Unlimited Access
-              </h3>
-              <button
-                onClick={() => setShowCreditsModal(false)}
-                className="text-slate-400 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
+      {/* ── Pricing & Credit Purchase Modal ── */}
+      <PricingModal
+        isOpen={showCreditsModal}
+        onClose={() => setShowCreditsModal(false)}
+      />
 
-            <div className="space-y-4">
-              {/* Option 1: BYOK Unlimited (Recommended) */}
-              <div className="p-4 rounded-2xl bg-black/40 border border-emerald-500/30 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                      Option 1: BYOK (100% Free &amp; Unlimited)
-                    </span>
-                  </div>
-                  <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
-                    Recommended
-                  </Badge>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Use your own Google Gemini API Key. Google provides generous free tier quotas with zero payment required.
-                </p>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <Button
-                    size="xs"
-                    onClick={() => {
-                      setShowCreditsModal(false)
-                      setShowKeyModal(true)
-                    }}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs gap-1.5"
-                  >
-                    <Key className="size-3.5" />
-                    Enter Custom API Key
-                  </Button>
-                  <a
-                    href="https://aistudio.google.com/app/apikey"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-medium transition-colors"
-                  >
-                    Get Free Gemini Key ↗
-                  </a>
-                </div>
-              </div>
-
-              {/* Option 2: Daily Free Quota */}
-              <div className="p-4 rounded-2xl bg-black/40 border border-purple-500/30 space-y-2">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-purple-300">
-                  Option 2: Daily Free Quota
-                </h4>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Every user gets <span className="text-purple-300 font-semibold">5 free AI requests every day</span> on our shared servers. Quota resets at midnight automatically.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
 
       <Separator className="my-8 bg-[rgba(124,58,237,0.25)]" />

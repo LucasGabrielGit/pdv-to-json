@@ -17,8 +17,10 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 import { AuthModal } from "./AuthModal";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PricingModal } from "@/components/pricing/PricingModal";
+import Link from "next/link";
+
 
 interface ProfileData {
   free_credits_remaining: number;
@@ -31,11 +33,13 @@ export function UserMenu() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [pricingModalOpen, setPricingModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const supabase = createClient();
+
 
   // Fetch user and profile
   useEffect(() => {
@@ -207,12 +211,34 @@ export function UserMenu() {
               </div>
             </div>
 
+            {/* Upgrade / Pricing Action */}
+            <div className="space-y-1.5 pt-1">
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  setPricingModalOpen(true);
+                }}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 p-2 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
+              >
+                <Sparkles className="size-3.5" />
+                {isPro ? "Buy Additional Credits" : "Upgrade to Pro"}
+              </button>
+
+              <Link
+                href="/pricing"
+                onClick={() => setMenuOpen(false)}
+                className="block text-center text-[11px] text-slate-400 hover:text-white py-1 transition-colors"
+              >
+                View Full Pricing &amp; Plans →
+              </Link>
+            </div>
+
             <div className="border-t border-purple-500/20" />
 
             {/* Sign out button */}
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              className="w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
             >
               <LogOut className="size-3.5" />
               Sign Out
@@ -222,6 +248,11 @@ export function UserMenu() {
       </div>
 
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+      <PricingModal
+        isOpen={pricingModalOpen}
+        onClose={() => setPricingModalOpen(false)}
+      />
     </>
   );
 }
+
