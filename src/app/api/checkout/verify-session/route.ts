@@ -45,41 +45,31 @@ export async function GET(req: Request) {
 
     const supabaseAdmin = getSupabaseAdmin()
 
-    // Fetch user's current profile
+    // Fetch user's current profile with strictly supported schema columns
     const { data: profile, error: profileErr } = await supabaseAdmin
       .from('profiles')
-      .select('id, purchased_credits, is_pro, stripe_customer_id, stripe_subscription_id')
+      .select('id, purchased_credits, is_pro, free_credits_remaining')
       .eq('id', userId)
       .single()
 
     if (profileErr || !profile) {
+      console.error('User profile lookup failed for userId:', userId, profileErr)
       return NextResponse.json({ error: 'User profile not found in database.' }, { status: 404 })
     }
 
     const mode = session.mode
 
     if (mode === 'subscription') {
-      const subscriptionId =
-        typeof session.subscription === 'string'
-          ? session.subscription
-          : (session.subscription as any)?.id
-
       const { error: updateErr } = await supabaseAdmin
         .from('profiles')
         .update({
           is_pro: true,
-          stripe_customer_id: (session.customer as any)?.id || (session.customer as string),
-          stripe_subscription_id: subscriptionId,
-          subscription_status: 'active',
         })
         .eq('id', userId)
 
       if (updateErr) {
-        // Fallback if stripe columns not yet migrated
-        await supabaseAdmin
-          .from('profiles')
-          .update({ is_pro: true })
-          .eq('id', userId)
+        console.error('Failed to update is_pro for user:', userId, updateErr)
+        return NextResponse.json({ error: 'Database update failed.' }, { status: 500 })
       }
 
       return NextResponse.json({
@@ -92,7 +82,6 @@ export async function GET(req: Request) {
       const creditAmount = parseInt(session.metadata?.creditAmount || '0', 10)
 
       if (creditAmount > 0) {
-        // Increment credits
         const currentCredits = profile.purchased_credits || 0
         const newCredits = currentCredits + creditAmount
 
@@ -100,17 +89,15 @@ export async function GET(req: Request) {
           .from('profiles')
           .update({
             purchased_credits: newCredits,
-            stripe_customer_id: (session.customer as any)?.id || (session.customer as string),
           })
           .eq('id', userId)
 
         if (updateErr) {
-          // Fallback if stripe_customer_id column not yet migrated
-          await supabaseAdmin
-            .from('profiles')
-            .update({ purchased_credits: newCredits })
-            .eq('id', userId)
+          console.error('Failed to update purchased_credits for user:', userId, updateErr)
+          return NextResponse.json({ error: 'Database update failed.' }, { status: 500 })
         }
+
+        console.log(`[VerifySession] User ${userId} credited +${creditAmount}. New balance: ${newCredits}`)
 
         return NextResponse.json({
           success: true,
@@ -119,7 +106,6 @@ export async function GET(req: Request) {
           message: `Successfully credited ${creditAmount} AI credits!`,
         })
       }
-
 
       return NextResponse.json({
         success: true,

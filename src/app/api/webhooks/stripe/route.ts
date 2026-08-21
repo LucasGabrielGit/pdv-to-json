@@ -51,18 +51,10 @@ export async function POST(req: Request) {
         }
 
         if (mode === 'subscription') {
-          const subscriptionId =
-            typeof session.subscription === 'string'
-              ? session.subscription
-              : session.subscription?.id
-
           await supabaseAdmin
             .from('profiles')
             .update({
               is_pro: true,
-              stripe_customer_id: session.customer as string,
-              stripe_subscription_id: subscriptionId,
-              subscription_status: 'active',
             })
             .eq('id', userId)
 
@@ -84,13 +76,13 @@ export async function POST(req: Request) {
               .from('profiles')
               .update({
                 purchased_credits: newPurchased,
-                stripe_customer_id: session.customer as string,
               })
               .eq('id', userId)
 
             console.log(`Credited ${creditAmount} credits to user ${userId} (New Total: ${newPurchased})`)
           }
         }
+
         break
       }
 

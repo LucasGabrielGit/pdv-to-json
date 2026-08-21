@@ -50,12 +50,12 @@ export const STRIPE_PLANS: Record<PlanKey, PlanConfig> = {
       'AI SQL Query Generator',
     ],
     usd: {
-      priceId: 'price_1U6YgGPgXV6U3mPU9JJ8xNZd',
+      priceId: process.env.STRIPE_PRICE_STARTER_USD || 'price_1U6YgGPgXV6U3mPU9JJ8xNZd',
       amount: 2.99,
       formatted: '$2.99',
     },
     brl: {
-      priceId: 'price_1U6YgsPgXV6U3mPUndm6hNOT',
+      priceId: process.env.STRIPE_PRICE_STARTER_BRL || 'price_1U6YgsPgXV6U3mPUndm6hNOT',
       amount: 14.90,
       formatted: 'R$ 14,90',
     },
@@ -76,12 +76,12 @@ export const STRIPE_PLANS: Record<PlanKey, PlanConfig> = {
       'AI SQL Query Generator',
     ],
     usd: {
-      priceId: 'price_1U6YgQPgXV6U3mPUsThFUQtF',
+      priceId: process.env.STRIPE_PRICE_POWER_USD || 'price_1U6YgQPgXV6U3mPUsThFUQtF',
       amount: 9.99,
       formatted: '$9.99',
     },
     brl: {
-      priceId: 'price_1U6Yh1PgXV6U3mPUSqDGbMwg',
+      priceId: process.env.STRIPE_PRICE_POWER_BRL || 'price_1U6Yh1PgXV6U3mPUSqDGbMwg',
       amount: 49.90,
       formatted: 'R$ 49,90',
     },
@@ -101,12 +101,12 @@ export const STRIPE_PLANS: Record<PlanKey, PlanConfig> = {
       'All present & future AI tools',
     ],
     usd: {
-      priceId: 'price_1U6YgYPgXV6U3mPUU0a3OyQJ',
+      priceId: process.env.STRIPE_PRICE_PRO_PACK_USD || 'price_1U6YgYPgXV6U3mPUU0a3OyQJ',
       amount: 19.99,
       formatted: '$19.99',
     },
     brl: {
-      priceId: 'price_1U6YhAPgXV6U3mPU8v6UZVOR',
+      priceId: process.env.STRIPE_PRICE_PRO_PACK_BRL || 'price_1U6YhAPgXV6U3mPU8v6UZVOR',
       amount: 99.90,
       formatted: 'R$ 99,90',
     },
@@ -128,14 +128,15 @@ export const STRIPE_PLANS: Record<PlanKey, PlanConfig> = {
       '1-Click cancellation anytime',
     ],
     usd: {
-      priceId: 'price_1U6YghPgXV6U3mPUjciR9I7B',
+      priceId: process.env.STRIPE_PRICE_PRO_SUB_USD || 'price_1U6YghPgXV6U3mPUjciR9I7B',
       amount: 5.99,
       formatted: '$5.99 / mo',
     },
     brl: {
-      priceId: 'price_1U6YhOPgXV6U3mPU8RK2DOxC',
+      priceId: process.env.STRIPE_PRICE_PRO_SUB_BRL || 'price_1U6YhOPgXV6U3mPU8RK2DOxC',
       amount: 29.90,
       formatted: 'R$ 29,90 / mês',
     },
   },
 }
+
