@@ -31,11 +31,12 @@ import { ToolHeader } from '@/components/converter/ToolHeader'
 
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import CodeEditor from '@/components/CodeEditor'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
+
 import {
   Select,
   SelectContent,
@@ -326,14 +327,12 @@ export default function UuidGenerator() {
 
             {/* Code Output Textarea / Interactive List */}
             {exportFormat !== 'plain' ? (
-              <div className="relative rounded-2xl overflow-hidden border border-[rgba(124,58,237,0.25)] bg-black/45">
-                <Textarea
-                  readOnly
-                  value={result.formattedOutput}
-                  className="h-64 font-mono text-sm resize-y leading-relaxed text-emerald-300 bg-transparent border-0 focus-visible:ring-0"
-                  spellCheck={false}
-                />
-              </div>
+              <CodeEditor
+                value={result.formattedOutput}
+                language={exportFormat === 'json' ? 'json' : 'typescript'}
+                readOnly
+                height="320px"
+              />
             ) : (
               <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
                 {result.items.map((item, idx) => (

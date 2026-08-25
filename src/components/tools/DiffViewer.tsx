@@ -31,11 +31,12 @@ import { ToolHeader } from '@/components/converter/ToolHeader'
 
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import CodeEditor from '@/components/CodeEditor'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+
 
 type ViewStyle = 'split' | 'unified'
 
@@ -219,12 +220,12 @@ export default function DiffViewer() {
                 <MinusCircle className="size-3.5" />
                 Original Text / Code
               </Label>
-              <Textarea
+              <CodeEditor
                 value={originalText}
-                onChange={(e) => setOriginalText(e.target.value)}
+                onChange={(val) => setOriginalText(val || '')}
+                language="typescript"
                 placeholder="Paste original text here..."
-                className="h-44 font-mono text-xs resize-y leading-relaxed bg-black/35 text-slate-100 border border-rose-500/30"
-                spellCheck={false}
+                height="240px"
               />
             </div>
 
@@ -233,12 +234,12 @@ export default function DiffViewer() {
                 <PlusCircle className="size-3.5" />
                 Modified Text / Code
               </Label>
-              <Textarea
+              <CodeEditor
                 value={modifiedText}
-                onChange={(e) => setModifiedText(e.target.value)}
+                onChange={(val) => setModifiedText(val || '')}
+                language="typescript"
                 placeholder="Paste modified text here..."
-                className="h-44 font-mono text-xs resize-y leading-relaxed bg-black/35 text-slate-100 border border-emerald-500/30"
-                spellCheck={false}
+                height="240px"
               />
             </div>
           </div>

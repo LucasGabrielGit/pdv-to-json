@@ -218,7 +218,7 @@ export default function CodeAnalyzer() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8">
       {/* ── Header ── */}
       <ToolHeader
         title="AI Code Reviewer & Architect"
@@ -280,127 +280,138 @@ export default function CodeAnalyzer() {
         </div>
       </div>
 
-      {/* ── Main Card ── */}
-      <Card
-        className="rounded-3xl shadow-2xl overflow-hidden border border-[rgba(124,58,237,0.25)] bg-[#16213e]"
-        style={{
-          boxShadow: '0 25px 60px rgba(0,0,0,0.4), 0 0 60px rgba(124,58,237,0.04)',
-        }}
-      >
-        <CardContent className="p-6 md:p-8 space-y-6">
-          {/* Language Selector Pills */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Programming Language
-            </Label>
-            <div className="flex flex-wrap gap-2">
-              {LANGUAGES.map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => setLanguage(lang)}
-                  className={`px-3 py-1.5 rounded-xl border text-xs font-mono capitalize transition-all ${language === lang
-                      ? 'bg-purple-600 text-white border-purple-500 font-semibold shadow-md'
-                      : 'bg-black/30 border-white/5 text-slate-400 hover:text-white'
-                    }`}
-                >
-                  {lang}
-                </button>
-              ))}
-            </div>
+      {/* ── Top Options & Action Controls Bar ── */}
+      <Card className="rounded-3xl shadow-xl border border-purple-500/25 bg-[#16213e] mb-6">
+        <CardContent className="p-4 md:p-5 flex flex-wrap items-center justify-between gap-4">
+          {/* Language Selector Chips */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider mr-1">Language:</span>
+            {LANGUAGES.slice(0, 8).map((lang) => (
+              <button
+                key={lang}
+                onClick={() => setLanguage(lang)}
+                className={`px-2.5 py-1 rounded-lg border text-xs font-mono capitalize transition-all ${
+                  language === lang
+                    ? 'bg-purple-600 text-white border-purple-500 font-semibold shadow-md'
+                    : 'bg-black/30 border-white/5 text-slate-400 hover:text-white'
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
           </div>
 
-          {/* Code Input Textarea */}
-          <div className="space-y-2">
-            <div className="flex flex-wrap justify-between items-center gap-2">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Code Snippet to Review
-              </Label>
-              <div className="flex items-center gap-2">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".ts,.tsx,.js,.jsx,.py,.sql,.html,.css,.go,.rs,.java,.cs,.cpp,.c,.php,.yaml,.yml,.sh,.md"
-                  className="hidden"
-                  onChange={handleFileUpload}
-                />
-                <Button
-                  size="xs"
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-purple-500/30 text-cyan-300 hover:bg-cyan-500/10 text-xs gap-1.5"
-                >
-                  <FileUp className="size-3" />
-                  Upload Code File (.ts, .tsx, .py, etc.)
-                </Button>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onClick={() => setCode(SAMPLE_CODE)}
-                  className="text-purple-300 hover:bg-purple-500/10 text-xs"
-                >
-                  <Sparkles className="size-3 mr-1 text-purple-400" />
-                  Load Sample
-                </Button>
-              </div>
-            </div>
-
-            <CodeEditor
-              value={code}
-              onChange={(v) => setCode(v || '')}
-              language={language}
-              height="260px"
+          {/* Quick Actions & Audit Submit */}
+          <div className="flex items-center gap-2 ml-auto">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".ts,.tsx,.js,.jsx,.py,.sql,.html,.css,.go,.rs,.java,.cs,.cpp,.c,.php,.yaml,.yml,.sh,.md"
+              className="hidden"
+              onChange={handleFileUpload}
             />
-          </div>
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              className="border-purple-500/30 text-cyan-300 hover:bg-cyan-500/10 text-xs gap-1.5"
+            >
+              <FileUp className="size-3.5" />
+              Upload File
+            </Button>
 
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={() => setCode(SAMPLE_CODE)}
+              className="text-purple-300 hover:bg-purple-500/10 text-xs"
+            >
+              <Sparkles className="size-3 mr-1 text-purple-400" />
+              Sample
+            </Button>
 
-          {/* Action Submit Button */}
-          <div className="flex justify-end">
             <Button
               onClick={handleAnalyze}
               disabled={isLoading}
-              className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-sm px-8 py-2.5 rounded-xl shadow-lg shadow-purple-600/25 gap-2"
+              className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs px-5 py-2 rounded-xl shadow-lg shadow-purple-600/25 gap-2"
             >
               {isLoading ? (
-                <RotateCcw className="size-4 animate-spin" />
+                <RotateCcw className="size-3.5 animate-spin" />
               ) : (
-                <BrainCircuit className="size-4" />
+                <BrainCircuit className="size-3.5" />
               )}
-              {isLoading ? 'Analyzing Code with AI...' : 'Run AI Code Audit'}
+              {isLoading ? 'Analyzing...' : 'Run AI Code Audit'}
             </Button>
           </div>
+        </CardContent>
+      </Card>
 
-          {/* ── AI Analysis Output Dashboard ── */}
-          {analysisResult && (
-            <div className="space-y-6 pt-4 border-t border-purple-500/20">
+      {/* ── Side-by-Side Editor & AI Audit Results ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: Source Code Input */}
+        <div className="space-y-3 flex flex-col">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+              <Code2 className="size-3.5 text-purple-400" />
+              Source Code ({language})
+            </Label>
+            <Badge variant="outline" className="text-[10px] border-white/10 text-slate-400 font-mono">
+              {code.length} chars
+            </Badge>
+          </div>
+
+          <CodeEditor
+            value={code}
+            onChange={(v) => setCode(v || '')}
+            language={language}
+            height="500px"
+          />
+        </div>
+
+        {/* Right: AI Audit Output & Refactored Code */}
+        <div className="space-y-4 flex flex-col">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+              <Sparkles className="size-3.5 text-cyan-400" />
+              AI Code Review &amp; Suggestions
+            </Label>
+            {analysisResult && (
+              <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-300 font-mono">
+                Audit Completed
+              </Badge>
+            )}
+          </div>
+
+          {analysisResult ? (
+            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
               {/* Score Header Card */}
-              <div className="p-5 rounded-2xl bg-black/40 border border-purple-500/30 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`size-16 rounded-2xl flex items-center justify-center font-mono text-2xl font-extrabold border shadow-lg ${analysisResult.score >= 80
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                        : analysisResult.score >= 50
-                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                          : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                      }`}
-                  >
-                    {analysisResult.score}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-100 text-base">Code Health Score</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">{analysisResult.summary}</p>
-                  </div>
+              <div className="p-4 rounded-2xl bg-black/40 border border-purple-500/30 flex items-center gap-4">
+                <div
+                  className={`size-14 rounded-xl flex items-center justify-center font-mono text-xl font-extrabold border shadow-lg shrink-0 ${
+                    analysisResult.score >= 80
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                      : analysisResult.score >= 50
+                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                        : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                  }`}
+                >
+                  {analysisResult.score}
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-100 text-sm">Code Health Score</h3>
+                  <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{analysisResult.summary}</p>
                 </div>
               </div>
 
               {/* Security & Performance Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Security Tips */}
-                <div className="p-4 rounded-2xl bg-black/40 border border-rose-500/30 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-400">
-                    <Bug className="size-4" />
-                    <span>Security & Vulnerabilities</span>
+                <div className="p-3.5 rounded-2xl bg-black/40 border border-rose-500/30 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-400">
+                    <Bug className="size-3.5" />
+                    <span>Security Audits</span>
                   </div>
-                  <ul className="space-y-1.5 text-xs text-slate-300 list-disc list-inside">
+                  <ul className="space-y-1 text-xs text-slate-300 list-disc list-inside">
                     {analysisResult.securityTips.map((tip, i) => (
                       <li key={i} className="leading-relaxed">{tip}</li>
                     ))}
@@ -408,12 +419,12 @@ export default function CodeAnalyzer() {
                 </div>
 
                 {/* Performance Tips */}
-                <div className="p-4 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-cyan-400">
-                    <Lightbulb className="size-4" />
-                    <span>Performance Optimizations</span>
+                <div className="p-3.5 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cyan-400">
+                    <Lightbulb className="size-3.5" />
+                    <span>Optimizations</span>
                   </div>
-                  <ul className="space-y-1.5 text-xs text-slate-300 list-disc list-inside">
+                  <ul className="space-y-1 text-xs text-slate-300 list-disc list-inside">
                     {analysisResult.performanceTips.map((tip, i) => (
                       <li key={i} className="leading-relaxed">{tip}</li>
                     ))}
@@ -423,30 +434,30 @@ export default function CodeAnalyzer() {
 
               {/* Refactored Clean Code */}
               {analysisResult.refactoredCode && (
-                <div className="p-4 rounded-2xl bg-black/40 border border-emerald-500/30 space-y-2">
+                <div className="p-3.5 rounded-2xl bg-black/40 border border-emerald-500/30 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-                      <Code2 className="size-4" />
+                      <Code2 className="size-3.5" />
                       Refactored Production Code
                     </span>
                     <Button
                       size="xs"
                       variant="ghost"
                       onClick={() => handleCopyText('refactored', analysisResult.refactoredCode)}
-                      className="h-7 text-xs text-emerald-300 hover:bg-emerald-500/10"
+                      className="h-6 text-xs text-emerald-300 hover:bg-emerald-500/10"
                     >
                       {copiedKey === 'refactored' ? (
                         <Check className="size-3 mr-1 text-emerald-400" />
                       ) : (
                         <Copy className="size-3 mr-1" />
                       )}
-                      {copiedKey === 'refactored' ? 'Copied' : 'Copy Code'}
+                      {copiedKey === 'refactored' ? 'Copied' : 'Copy'}
                     </Button>
                   </div>
                   <CodeEditor
                     value={analysisResult.refactoredCode}
                     language={language}
-                    height="200px"
+                    height="220px"
                     readOnly
                   />
                 </div>
@@ -454,17 +465,17 @@ export default function CodeAnalyzer() {
 
               {/* Unit Test Code */}
               {analysisResult.unitTestCode && (
-                <div className="p-4 rounded-2xl bg-black/40 border border-purple-500/30 space-y-2">
+                <div className="p-3.5 rounded-2xl bg-black/40 border border-purple-500/30 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
-                      <FileCode className="size-4" />
-                      Recommended Unit Tests
+                      <FileCode className="size-3.5" />
+                      Automated Unit Tests
                     </span>
                     <Button
                       size="xs"
                       variant="ghost"
                       onClick={() => handleCopyText('unitTest', analysisResult.unitTestCode)}
-                      className="h-7 text-xs text-purple-300 hover:bg-purple-500/10"
+                      className="h-6 text-xs text-purple-300 hover:bg-purple-500/10"
                     >
                       {copiedKey === 'unitTest' ? (
                         <Check className="size-3 mr-1 text-emerald-400" />
@@ -477,15 +488,24 @@ export default function CodeAnalyzer() {
                   <CodeEditor
                     value={analysisResult.unitTestCode}
                     language={language}
-                    height="200px"
+                    height="220px"
                     readOnly
                   />
                 </div>
               )}
             </div>
+          ) : (
+            <div className="h-[540px] flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-purple-500/20 bg-[#16213e]/30 space-y-3">
+              <BrainCircuit className="size-10 text-purple-400/60 animate-pulse" />
+              <p className="text-sm font-semibold text-slate-200">AI Code Audit Dashboard</p>
+              <p className="text-xs text-slate-400 max-w-xs leading-relaxed">
+                Paste your code on the left and click <strong>&quot;Run AI Code Audit&quot;</strong> to inspect OWASP vulnerabilities, performance bottlenecks, and generate production refactoring.
+              </p>
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
 
       {/* ── Custom API Key Modal ── */}
       {showKeyModal && (

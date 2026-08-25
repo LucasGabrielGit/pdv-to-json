@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Sparkles, X, ArrowRight, CornerDownLeft } from 'lucide-react'
+import { Search, Sparkles, X, CornerDownLeft, Star, Clock } from 'lucide-react'
 import { tools, searchTools, type Tool } from '@/lib/tools-registry'
 import { Badge } from '@/components/ui/badge'
+import { useFavorites } from '@/hooks/useFavorites'
 
 interface CommandPaletteProps {
   open: boolean
@@ -18,7 +19,23 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
-  const filteredTools = query.trim() ? searchTools(query) : tools
+  const { favorites, recents, isFavorite, toggleFavorite } = useFavorites()
+
+  const displayedTools = useMemo(() => {
+    if (query.trim()) {
+      return searchTools(query)
+    }
+    // When empty, show favorites, recents, then the rest
+    const favs = tools.filter((t) => favorites.includes(t.id))
+    const recent = tools.filter(
+      (t) => recents.includes(t.id) && !favorites.includes(t.id)
+    )
+    const others = tools.filter(
+      (t) => !favorites.includes(t.id) && !recents.includes(t.id)
+    )
+
+    return [...favs, ...recent, ...others]
+  }, [query, favorites, recents])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -56,15 +73,15 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setSelectedIndex((prev) => (prev + 1) % filteredTools.length)
+      setSelectedIndex((prev) => (prev + 1) % displayedTools.length)
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
       setSelectedIndex((prev) =>
-        prev <= 0 ? filteredTools.length - 1 : prev - 1
+        prev <= 0 ? displayedTools.length - 1 : prev - 1
       )
     } else if (e.key === 'Enter') {
       e.preventDefault()
-      const selected = filteredTools[selectedIndex]
+      const selected = displayedTools[selectedIndex]
       if (selected) handleSelect(selected)
     }
   }
@@ -125,15 +142,17 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           ref={listRef}
           className="max-h-[60vh] overflow-y-auto p-2 space-y-1 divide-y divide-white/5"
         >
-          {filteredTools.length === 0 ? (
+          {displayedTools.length === 0 ? (
             <div className="py-12 text-center text-sm text-muted-foreground">
               No developer tools found matching &quot;{query}&quot;.
             </div>
           ) : (
-            filteredTools.map((tool, index) => {
+            displayedTools.map((tool, index) => {
               const Icon = tool.icon
               const isSelected = index === selectedIndex
               const isComingSoon = tool.status === 'coming-soon'
+              const isFav = isFavorite(tool.id)
+              const isRec = !isFav && recents.includes(tool.id) && !query.trim()
 
               return (
                 <div
@@ -162,6 +181,22 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                         <span className="font-semibold text-xs text-foreground">
                           {tool.name}
                         </span>
+                        {isFav && (
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] px-1 py-0 border-amber-400/40 text-amber-300 bg-amber-500/10 font-mono gap-0.5"
+                          >
+                            <Star className="size-2.5 fill-amber-300" /> Fav
+                          </Badge>
+                        )}
+                        {isRec && (
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] px-1 py-0 border-cyan-400/40 text-cyan-300 bg-cyan-500/10 font-mono gap-0.5"
+                          >
+                            <Clock className="size-2.5" /> Recent
+                          </Badge>
+                        )}
                         <Badge
                           variant="outline"
                           className="text-[9px] px-1 py-0 uppercase tracking-wider font-mono border-white/10 text-muted-foreground"
@@ -183,11 +218,28 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                     </div>
                   </div>
 
-                  {!isComingSoon && (
-                    <div className="flex items-center gap-1 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                      <CornerDownLeft className="size-3 text-purple-400" />
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleFavorite(tool.id)
+                      }}
+                      className="p-1 rounded-md hover:bg-white/10 text-slate-400 hover:text-amber-300 transition-colors"
+                      title={isFav ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      <Star
+                        className={`size-3.5 ${
+                          isFav ? 'fill-amber-400 text-amber-400' : 'opacity-40 group-hover:opacity-100'
+                        }`}
+                      />
+                    </button>
+                    {!isComingSoon && (
+                      <div className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                        <CornerDownLeft className="size-3 text-purple-400" />
+                      </div>
+                    )}
+                  </div>
                 </div>
               )
             })

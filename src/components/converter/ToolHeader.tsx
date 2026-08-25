@@ -1,6 +1,13 @@
-import React from 'react'
-import { Zap, ShieldCheck } from 'lucide-react'
+'use client'
+
+import React, { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
+import { Zap, ShieldCheck, Star } from 'lucide-react'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { useFavorites } from '@/hooks/useFavorites'
+import { tools } from '@/lib/tools-registry'
 
 export interface ToolHeaderProps {
   title: string
@@ -8,15 +15,44 @@ export interface ToolHeaderProps {
   badgeText?: string
   privacyText?: string
   category?: string
+  toolId?: string
 }
-
 
 export function ToolHeader({
   title,
   description,
   badgeText = 'Instant & Free Online Tool',
   privacyText = '100% Client-Side Privacy',
+  toolId,
 }: ToolHeaderProps) {
+  const pathname = usePathname()
+  const { isFavorite, toggleFavorite, addRecent } = useFavorites()
+
+  // Find tool slug from prop or current pathname
+  const currentTool = tools.find(
+    (t) => t.id === toolId || t.href === pathname || (pathname === '/' && t.id === 'json-csv')
+  )
+  const currentId = currentTool?.id || toolId || pathname.replace(/^\/tools\//, '')
+
+  useEffect(() => {
+    if (currentId) {
+      addRecent(currentId)
+    }
+  }, [currentId, addRecent])
+
+  const isFav = isFavorite(currentId)
+
+  const handleToggleFavorite = () => {
+    toggleFavorite(currentId)
+    if (!isFav) {
+      toast.success(`Added ${title} to Favorites! ⭐`, {
+        description: 'Pinned to the top of your sidebar & command palette.',
+      })
+    } else {
+      toast.info(`Removed ${title} from Favorites.`)
+    }
+  }
+
   return (
     <div className="text-center mb-8">
       <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
@@ -34,6 +70,26 @@ export function ToolHeader({
           <ShieldCheck className="size-3.5" />
           {privacyText}
         </Badge>
+        {currentId && (
+          <Button
+            size="xs"
+            variant="outline"
+            onClick={handleToggleFavorite}
+            className={`h-7 px-2.5 rounded-full border transition-all text-xs gap-1.5 cursor-pointer ${
+              isFav
+                ? 'border-amber-400/50 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 shadow-sm shadow-amber-500/20'
+                : 'border-white/10 bg-white/5 text-slate-400 hover:text-amber-300 hover:border-amber-400/30'
+            }`}
+            title={isFav ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Star
+              className={`size-3.5 transition-transform duration-200 ${
+                isFav ? 'fill-amber-400 text-amber-400 scale-110' : 'text-slate-400 hover:scale-110'
+              }`}
+            />
+            <span>{isFav ? 'Favorited' : 'Favorite'}</span>
+          </Button>
+        )}
       </div>
 
       <h1

@@ -105,16 +105,13 @@ export default function CurlConverter() {
             </span>
             <span className="text-slate-500 font-mono">{curlInput.length} chars</span>
           </div>
-          <div className="rounded-2xl border border-purple-500/30 overflow-hidden bg-black/40 shadow-inner">
-            <CodeEditor
-              value={curlInput}
-              onChange={(val) => setCurlInput(val || '')}
-              language="bash"
-              placeholder="Paste curl command here (e.g. curl https://api.example.com -H 'Auth...')..."
-              height="380px"
-            />
-          </div>
-
+          <CodeEditor
+            value={curlInput}
+            onChange={(val) => setCurlInput(val || '')}
+            language="bash"
+            placeholder="Paste curl command here (e.g. curl https://api.example.com -H 'Auth...')..."
+            height="500px"
+          />
         </div>
 
         <div className="space-y-2">
@@ -126,14 +123,12 @@ export default function CurlConverter() {
               Ready to Execute
             </Badge>
           </div>
-          <div className="rounded-2xl border border-purple-500/30 overflow-hidden bg-black/40 shadow-inner">
-            <CodeEditor
-              value={generatedCode}
-              language={selectedLang === 'python' ? 'python' : selectedLang === 'go' ? 'go' : selectedLang === 'rust' ? 'rust' : 'typescript'}
-              readOnly
-              height="380px"
-            />
-          </div>
+          <CodeEditor
+            value={generatedCode}
+            language={selectedLang === 'python' ? 'python' : selectedLang === 'go' ? 'go' : selectedLang === 'rust' ? 'rust' : 'typescript'}
+            readOnly
+            height="500px"
+          />
         </div>
       </div>
     </div>

@@ -19,9 +19,12 @@ export async function GET(request: Request) {
       } else {
         return NextResponse.redirect(`${origin}${next}`)
       }
+    } else {
+      console.error('[AuthCallback Error]: Failed to exchange code for session:', error)
     }
   }
 
   // Return the user to an error page with instructions
   return NextResponse.redirect(`${origin}/?auth_error=could_not_authenticate`)
+
 }

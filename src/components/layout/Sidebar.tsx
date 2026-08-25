@@ -15,12 +15,13 @@ import { Separator } from '@/components/ui/separator'
 import {
   categories,
   getToolsByCategory,
+  tools,
   type Tool,
 } from '@/lib/tools-registry'
+import { useFavorites } from '@/hooks/useFavorites'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/contexts/I18nContext'
 import { Logo, LogoIcon } from './Logo'
-
 
 interface SidebarProps {
   isOpen?: boolean
@@ -31,6 +32,9 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const { t } = useTranslation()
+  const { favorites } = useFavorites()
+
+  const favoriteTools = tools.filter((tool) => favorites.includes(tool.id))
 
   const categoryTranslationMap: Record<string, string> = {
     converters: t.sidebar.categories.converters,
@@ -39,6 +43,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     generators: t.sidebar.categories.generators,
     ai: t.sidebar.categories.ai,
   }
+
 
 
   return (
@@ -110,6 +115,28 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
 
         {/* Tool navigation */}
         <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
+          {/* Pinned Favorites */}
+          {favoriteTools.length > 0 && (
+            <div className="pb-3 border-b border-sidebar-border/50">
+              {(!collapsed || isOpen) && (
+                <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
+                  <span>⭐</span> <span>Favorites</span>
+                </p>
+              )}
+              <ul className="space-y-0.5">
+                {favoriteTools.map((tool) => (
+                  <SidebarItem
+                    key={`fav-${tool.id}`}
+                    tool={tool}
+                    isActive={pathname === tool.href}
+                    collapsed={collapsed && !isOpen}
+                    onNavigate={onClose}
+                  />
+                ))}
+              </ul>
+            </div>
+          )}
+
           {categories.map((cat) => {
             const catTools = getToolsByCategory(cat.id)
             if (catTools.length === 0) return null

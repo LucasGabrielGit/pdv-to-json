@@ -189,97 +189,99 @@ export default function AiSqlGenerator() {
       </div>
 
 
-      {/* Main Form */}
+      {/* Main Form Side-by-Side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Input */}
-        <div className="space-y-4">
-          <Card className="border border-purple-500/20 bg-[#16213e]/60 backdrop-blur-md">
-            <CardContent className="p-4 md:p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="sql-prompt" className="text-xs font-bold text-white">
-                  Describe what you want to query:
-                </Label>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-slate-400">Dialect:</span>
-                  <Select
-                    value={dialect}
-                    onValueChange={(v) => {
-                      if (v) setDialect(v)
-                    }}
-                  >
-                    <SelectTrigger className="h-7 w-32 text-xs bg-black/40 border-purple-500/30 text-white font-mono">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#16213e] border-purple-500/30 text-white">
-                      <SelectItem value="postgresql">PostgreSQL</SelectItem>
-                      <SelectItem value="mysql">MySQL</SelectItem>
-                      <SelectItem value="sqlite">SQLite</SelectItem>
-                      <SelectItem value="tsql">T-SQL (SQL Server)</SelectItem>
-                      <SelectItem value="bigquery">BigQuery</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+        <div className="space-y-3 flex flex-col">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="sql-prompt" className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+              <Database className="size-3.5 text-purple-400" />
+              Describe What You Want to Query
+            </Label>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-slate-400 font-semibold">Dialect:</span>
+              <Select
+                value={dialect}
+                onValueChange={(v) => {
+                  if (v) setDialect(v)
+                }}
+              >
+                <SelectTrigger className="h-7 w-32 text-xs bg-black/40 border-purple-500/30 text-white font-mono">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#16213e] border-purple-500/30 text-white">
+                  <SelectItem value="postgresql">PostgreSQL</SelectItem>
+                  <SelectItem value="mysql">MySQL</SelectItem>
+                  <SelectItem value="sqlite">SQLite</SelectItem>
+                  <SelectItem value="tsql">T-SQL (SQL Server)</SelectItem>
+                  <SelectItem value="bigquery">BigQuery</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-              </div>
+          <div className="flex-1 rounded-2xl overflow-hidden shadow-xl border border-purple-500/30 bg-[#0d1527] flex flex-col">
+            <Textarea
+              id="sql-prompt"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="e.g. Find users who have registered in the past 30 days and have made at least 3 distinct orders, calculate average order value and sort by highest spender..."
+              className="w-full h-[440px] font-sans text-sm leading-relaxed p-4 bg-transparent text-slate-100 border-0 resize-none focus-visible:ring-0"
+              spellCheck={false}
+            />
 
-              <Textarea
-                id="sql-prompt"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="e.g. Find users who have registered in the past 30 days and have never placed an order..."
-                className="h-44 bg-black/40 border-purple-500/30 text-xs text-white resize-y"
-              />
-
-              <div className="flex items-center justify-between pt-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setPrompt(SAMPLE_PROMPT)}
-                  className="text-xs text-slate-400 hover:text-white gap-1.5"
-                >
-                  <RotateCcw className="size-3" /> Sample Prompt
-                </Button>
-                <Button
-                  onClick={handleGenerate}
-                  disabled={isLoading}
-                  className="bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs gap-2"
-                >
-                  {isLoading ? (
-                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <Sparkles className="size-3.5" />
-                  )}
-                  {isLoading ? 'Generating SQL...' : 'Generate SQL Query'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            <div className="p-3 border-t border-purple-500/20 bg-black/40 flex items-center justify-between">
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={() => setPrompt(SAMPLE_PROMPT)}
+                className="text-xs text-purple-300 hover:bg-purple-500/10 gap-1.5"
+              >
+                <RotateCcw className="size-3" /> Sample Prompt
+              </Button>
+              <Button
+                onClick={handleGenerate}
+                disabled={isLoading}
+                className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs px-5 py-2 rounded-xl shadow-lg shadow-purple-600/25 gap-2"
+              >
+                {isLoading ? (
+                  <span className="size-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <Sparkles className="size-3.5" />
+                )}
+                {isLoading ? 'Generating SQL...' : 'Generate SQL Query'}
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Right: Results */}
-        <div className="space-y-4">
-          {result ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Database className="size-4 text-cyan-400" /> Generated SQL
-                </h3>
-                <Button
-                  size="sm"
-                  onClick={() => handleCopy(result.query)}
-                  className="text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold gap-1.5"
-                >
-                  {copied ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
-                  Copy SQL
-                </Button>
-              </div>
+        <div className="space-y-4 flex flex-col">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+              <Database className="size-3.5 text-cyan-400" />
+              Generated SQL &amp; Optimization
+            </Label>
+            {result && (
+              <Button
+                size="xs"
+                onClick={() => handleCopy(result.query)}
+                className="h-6 text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold gap-1"
+              >
+                {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+                Copy SQL
+              </Button>
+            )}
+          </div>
 
+          {result ? (
+            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
               <div className="rounded-2xl border border-purple-500/30 overflow-hidden bg-black/40 shadow-inner">
                 <CodeEditor
                   value={result.query}
                   language="sql"
                   readOnly
-                  height="220px"
+                  height="280px"
                 />
               </div>
 
@@ -313,16 +315,17 @@ export default function AiSqlGenerator() {
               </Card>
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-purple-500/20 bg-[#16213e]/30 space-y-2">
-              <Database className="size-8 text-purple-400/50" />
-              <p className="text-sm font-semibold text-slate-300">Generated Query Will Appear Here</p>
-              <p className="text-xs text-slate-500 max-w-xs">
-                Describe your data schema or requirements on the left and click &ldquo;Generate SQL Query&rdquo;.
+            <div className="h-[500px] flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-purple-500/20 bg-[#16213e]/30 space-y-3">
+              <Database className="size-10 text-cyan-400/60 animate-pulse" />
+              <p className="text-sm font-semibold text-slate-200">Generated Query Canvas</p>
+              <p className="text-xs text-slate-400 max-w-xs leading-relaxed">
+                Describe your query requirement on the left and click <strong>&quot;Generate SQL Query&quot;</strong> to get optimized SQL, execution explanations, and index recommendations.
               </p>
             </div>
           )}
         </div>
       </div>
+
 
       {/* BYOK Modal */}
       {showKeyModal && (

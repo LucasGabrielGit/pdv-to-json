@@ -12,9 +12,10 @@ import FileDropZone from './FileDropZone'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import CodeEditor from './CodeEditor'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+
 
 import { ConverterHeader } from './converter/ConverterHeader'
 import { DirectionToggle, type Direction } from './converter/DirectionToggle'
@@ -232,18 +233,16 @@ const Converter: React.FC = () => {
                   Load Example
                 </Button>
               </div>
-              <Textarea
-                id="input-area"
+              <CodeEditor
                 value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
+                onChange={(val) => setInputText(val || '')}
+                language={isJsonToCsv ? 'json' : 'plaintext'}
                 placeholder={
                   isJsonToCsv
                     ? '[\n  { "name": "Alice", "age": 30 },\n  { "name": "Bob", "age": 25 }\n]'
                     : 'name,age,city\nAlice,30,San Francisco\nBob,25,New York'
                 }
-
-                className="h-64 font-mono text-sm resize-y leading-relaxed bg-black/35 text-slate-100 border border-[rgba(124,58,237,0.25)]"
-                spellCheck={false}
+                height="360px"
               />
             </div>
           ) : (

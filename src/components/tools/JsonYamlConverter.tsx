@@ -1,37 +1,34 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
-import { toast } from 'sonner'
-import {
-  ArrowLeftRight,
-  Copy,
-  Download,
-  Trash2,
-  Check,
-  FileCode,
-  Sparkles,
-  Zap,
-  ShieldCheck,
-  Settings2,
-} from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
+import {
+  ArrowLeftRight,
+  Check,
+  Copy,
+  Download,
+  FileCode,
+  Settings2,
+  Sparkles,
+  Trash2
+} from 'lucide-react'
+import { useRef, useState } from 'react'
+import { toast } from 'sonner'
 
+import FileDropZone from '@/components/FileDropZone'
+import { ToolHeader } from '@/components/converter/ToolHeader'
 import {
   jsonToYaml,
   yamlToJson,
   type YamlConversionResult,
 } from '@/utils/yamlConverter'
-import FileDropZone from '@/components/FileDropZone'
-import { ToolHeader } from '@/components/converter/ToolHeader'
 
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+import CodeEditor from '@/components/CodeEditor'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -39,7 +36,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+import { Separator } from '@/components/ui/separator'
+
 
 type Direction = 'json-to-yaml' | 'yaml-to-json'
 type InputMode = 'text' | 'file'
@@ -188,7 +186,7 @@ export default function JsonYamlConverter() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8">
       {/* ── Header ── */}
       <ToolHeader
         title={isJsonToYaml ? 'JSON → YAML Converter' : 'YAML → JSON Converter'}
@@ -203,237 +201,221 @@ export default function JsonYamlConverter() {
       {/* ── Privacy Banner ── */}
       <PrivacyBanner />
 
-      {/* ── Direction Toggle ── */}
-      <div className="flex items-center justify-center gap-3 mb-8">
-        <Button
-          variant={isJsonToYaml ? 'default' : 'outline'}
-          onClick={() => handleDirectionToggle('json-to-yaml')}
-          className={`gap-2 font-medium transition-all ${isJsonToYaml
-              ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25'
-              : 'border-purple-500/30 text-slate-300 hover:text-white hover:border-purple-500/60'
-            }`}
-        >
-          <FileCode className="size-4" />
-          JSON → YAML
-        </Button>
+      {/* ── Top Controls & Options Bar ── */}
+      <Card className="rounded-3xl shadow-xl border border-purple-500/25 bg-[#16213e] mb-6">
+        <CardContent className="p-4 md:p-5 flex flex-wrap items-center justify-between gap-4">
+          {/* Direction Controls */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant={isJsonToYaml ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleDirectionToggle('json-to-yaml')}
+              className={`gap-1.5 text-xs font-semibold transition-all ${
+                isJsonToYaml
+                  ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25'
+                  : 'border-purple-500/30 text-slate-300 hover:text-white'
+              }`}
+            >
+              <FileCode className="size-3.5" />
+              JSON → YAML
+            </Button>
 
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleSwap}
-          title="Swap conversion direction"
-          className="size-10 border-purple-500/30 text-purple-400 hover:bg-purple-500/10 hover:text-purple-300 transition-all rounded-full"
-        >
-          <ArrowLeftRight className="size-4" />
-        </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleSwap}
+              title="Swap conversion direction"
+              className="size-8 border-purple-500/30 text-purple-400 hover:bg-purple-500/10 hover:text-purple-300 transition-all rounded-full"
+            >
+              <ArrowLeftRight className="size-3.5" />
+            </Button>
 
-        <Button
-          variant={!isJsonToYaml ? 'default' : 'outline'}
-          onClick={() => handleDirectionToggle('yaml-to-json')}
-          className={`gap-2 font-medium transition-all ${!isJsonToYaml
-              ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25'
-              : 'border-purple-500/30 text-slate-300 hover:text-white hover:border-purple-500/60'
-            }`}
-        >
-          <FileCode className="size-4" />
-          YAML → JSON
-        </Button>
-      </div>
-
-      {/* ── Main Card ── */}
-      <Card
-        className="rounded-3xl shadow-2xl overflow-hidden border border-[rgba(124,58,237,0.25)] bg-[#16213e]"
-        style={{
-          boxShadow: '0 25px 60px rgba(0,0,0,0.4), 0 0 60px rgba(124,58,237,0.04)',
-        }}
-      >
-        <CardContent className="p-6 md:p-8">
-          {/* Input Mode Tabs */}
-          <Tabs
-            value={inputMode}
-            onValueChange={(v) => setInputMode(v as InputMode)}
-            className="mb-5"
-          >
-            <TabsList className="h-auto gap-1 p-1 rounded-xl bg-black/30 border border-white/5">
-              <TabsTrigger
-                value="text"
-                className={`px-5 py-2 rounded-lg transition-all ${activeTab === 'text'
-                    ? 'bg-white text-zinc-900 font-semibold shadow-md'
-                    : 'text-slate-400 hover:text-white'
-                  }`}
-                onClick={() => setActiveTab('text')}
-              >
-                ✏️ Paste Text
-              </TabsTrigger>
-              <TabsTrigger
-                value="file"
-                className={`px-5 py-2 rounded-lg transition-all ${activeTab === 'file'
-                    ? 'bg-white text-zinc-900 font-semibold shadow-md'
-                    : 'text-slate-400 hover:text-white'
-                  }`}
-                onClick={() => setActiveTab('file')}
-              >
-                📁 Upload File
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          {/* Input Area */}
-          {inputMode === 'text' ? (
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  {isJsonToYaml ? 'JSON' : 'YAML'} Input
-                </Label>
-                <Button
-                  size="xs"
-                  variant="outline"
-                  onClick={handleLoadExample}
-                  className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 hover:bg-cyan-500/20 hover:text-cyan-300 transition-all"
-                >
-                  Load Example
-                </Button>
-              </div>
-              <Textarea
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder={
-                  isJsonToYaml
-                    ? '{\n  "name": "devkit",\n  "version": "1.0.0"\n}'
-                    : 'name: devkit\nversion: 1.0.0'
-                }
-                className="h-64 font-mono text-sm resize-y leading-relaxed bg-black/35 text-slate-100 border border-[rgba(124,58,237,0.25)]"
-                spellCheck={false}
-              />
-            </div>
-          ) : (
-            <FileDropZone
-              onFileContent={handleFileContent}
-              fileType={isJsonToYaml ? 'json' : 'yaml'}
-            />
-          )}
-
-
-          {/* Options & Action Row */}
-          <div className="my-6 p-4 rounded-2xl bg-black/25 border border-white/5 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
-              <div className="flex items-center gap-2">
-                <Settings2 className="size-4 text-purple-400" />
-                <Label className="text-xs text-slate-400">Indent Spaces:</Label>
-                <Select
-                  value={String(indentSpaces)}
-                  onValueChange={(val) => setIndentSpaces(Number(val))}
-                >
-                  <SelectTrigger className="w-24 h-8 bg-black/40 border-purple-500/30 text-slate-200">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="2">2 spaces</SelectItem>
-                    <SelectItem value="4">4 spaces</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {isJsonToYaml && (
-                <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={sortKeys}
-                    onChange={(e) => setSortKeys(e.target.checked)}
-                    className="rounded border-purple-500/30 bg-black/40 text-purple-600 focus:ring-purple-500"
-                  />
-                  <span>Alphabetize keys</span>
-                </label>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 ml-auto">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleClear}
-                disabled={!inputText && !result}
-                className="text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-              >
-                <Trash2 className="size-4 mr-1.5" />
-                Clear
-              </Button>
-
-              <Button
-                onClick={handleConvert}
-                disabled={isConverting}
-                className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold shadow-lg shadow-purple-600/20 px-6"
-              >
-                <Sparkles className="size-4 mr-2" />
-                {isConverting ? 'Converting...' : 'Convert'}
-              </Button>
-            </div>
+            <Button
+              variant={!isJsonToYaml ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleDirectionToggle('yaml-to-json')}
+              className={`gap-1.5 text-xs font-semibold transition-all ${
+                !isJsonToYaml
+                  ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25'
+                  : 'border-purple-500/30 text-slate-300 hover:text-white'
+              }`}
+            >
+              <FileCode className="size-3.5" />
+              YAML → JSON
+            </Button>
           </div>
 
-          {/* Output Section */}
-          <div ref={outputRef} className="space-y-3 pt-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                {isJsonToYaml ? 'YAML' : 'JSON'} Output
-              </Label>
-
-              {result && (
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs border-purple-500/30 text-purple-300">
-                    {result.lineCount} lines
-                  </Badge>
-                  <Badge variant="outline" className="text-xs border-cyan-500/30 text-cyan-300">
-                    {result.charCount} chars
-                  </Badge>
-                </div>
-              )}
+          {/* Options */}
+          <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300">
+            <div className="flex items-center gap-1.5">
+              <Settings2 className="size-3.5 text-purple-400" />
+              <span className="text-slate-400">Indent:</span>
+              <Select
+                value={String(indentSpaces)}
+                onValueChange={(val) => setIndentSpaces(Number(val))}
+              >
+                <SelectTrigger className="w-20 h-7 text-xs bg-black/40 border-purple-500/30 text-slate-200">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#16213e] border-purple-500/30 text-white text-xs">
+                  <SelectItem value="2">2 spaces</SelectItem>
+                  <SelectItem value="4">4 spaces</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="relative rounded-2xl overflow-hidden border border-[rgba(124,58,237,0.25)] bg-black/45">
-              <Textarea
-                readOnly
-                value={result?.output ?? ''}
-                placeholder={
-                  result
-                    ? ''
-                    : `Converted ${isJsonToYaml ? 'YAML' : 'JSON'} output will appear here...`
-                }
-                className="h-64 font-mono text-sm resize-y leading-relaxed text-emerald-300 bg-transparent border-0 focus-visible:ring-0"
-                spellCheck={false}
-              />
+            {isJsonToYaml && (
+              <label className="flex items-center gap-1.5 text-slate-400 cursor-pointer hover:text-slate-200 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={sortKeys}
+                  onChange={(e) => setSortKeys(e.target.checked)}
+                  className="rounded border-purple-500/30 bg-black/40 text-purple-600 focus:ring-purple-500 size-3.5"
+                />
+                <span>Sort keys</span>
+              </label>
+            )}
+          </div>
 
-              {result?.output && (
-                <div className="absolute top-3 right-3 flex items-center gap-2 bg-[#16213e]/90 p-1.5 rounded-xl border border-white/10 backdrop-blur-md">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={handleCopy}
-                    className="h-8 text-xs text-slate-300 hover:text-white hover:bg-white/10"
-                  >
-                    {copied ? (
-                      <Check className="size-3.5 mr-1 text-emerald-400" />
-                    ) : (
-                      <Copy className="size-3.5 mr-1" />
-                    )}
-                    {copied ? 'Copied' : 'Copy'}
-                  </Button>
+          {/* Quick Action Buttons */}
+          <div className="flex items-center gap-2 ml-auto">
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={handleLoadExample}
+              className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 hover:bg-cyan-500/20 text-xs"
+            >
+              <Sparkles className="size-3 mr-1" /> Example
+            </Button>
 
-                  <Button
-                    size="sm"
-                    onClick={handleDownload}
-                    className="h-8 text-xs bg-purple-600 hover:bg-purple-500 text-white"
-                  >
-                    <Download className="size-3.5 mr-1" />
-                    Download
-                  </Button>
-                </div>
-              )}
-            </div>
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={handleClear}
+              disabled={!inputText && !result}
+              className="text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 text-xs"
+            >
+              <Trash2 className="size-3 mr-1" /> Clear
+            </Button>
+
+            <Button
+              size="sm"
+              onClick={handleConvert}
+              disabled={isConverting}
+              className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs px-4 h-8 gap-1.5 shadow-md shadow-purple-600/25"
+            >
+              <Sparkles className="size-3.5" />
+              {isConverting ? 'Converting...' : 'Convert'}
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      <Separator className="my-8 bg-[rgba(124,58,237,0.25)]" />
+      {/* ── Side-by-Side Editor & Output Grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: Input Editor */}
+        <div className="space-y-3 flex flex-col">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <FileCode className="size-3.5 text-purple-400" />
+                {isJsonToYaml ? 'JSON Input' : 'YAML Input'}
+              </Label>
+              <Badge variant="outline" className="text-[10px] border-white/10 text-slate-400 font-mono">
+                {inputText.length} chars
+              </Badge>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Button
+                size="xs"
+                variant={inputMode === 'text' ? 'secondary' : 'ghost'}
+                onClick={() => setInputMode('text')}
+                className="text-[11px] h-6 px-2"
+              >
+                Editor
+              </Button>
+              <Button
+                size="xs"
+                variant={inputMode === 'file' ? 'secondary' : 'ghost'}
+                onClick={() => setInputMode('file')}
+                className="text-[11px] h-6 px-2"
+              >
+                Upload File
+              </Button>
+            </div>
+          </div>
+
+          {inputMode === 'text' ? (
+            <CodeEditor
+              value={inputText}
+              onChange={(val) => setInputText(val || '')}
+              language={isJsonToYaml ? 'json' : 'yaml'}
+              placeholder={
+                isJsonToYaml
+                  ? '{\n  "name": "dev-kit",\n  "version": "1.0.0",\n  "active": true\n}'
+                  : 'name: dev-kit\nversion: 1.0.0\nactive: true'
+              }
+              height="500px"
+            />
+          ) : (
+            <div className="h-[500px] rounded-2xl border border-purple-500/30 bg-black/40 p-4 flex flex-col justify-center">
+              <FileDropZone
+                onFileContent={handleFileContent}
+                fileType={isJsonToYaml ? 'json' : 'yaml'}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Right: Output Converted Result */}
+        <div className="space-y-3 flex flex-col" ref={outputRef}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Label className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                <Check className="size-3.5 text-emerald-400" />
+                {isJsonToYaml ? 'YAML Output' : 'JSON Output'}
+              </Label>
+              {result && (
+                <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-300 font-mono">
+                  {result.lineCount} lines • {result.charCount} chars
+                </Badge>
+              )}
+            </div>
+
+            {result?.output && (
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="xs"
+                  variant="outline"
+                  onClick={handleCopy}
+                  className="h-6 text-xs border-purple-500/30 text-slate-200 hover:text-white"
+                >
+                  {copied ? <Check className="size-3 mr-1 text-emerald-400" /> : <Copy className="size-3 mr-1" />}
+                  {copied ? 'Copied' : 'Copy'}
+                </Button>
+                <Button
+                  size="xs"
+                  onClick={handleDownload}
+                  className="h-6 text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold"
+                >
+                  <Download className="size-3 mr-1" />
+                  Download
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <CodeEditor
+            value={result?.output ?? ''}
+            language={isJsonToYaml ? 'yaml' : 'json'}
+            readOnly
+            height="500px"
+          />
+        </div>
+      </div>
+
+      <Separator className="my-8 bg-purple-500/20" />
 
       {/* AdSense Placement */}
       <AdSense
@@ -444,3 +426,4 @@ export default function JsonYamlConverter() {
     </div>
   )
 }
+

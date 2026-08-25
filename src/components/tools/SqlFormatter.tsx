@@ -200,16 +200,13 @@ export default function SqlFormatter() {
             </span>
             <span className="text-slate-500 font-mono">{inputSql.length} chars</span>
           </div>
-          <div className="rounded-2xl border border-purple-500/30 overflow-hidden bg-black/40 shadow-inner">
-            <CodeEditor
-              value={inputSql}
-              onChange={(val) => setInputSql(val || '')}
-              language="sql"
-              placeholder="Paste raw SQL query here..."
-              height="380px"
-            />
-          </div>
-
+          <CodeEditor
+            value={inputSql}
+            onChange={(val) => setInputSql(val || '')}
+            language="sql"
+            placeholder="Paste raw SQL query here..."
+            height="500px"
+          />
         </div>
 
         <div className="space-y-2">
@@ -219,14 +216,12 @@ export default function SqlFormatter() {
             </span>
             <span className="text-slate-500 font-mono">{formattedSql.split('\n').length} lines</span>
           </div>
-          <div className="rounded-2xl border border-purple-500/30 overflow-hidden bg-black/40 shadow-inner">
-            <CodeEditor
-              value={formattedSql}
-              language="sql"
-              readOnly
-              height="380px"
-            />
-          </div>
+          <CodeEditor
+            value={formattedSql}
+            language="sql"
+            readOnly
+            height="500px"
+          />
         </div>
       </div>
     </div>

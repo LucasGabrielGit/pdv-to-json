@@ -31,6 +31,7 @@ import { ToolHeader } from '@/components/converter/ToolHeader'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import CodeEditor from '@/components/CodeEditor'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
@@ -260,14 +261,12 @@ export default function JwtDecoder() {
                   </Button>
                 </div>
 
-                <div className="rounded-2xl overflow-hidden border border-rose-500/30 bg-black/40">
-                  <Textarea
-                    readOnly
-                    value={result.formattedHeader}
-                    className="h-52 font-mono text-sm leading-relaxed text-rose-300 bg-transparent border-0 focus-visible:ring-0 resize-y"
-                    spellCheck={false}
-                  />
-                </div>
+                <CodeEditor
+                  value={result.formattedHeader}
+                  language="json"
+                  readOnly
+                  height="260px"
+                />
               </div>
 
               {/* PAYLOAD SECTION */}
@@ -289,14 +288,12 @@ export default function JwtDecoder() {
                   </Button>
                 </div>
 
-                <div className="rounded-2xl overflow-hidden border border-purple-500/30 bg-black/40">
-                  <Textarea
-                    readOnly
-                    value={result.formattedPayload}
-                    className="h-52 font-mono text-sm leading-relaxed text-purple-300 bg-transparent border-0 focus-visible:ring-0 resize-y"
-                    spellCheck={false}
-                  />
-                </div>
+                <CodeEditor
+                  value={result.formattedPayload}
+                  language="json"
+                  readOnly
+                  height="260px"
+                />
               </div>
             </div>
           )}

@@ -2,7 +2,7 @@ import React from 'react'
 import { Clipboard, ClipboardCheck, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import CodeEditor from '../CodeEditor'
 import StatsBar from '../StatsBar'
 import type { ConversionResult } from '../../utils/jsonToCsv'
 import type { CsvConversionResult } from '../../utils/csvToJson'
@@ -86,13 +86,11 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
         </div>
       </div>
 
-      <Textarea
-        id="output-area"
-        readOnly
+      <CodeEditor
         value={outputText}
-        className={`h-52 font-mono text-sm resize-y leading-relaxed bg-black/35 ${
-          isJsonToCsv ? 'text-cyan-400 border border-cyan-500/20' : 'text-lime-400 border border-lime-500/20'
-        }`}
+        language={isJsonToCsv ? 'plaintext' : 'json'}
+        readOnly
+        height="360px"
       />
 
       <StatsBar rowCount={rowCount} columnCount={columnCount} headers={headers} />
