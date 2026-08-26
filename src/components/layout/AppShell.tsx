@@ -19,14 +19,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <I18nProvider>
       <TooltipProvider>
         <div className="flex min-h-screen">
-          {/* Sidebar */}
           <Sidebar
             isOpen={sidebarOpen}
             collapsed={collapsed}
             onClose={() => setSidebarOpen(false)}
           />
 
-          {/* Main content area */}
           <div className="flex flex-1 flex-col min-w-0">
             <Header
               onMenuClick={() => setSidebarOpen(!sidebarOpen)}
@@ -35,8 +33,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onToggleCollapse={() => setCollapsed(!collapsed)}
             />
 
-
-            {/* Page content */}
             <main
               className="flex-1 relative"
               style={{
@@ -44,7 +40,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   "radial-gradient(ellipse at top, #1a1040 0%, #0f0f1a 60%)",
               }}
             >
-              {/* Ambient glow orbs */}
               <div
                 className="fixed -top-50 -left-50 w-150 h-150 rounded-full pointer-events-none"
                 style={{

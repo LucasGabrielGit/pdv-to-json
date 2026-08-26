@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PanelLeftClose, PanelLeft, Wrench, ExternalLink } from "lucide-react";
+import { PanelLeftClose } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -45,7 +45,6 @@ export function Sidebar({
 
   return (
     <>
-      {/* Mobile overlay */}
       <div
         className={cn(
           "fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity md:hidden",
@@ -55,19 +54,15 @@ export function Sidebar({
         aria-hidden={!isOpen}
       />
 
-      {/* Sidebar panel */}
       <aside
         className={cn(
           "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 md:sticky md:top-0 md:z-30 shrink-0",
-          // Mobile state
           isOpen
             ? "translate-x-0 w-64 shadow-2xl"
             : "-translate-x-full md:translate-x-0",
-          // Desktop collapsed state
           collapsed ? "md:w-16" : "md:w-64",
         )}
       >
-        {/* Logo area */}
         <div className="flex h-16 items-center justify-between px-3 shrink-0">
           {(!collapsed || isOpen) && (
             <Link
@@ -87,7 +82,6 @@ export function Sidebar({
             </Link>
           )}
 
-          {/* Mobile close button */}
           <Button
             variant="ghost"
             size="icon"
@@ -100,9 +94,7 @@ export function Sidebar({
 
         <Separator className="bg-sidebar-border" />
 
-        {/* Tool navigation */}
         <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
-          {/* Pinned Favorites */}
           {favoriteTools.length > 0 && (
             <div className="pb-3 border-b border-sidebar-border/50">
               {(!collapsed || isOpen) && (
@@ -156,7 +148,6 @@ export function Sidebar({
   );
 }
 
-/* ── Sidebar Item ── */
 interface SidebarItemProps {
   tool: Tool;
   isActive: boolean;
@@ -218,19 +209,5 @@ function SidebarItem({
         {content}
       </Link>
     </li>
-  );
-}
-
-/* ── Mobile trigger button (exported for Header) ── */
-export function SidebarMobileTrigger({ onClick }: { onClick: () => void }) {
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="size-9 text-muted-foreground hover:text-foreground md:hidden"
-      onClick={onClick}
-    >
-      <Wrench className="size-5" />
-    </Button>
   );
 }

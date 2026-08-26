@@ -3,10 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { Menu, Search, Sparkles, PanelLeft, PanelLeftClose } from "lucide-react";
-
-
 import { useTranslation } from "@/contexts/I18nContext";
 import { Button } from "@/components/ui/button";
 import { tools } from "@/lib/tools-registry";
@@ -34,7 +31,6 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/40 bg-background/80 backdrop-blur-xl px-4 md:px-6">
-      {/* Mobile menu button */}
       <Button
         variant="ghost"
         size="icon"
@@ -45,7 +41,6 @@ export function Header({
         <Menu className="size-5" />
       </Button>
 
-      {/* Desktop Sidebar Collapse Toggle */}
       <Button
         variant="ghost"
         size="icon"
@@ -61,9 +56,7 @@ export function Header({
         )}
       </Button>
 
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm">
-
         <Link
           href="/"
           className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1.5"
@@ -82,10 +75,8 @@ export function Header({
         )}
       </nav>
 
-      {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Right actions: Search, Pricing, Language & User */}
       <div className="flex items-center gap-2">
         <button
           onClick={onSearchClick}
