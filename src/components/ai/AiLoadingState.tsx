@@ -13,7 +13,7 @@ interface AiLoadingStateProps {
 
 const DEFAULT_STEPS = [
   'Parsing input structure & AST...',
-  'Processing with Gemini AI model...',
+  'Processing with Advanced AI Engine...',
   'Optimizing code & validating schema...',
   'Formatting final response...',
 ]
@@ -90,25 +90,25 @@ export function AiLoadingState({
       {/* Badges / Plan transparency */}
       <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs">
         {isPro ? (
-          <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 gap-1 text-[10px]">
-            👑 Pro Priority Processing Active
+          <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/40 gap-1 text-[10px] shadow-sm">
+            👑 Pro Dedicated High-Speed Pipeline
           </Badge>
         ) : (
           <Badge
             variant="outline"
-            className="border-white/10 text-slate-400 bg-white/5 gap-1 text-[10px]"
+            className="border-amber-500/30 text-amber-300 bg-amber-500/10 gap-1 text-[10px]"
           >
-            <ShieldCheck className="size-3 text-emerald-400" />
-            100% Client-Side Privacy
+            <Zap className="size-3 text-amber-400" />
+            Free Shared Queue • Upgrade to Pro for instant speed
           </Badge>
         )}
 
         <Badge
           variant="outline"
-          className="border-cyan-500/30 text-cyan-300 bg-cyan-500/10 gap-1 text-[10px]"
+          className="border-white/10 text-slate-400 bg-white/5 gap-1 text-[10px]"
         >
-          <Zap className="size-3" />
-          Powered by Gemini 2.5 Flash
+          <ShieldCheck className="size-3 text-emerald-400" />
+          100% Secure & Private
         </Badge>
       </div>
     </div>
