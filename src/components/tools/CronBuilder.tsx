@@ -118,7 +118,7 @@ export default function CronBuilder() {
           {/* Main Cron Expression Bar */}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <Label htmlFor="cron-expression-input" className="text-xs font-semibold uppercase tracking-wider text-slate-400 cursor-pointer">
                 Cron Expression (5 Fields)
               </Label>
 
@@ -147,6 +147,7 @@ export default function CronBuilder() {
 
             <div className="flex items-center rounded-2xl bg-black/40 border border-purple-500/30 overflow-hidden p-2 transition-all">
               <input
+                id="cron-expression-input"
                 type="text"
                 value={expression}
                 onChange={(e) => setExpression(e.target.value)}
@@ -155,6 +156,7 @@ export default function CronBuilder() {
                 spellCheck={false}
               />
             </div>
+
           </div>
 
           {/* Validation Status & Human Description Alert */}

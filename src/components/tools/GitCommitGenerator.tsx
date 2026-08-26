@@ -188,10 +188,11 @@ export default function GitCommitGenerator() {
         {showApiKeyInput && (
           <div className="p-4 border-t border-purple-500/20 bg-black/40 flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex-1 min-w-[260px] space-y-1">
-              <Label className="text-slate-300 flex items-center gap-1.5">
+              <Label htmlFor="git-commit-key" className="text-slate-300 flex items-center gap-1.5 cursor-pointer">
                 <Key className="size-3 text-purple-400" /> Bring Your Own Key (Unlimited Free Usage)
               </Label>
               <Input
+                id="git-commit-key"
                 type="password"
                 value={customApiKey}
                 onChange={(e) => setCustomApiKey(e.target.value)}
@@ -199,6 +200,7 @@ export default function GitCommitGenerator() {
                 className="bg-black/60 border-purple-500/30 h-8 font-mono text-xs text-white"
               />
             </div>
+
             <p className="text-[11px] text-slate-400 max-w-sm leading-relaxed">
               Your key stays locally in your browser memory and is never stored on our database.
             </p>

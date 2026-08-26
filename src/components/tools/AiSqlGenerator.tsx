@@ -343,11 +343,14 @@ export default function AiSqlGenerator() {
               . Your key is stored exclusively in your browser.
             </p>
             <Input
+              id="custom-byok-sql-input"
+              aria-label="Custom Gemini API Key"
               value={customKeyInput}
               onChange={(e) => setCustomKeyInput(e.target.value)}
               placeholder="AIzaSy..."
               className="bg-black/40 border-purple-500/30 text-xs font-mono text-white"
             />
+
             <div className="flex justify-end gap-2">
               <Button variant="ghost" size="sm" onClick={() => setShowKeyModal(false)}>
                 Cancel

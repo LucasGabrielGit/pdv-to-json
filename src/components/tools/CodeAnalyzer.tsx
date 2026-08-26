@@ -529,8 +529,9 @@ export default function CodeAnalyzer() {
             </p>
 
             <div className="space-y-1.5">
-              <Label className="text-xs text-slate-400">Gemini API Key:</Label>
+              <Label htmlFor="custom-gemini-key-codeanalyzer" className="text-xs text-slate-400 cursor-pointer">Gemini API Key:</Label>
               <Input
+                id="custom-gemini-key-codeanalyzer"
                 type="password"
                 value={customKeyInput}
                 onChange={(e) => setCustomKeyInput(e.target.value)}

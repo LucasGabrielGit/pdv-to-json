@@ -237,8 +237,9 @@ export default function UuidGenerator() {
               {/* SQL Table Name Input (if SQL mode selected) */}
               {exportFormat === 'sql' ? (
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-slate-400">SQL Table Name:</Label>
+                  <Label htmlFor="uuid-sql-table-name" className="text-xs text-slate-400 cursor-pointer">SQL Table Name:</Label>
                   <Input
+                    id="uuid-sql-table-name"
                     type="text"
                     value={tableName}
                     onChange={(e) => setTableName(e.target.value)}
@@ -247,6 +248,7 @@ export default function UuidGenerator() {
                   />
                 </div>
               ) : (
+
                 /* Checkbox Toggles */
                 <div className="flex flex-col gap-2 pt-3 text-xs text-slate-300">
                   <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">

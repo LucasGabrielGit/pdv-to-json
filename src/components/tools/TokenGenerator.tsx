@@ -138,15 +138,17 @@ export default function TokenGenerator() {
           <div className="lg:col-span-7 space-y-6">
             <Card className="rounded-3xl border border-purple-500/25 bg-[#16213e] shadow-2xl p-6 md:p-8 space-y-6">
               <div>
-                <Label className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 block">
+                <Label htmlFor="generated-password-display" className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 block cursor-pointer">
                   Generated Password
                 </Label>
                 <div className="relative flex items-center">
                   <Input
+                    id="generated-password-display"
                     readOnly
                     value={password}
                     className="h-16 pr-28 text-lg md:text-xl font-mono text-emerald-300 bg-black/50 border-purple-500/30 rounded-2xl shadow-inner tracking-wider"
                   />
+
                   <div className="absolute right-2 flex items-center gap-1.5">
                     <Button
                       size="sm"
@@ -305,14 +307,16 @@ export default function TokenGenerator() {
 
               {/* Prefix */}
               <div className="space-y-1.5">
-                <Label className="text-xs text-slate-400">Key Prefix (e.g. sk_live_, whsec_):</Label>
+                <Label htmlFor="token-prefix-input" className="text-xs text-slate-400 cursor-pointer">Key Prefix (e.g. sk_live_, whsec_):</Label>
                 <Input
+                  id="token-prefix-input"
                   value={tokenOptions.prefix}
                   onChange={(e) => setTokenOptions({ ...tokenOptions, prefix: e.target.value })}
                   placeholder="sk_live_"
                   className="h-8 bg-black/40 border-purple-500/30 text-xs font-mono text-white"
                 />
               </div>
+
 
               {/* Format */}
               <div className="space-y-1.5">

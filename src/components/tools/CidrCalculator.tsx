@@ -67,10 +67,11 @@ export default function CidrCalculator() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             {/* IP Address */}
             <div className="md:col-span-5 space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+              <Label htmlFor="cidr-ip-input" className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5 cursor-pointer">
                 <Globe className="size-3.5 text-purple-400" /> IP Address (IPv4)
               </Label>
               <Input
+                id="cidr-ip-input"
                 value={ipInput}
                 onChange={(e) => setIpInput(e.target.value)}
                 placeholder="192.168.1.1 or 10.0.0.0/24"
@@ -80,7 +81,7 @@ export default function CidrCalculator() {
 
             {/* CIDR Prefix */}
             <div className="md:col-span-4 space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+              <Label htmlFor="cidr-range-input" className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between cursor-pointer">
                 <span className="flex items-center gap-1.5">
                   <Network className="size-3.5 text-cyan-400" /> CIDR Subnet Mask
                 </span>
@@ -88,11 +89,13 @@ export default function CidrCalculator() {
               </Label>
               <div className="flex items-center gap-3">
                 <input
+                  id="cidr-range-input"
                   type="range"
                   min="0"
                   max="32"
                   value={cidr}
                   onChange={(e) => setCidr(parseInt(e.target.value, 10))}
+
                   className="w-full h-2 bg-black/50 rounded-lg appearance-none cursor-pointer accent-cyan-400"
                 />
                 <span className="text-sm font-mono text-cyan-300 w-8 text-right font-bold">
