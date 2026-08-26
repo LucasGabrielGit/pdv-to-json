@@ -35,6 +35,9 @@ import { createClient } from '@/lib/supabase/client'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
 import { PricingModal } from '@/components/pricing/PricingModal'
 import { AiLoadingState } from '@/components/ai/AiLoadingState'
+import { ProGateModal } from '@/components/pro/ProGateModal'
+import { ProBadge } from '@/components/pro/ProBadge'
+import { useProStatus } from '@/hooks/useProStatus'
 import CodeEditor from '@/components/CodeEditor'
 
 import { Badge } from '@/components/ui/badge'
@@ -221,13 +224,26 @@ export default function CodeAnalyzer() {
     setTimeout(() => setCopiedKey(null), 2000)
   }
 
+  const {
+    requirePro,
+    isProModalOpen,
+    setIsProModalOpen,
+    proModalFeature,
+    isProOrByok,
+  } = useProStatus()
+
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 space-y-6">
+      <ProGateModal
+        isOpen={isProModalOpen}
+        onClose={() => setIsProModalOpen(false)}
+        featureName={proModalFeature}
+      />
       {/* ── Header ── */}
       <ToolHeader
         title="AI Code Reviewer & Architect"
         description="Paste code to receive instant AI security vulnerability audits (OWASP), performance optimization tips, refactored clean code, and automated unit tests."
-        badgeText="AI Powered"
+        badgeText="AI Code Auditor"
       />
 
       {/* ── Privacy Banner ── */}
@@ -339,15 +355,21 @@ export default function CodeAnalyzer() {
               </button>
               <button
                 type="button"
-                onClick={() => setAiMode("deep")}
-                className={`px-2.5 py-1 rounded-md transition-all font-semibold flex items-center gap-1 text-[11px] cursor-pointer ${
+                onClick={() =>
+                  requirePro("Deep Code Security Audit", () =>
+                    setAiMode("deep")
+                  )
+                }
+                className={`px-2.5 py-1 rounded-md transition-all font-semibold flex items-center gap-1.5 text-[11px] cursor-pointer ${
                   aiMode === "deep"
                     ? "bg-purple-600 text-white shadow-xs"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
                 title="Deep security & AST audit (~3.5s)"
               >
-                <Sparkles className="size-3 text-cyan-400" /> Deep (~3.5s)
+                <Sparkles className="size-3 text-cyan-400" />
+                <span>Deep (~3.5s)</span>
+                {!isProOrByok && <ProBadge />}
               </button>
             </div>
 

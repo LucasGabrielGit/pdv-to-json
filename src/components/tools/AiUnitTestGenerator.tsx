@@ -19,6 +19,9 @@ import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
 import { AiLoadingState } from "@/components/ai/AiLoadingState";
+import { ProGateModal } from "@/components/pro/ProGateModal";
+import { ProBadge } from "@/components/pro/ProBadge";
+import { useProStatus } from "@/hooks/useProStatus";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -127,6 +130,14 @@ export default function AiUnitTestGenerator() {
     toast.success(`Downloaded ${ext}`);
   };
 
+  const {
+    requirePro,
+    isProModalOpen,
+    setIsProModalOpen,
+    proModalFeature,
+    isProOrByok,
+  } = useProStatus();
+
   useKeyboardShortcut({
     onExecute: handleGenerate,
     onCopy: handleCopy,
@@ -134,6 +145,11 @@ export default function AiUnitTestGenerator() {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
+      <ProGateModal
+        isOpen={isProModalOpen}
+        onClose={() => setIsProModalOpen(false)}
+        featureName={proModalFeature}
+      />
       <ToolHeader
         title="AI Unit Test Generator"
         description="Generate comprehensive unit test suites with mocks, edge-case assertions, and fixtures in Vitest, Jest, Pytest, or Go."
@@ -179,7 +195,7 @@ export default function AiUnitTestGenerator() {
 
             {/* Coverage Focus */}
             <div className="flex items-center gap-2">
-              <Label className="text-slate-400">Focus:</Label>
+              <Label className="text-slate-400">Coverage Focus:</Label>
               <select
                 value={coverageFocus}
                 onChange={(e) => setCoverageFocus(e.target.value)}
@@ -207,15 +223,21 @@ export default function AiUnitTestGenerator() {
               </button>
               <button
                 type="button"
-                onClick={() => setAiMode("deep")}
-                className={`px-2.5 py-1 rounded-md transition-all font-semibold flex items-center gap-1 text-[11px] cursor-pointer ${
+                onClick={() =>
+                  requirePro("Deep Test Architecture", () =>
+                    setAiMode("deep")
+                  )
+                }
+                className={`px-2.5 py-1 rounded-md transition-all font-semibold flex items-center gap-1.5 text-[11px] cursor-pointer ${
                   aiMode === "deep"
                     ? "bg-purple-600 text-white shadow-xs"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
                 title="Deep chain-of-thought test analysis (~3.5s)"
               >
-                <Sparkles className="size-3 text-cyan-400" /> Deep (~3.5s)
+                <Sparkles className="size-3 text-cyan-400" />
+                <span>Deep (~3.5s)</span>
+                {!isProOrByok && <ProBadge />}
               </button>
             </div>
 

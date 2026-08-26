@@ -10,11 +10,15 @@ import {
   Key,
   Download,
   FileCode,
+  Archive,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
 import { AiLoadingState } from "@/components/ai/AiLoadingState";
+import { ProGateModal } from "@/components/pro/ProGateModal";
+import { ProBadge } from "@/components/pro/ProBadge";
+import { useProStatus } from "@/hooks/useProStatus";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -153,6 +157,29 @@ export default function AiDocGenerator() {
     toast.success(`Downloaded ${filename}`);
   };
 
+  const {
+    requirePro,
+    isProModalOpen,
+    setIsProModalOpen,
+    proModalFeature,
+    isProOrByok,
+  } = useProStatus();
+
+  const handleDownloadAllBundle = () => {
+    if (!result) return;
+    requirePro("Complete API Docs & OpenAPI Bundle", () => {
+      const combined = `# ====================================\n# 1. OPENAPI 3.0.3 YAML SPEC (openapi.yaml)\n# ====================================\n${result.openapiYaml}\n\n# ====================================\n# 2. OPENAPI JSON SPEC (openapi.json)\n# ====================================\n${result.openapiJson}\n\n# ====================================\n# 3. DEVELOPER DOCUMENTATION (API_DOCS.md)\n# ====================================\n${result.markdownDocs}\n\n# ====================================\n# 4. TYPED JSDOC/TSDOC (documented_code.ts)\n# ====================================\n${result.jsdocComments}`;
+      const blob = new Blob([combined], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "complete-api-docs-bundle.txt";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Downloaded Complete API Docs Bundle!");
+    });
+  };
+
   useKeyboardShortcut({
     onExecute: handleGenerate,
     onCopy: handleCopy,
@@ -160,10 +187,15 @@ export default function AiDocGenerator() {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
+      <ProGateModal
+        isOpen={isProModalOpen}
+        onClose={() => setIsProModalOpen(false)}
+        featureName={proModalFeature}
+      />
       <ToolHeader
-        title="AI API Docs & OpenAPI Spec Generator"
-        description="Generate Swagger / OpenAPI 3.0 specs (YAML & JSON), developer portal Markdown guides, and typed JSDoc/TSDoc comments from route handlers in seconds."
-        badgeText="AI Technical Writer & OpenAPI Architect"
+        title="AI API Documentation & OpenAPI Generator"
+        description="Convert backend endpoints, Express/Next.js routes, or TypeScript interfaces into OpenAPI 3.0 specs and Markdown developer docs."
+        badgeText="AI Technical Writer"
         toolId="ai-docs"
       />
 
@@ -333,6 +365,16 @@ export default function AiDocGenerator() {
                 >
                   <Download className="size-3 mr-1" />
                   Download
+                </Button>
+                <Button
+                  size="xs"
+                  variant="outline"
+                  onClick={handleDownloadAllBundle}
+                  className="h-7 text-xs border-amber-500/30 text-amber-300 hover:bg-amber-500/10 font-semibold gap-1"
+                >
+                  <Archive className="size-3 text-amber-400" />
+                  <span>Export All</span>
+                  {!isProOrByok && <ProBadge />}
                 </Button>
               </div>
             ) : (

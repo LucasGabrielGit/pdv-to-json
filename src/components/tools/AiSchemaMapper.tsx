@@ -10,11 +10,15 @@ import {
   Key,
   Download,
   Table,
+  Archive,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
 import { AiLoadingState } from "@/components/ai/AiLoadingState";
+import { ProGateModal } from "@/components/pro/ProGateModal";
+import { ProBadge } from "@/components/pro/ProBadge";
+import { useProStatus } from "@/hooks/useProStatus";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -147,6 +151,29 @@ export default function AiSchemaMapper() {
     toast.success(`Downloaded ${filename}`);
   };
 
+  const {
+    requirePro,
+    isProModalOpen,
+    setIsProModalOpen,
+    proModalFeature,
+    isProOrByok,
+  } = useProStatus();
+
+  const handleDownloadAllBundle = () => {
+    if (!result) return;
+    requirePro("Multi-ORM Schema Bundle Exporter", () => {
+      const combined = `// ====================================\n// 1. PRISMA SCHEMA (schema.prisma)\n// ====================================\n${result.prisma}\n\n// ====================================\n// 2. DRIZZLE ORM SCHEMA (drizzle.ts)\n// ====================================\n${result.drizzle}\n\n// ====================================\n// 3. TYPEORM ENTITIES (entities.ts)\n// ====================================\n${result.typeorm}\n\n// ====================================\n// 4. ZOD VALIDATORS (validators.ts)\n// ====================================\n${result.zod}\n\n// ====================================\n// 5. MIGRATION SQL (migration.sql)\n// ====================================\n${result.migrationSql || ""}`;
+      const blob = new Blob([combined], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "all-schemas-bundle.txt";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Downloaded Complete Multi-ORM Bundle!");
+    });
+  };
+
   useKeyboardShortcut({
     onExecute: handleGenerate,
     onCopy: handleCopy,
@@ -154,6 +181,11 @@ export default function AiSchemaMapper() {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
+      <ProGateModal
+        isOpen={isProModalOpen}
+        onClose={() => setIsProModalOpen(false)}
+        featureName={proModalFeature}
+      />
       <ToolHeader
         title="AI Database Schema Mapper"
         description="Convert SQL DDL queries, JSON models, or natural language into Prisma Schemas, Drizzle ORM, TypeORM Entities, and Zod Schemas."
@@ -339,6 +371,16 @@ export default function AiSchemaMapper() {
                 >
                   <Download className="size-3 mr-1" />
                   Download
+                </Button>
+                <Button
+                  size="xs"
+                  variant="outline"
+                  onClick={handleDownloadAllBundle}
+                  className="h-7 text-xs border-amber-500/30 text-amber-300 hover:bg-amber-500/10 font-semibold gap-1"
+                >
+                  <Archive className="size-3 text-amber-400" />
+                  <span>Export All</span>
+                  {!isProOrByok && <ProBadge />}
                 </Button>
               </div>
             ) : (
