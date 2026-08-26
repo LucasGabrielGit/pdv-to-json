@@ -384,7 +384,7 @@ export default function CodeAnalyzer() {
           </div>
 
           {analysisResult ? (
-            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+            <div className="space-y-4 max-h-125 overflow-y-auto pr-1">
               {/* Score Header Card */}
               <div className="p-4 rounded-2xl bg-black/40 border border-purple-500/30 flex items-center gap-4">
                 <div
@@ -496,7 +496,7 @@ export default function CodeAnalyzer() {
               )}
             </div>
           ) : (
-            <div className="h-[540px] flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-purple-500/20 bg-[#16213e]/30 space-y-3">
+            <div className="h-135 flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-purple-500/20 bg-[#16213e]/30 space-y-3">
               <BrainCircuit className="size-10 text-purple-400/60 animate-pulse" />
               <p className="text-sm font-semibold text-slate-200">AI Code Audit Dashboard</p>
               <p className="text-xs text-slate-400 max-w-xs leading-relaxed">

@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   FlaskConical,
   Sparkles,
@@ -13,16 +13,16 @@ import {
   Layers,
   Terminal,
   CheckCircle2,
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { ToolHeader } from '@/components/converter/ToolHeader'
-import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
-import CodeEditor from '@/components/CodeEditor'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+} from "lucide-react";
+import { toast } from "sonner";
+import { ToolHeader } from "@/components/converter/ToolHeader";
+import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
+import CodeEditor from "@/components/CodeEditor";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const SAMPLE_CODE = `export function calculateDiscount(price: number, couponCode?: string): number {
   if (price < 0) {
@@ -35,38 +35,40 @@ const SAMPLE_CODE = `export function calculateDiscount(price: number, couponCode
   if (code === 'VIP50') return Number((price * 0.5).toFixed(2));
   
   return price;
-}`
+}`;
 
 interface TestResult {
-  testCode: string
-  runCommand: string
-  testCases: { name: string; category: string }[]
-  mockExplanation: string
+  testCode: string;
+  runCommand: string;
+  testCases: { name: string; category: string }[];
+  mockExplanation: string;
 }
 
 export default function AiUnitTestGenerator() {
-  const [sourceCode, setSourceCode] = useState(SAMPLE_CODE)
-  const [language, setLanguage] = useState<'typescript' | 'javascript' | 'python' | 'go'>('typescript')
-  const [framework, setFramework] = useState('vitest')
-  const [coverageFocus, setCoverageFocus] = useState('comprehensive')
-  const [customApiKey, setCustomApiKey] = useState('')
-  const [showApiKeyInput, setShowApiKeyInput] = useState(false)
+  const [sourceCode, setSourceCode] = useState(SAMPLE_CODE);
+  const [language, setLanguage] = useState<
+    "typescript" | "javascript" | "python" | "go"
+  >("typescript");
+  const [framework, setFramework] = useState("vitest");
+  const [coverageFocus, setCoverageFocus] = useState("comprehensive");
+  const [customApiKey, setCustomApiKey] = useState("");
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState<TestResult | null>(null)
-  const [copied, setCopied] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<TestResult | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleGenerate = async () => {
     if (!sourceCode.trim()) {
-      toast.error('Please enter source code to generate unit tests.')
-      return
+      toast.error("Please enter source code to generate unit tests.");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const res = await fetch('/api/ai/unit-tests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/ai/unit-tests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           code: sourceCode.trim(),
           language,
@@ -74,44 +76,51 @@ export default function AiUnitTestGenerator() {
           coverageFocus,
           customApiKey: customApiKey.trim() || undefined,
         }),
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
       if (!res.ok || data.error) {
-        throw new Error(data.error || 'Failed to generate unit tests.')
+        throw new Error(data.error || "Failed to generate unit tests.");
       }
 
-      setResult(data.data)
-      toast.success('Unit tests generated successfully!')
+      setResult(data.data);
+      toast.success("Unit tests generated successfully!");
     } catch (e) {
-      toast.error('Generation Error', {
+      toast.error("Generation Error", {
         description: (e as Error).message,
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCopy = async () => {
-    if (!result?.testCode) return
-    await navigator.clipboard.writeText(result.testCode)
-    setCopied(true)
-    toast.success('Copied unit test file to clipboard!')
-    setTimeout(() => setCopied(false), 2000)
-  }
+    if (!result?.testCode) return;
+    await navigator.clipboard.writeText(result.testCode);
+    setCopied(true);
+    toast.success("Copied unit test file to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleDownload = () => {
-    if (!result?.testCode) return
-    const ext = language === 'python' ? 'test_module.py' : language === 'go' ? 'main_test.go' : 'module.test.ts'
-    const blob = new Blob([result.testCode], { type: 'text/plain;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = ext
-    a.click()
-    URL.revokeObjectURL(url)
-    toast.success(`Downloaded ${ext}`)
-  }
+    if (!result?.testCode) return;
+    const ext =
+      language === "python"
+        ? "test_module.py"
+        : language === "go"
+          ? "main_test.go"
+          : "module.test.ts";
+    const blob = new Blob([result.testCode], {
+      type: "text/plain;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = ext;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded ${ext}`);
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
@@ -173,7 +182,6 @@ export default function AiUnitTestGenerator() {
               </select>
             </div>
 
-
             <Button
               size="xs"
               variant="outline"
@@ -181,7 +189,7 @@ export default function AiUnitTestGenerator() {
               className="h-8 text-xs border-purple-500/30 text-purple-300 hover:bg-purple-500/10 gap-1.5"
             >
               <Key className="size-3" />
-              {customApiKey ? 'Custom Key Set' : 'BYOK Key (Optional)'}
+              {customApiKey ? "Custom Key Set" : "BYOK Key (Optional)"}
             </Button>
           </div>
 
@@ -197,7 +205,7 @@ export default function AiUnitTestGenerator() {
             <Button
               size="xs"
               variant="ghost"
-              onClick={() => setSourceCode('')}
+              onClick={() => setSourceCode("")}
               className="text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 text-xs"
             >
               <RotateCcw className="size-3 mr-1" /> Clear
@@ -205,23 +213,27 @@ export default function AiUnitTestGenerator() {
             <Button
               onClick={handleGenerate}
               disabled={isLoading}
-              className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs px-6 h-8 gap-1.5 shadow-md cursor-pointer"
+              className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs px-6 h-8 gap-1.5 shadow-md cursor-pointer"
             >
               {isLoading ? (
                 <span className="size-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <FlaskConical className="size-3.5" />
               )}
-              {isLoading ? 'Generating Tests...' : 'Generate Test Suite'}
+              {isLoading ? "Generating Tests..." : "Generate Test Suite"}
             </Button>
           </div>
         </CardContent>
 
         {showApiKeyInput && (
           <div className="p-4 border-t border-purple-500/20 bg-black/40 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex-1 min-w-[260px] space-y-1">
-              <Label htmlFor="ai-unit-tests-key" className="text-slate-300 flex items-center gap-1.5 cursor-pointer">
-                <Key className="size-3 text-purple-400" /> Bring Your Own Key (Unlimited Free Usage)
+            <div className="flex-1 min-w-65 space-y-1">
+              <Label
+                htmlFor="ai-unit-tests-key"
+                className="text-slate-300 flex items-center gap-1.5 cursor-pointer"
+              >
+                <Key className="size-3 text-purple-400" /> Bring Your Own Key
+                (Unlimited Free Usage)
               </Label>
               <Input
                 id="ai-unit-tests-key"
@@ -234,7 +246,8 @@ export default function AiUnitTestGenerator() {
             </div>
 
             <p className="text-[11px] text-slate-400 max-w-sm leading-relaxed">
-              Your key is kept only in client memory and is never logged or persisted.
+              Your key is kept only in client memory and is never logged or
+              persisted.
             </p>
           </div>
         )}
@@ -244,18 +257,22 @@ export default function AiUnitTestGenerator() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left: Input Code */}
         <div className="space-y-2.5 flex flex-col">
-          <div className="flex items-center justify-between h-9 min-h-[36px]">
+          <div className="flex items-center justify-between h-9 min-h-9">
             <Label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-              <FileCode className="size-3.5 text-purple-400" /> Source Code to Test
+              <FileCode className="size-3.5 text-purple-400" /> Source Code to
+              Test
             </Label>
-            <Badge variant="outline" className="text-[10px] border-white/10 text-slate-400 font-mono">
+            <Badge
+              variant="outline"
+              className="text-[10px] border-white/10 text-slate-400 font-mono"
+            >
               {sourceCode.length} chars
             </Badge>
           </div>
 
           <CodeEditor
             value={sourceCode}
-            onChange={(v) => setSourceCode(v || '')}
+            onChange={(v) => setSourceCode(v || "")}
             language={language}
             placeholder="Paste function, class, or component here..."
             height="500px"
@@ -264,9 +281,10 @@ export default function AiUnitTestGenerator() {
 
         {/* Right: Generated Unit Tests */}
         <div className="space-y-2.5 flex flex-col">
-          <div className="flex items-center justify-between h-9 min-h-[36px]">
+          <div className="flex items-center justify-between h-9 min-h-9">
             <Label className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-              <FlaskConical className="size-3.5 text-cyan-400" /> Generated Test Suite ({framework})
+              <FlaskConical className="size-3.5 text-cyan-400" /> Generated Test
+              Suite ({framework})
             </Label>
 
             {result ? (
@@ -277,8 +295,12 @@ export default function AiUnitTestGenerator() {
                   onClick={handleCopy}
                   className="h-7 text-xs border-purple-500/30 text-slate-200 hover:text-white"
                 >
-                  {copied ? <Check className="size-3 mr-1 text-emerald-400" /> : <Copy className="size-3 mr-1" />}
-                  {copied ? 'Copied!' : 'Copy'}
+                  {copied ? (
+                    <Check className="size-3 mr-1 text-emerald-400" />
+                  ) : (
+                    <Copy className="size-3 mr-1" />
+                  )}
+                  {copied ? "Copied!" : "Copy"}
                 </Button>
                 <Button
                   size="xs"
@@ -290,14 +312,20 @@ export default function AiUnitTestGenerator() {
                 </Button>
               </div>
             ) : (
-              <Badge variant="outline" className="text-[10px] border-white/10 text-slate-400 font-mono">
+              <Badge
+                variant="outline"
+                className="text-[10px] border-white/10 text-slate-400 font-mono"
+              >
                 Output
               </Badge>
             )}
           </div>
 
           <CodeEditor
-            value={result?.testCode || '// Click "Generate Test Suite" to create unit tests...'}
+            value={
+              result?.testCode ||
+              '// Click "Generate Test Suite" to create unit tests...'
+            }
             language={language}
             readOnly
             height="500px"
@@ -311,7 +339,8 @@ export default function AiUnitTestGenerator() {
           <CardContent className="p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold uppercase tracking-wider text-purple-300 flex items-center gap-2">
-                <Layers className="size-4" /> Covered Test Scenarios ({result.testCases.length} Cases)
+                <Layers className="size-4" /> Covered Test Scenarios (
+                {result.testCases.length} Cases)
               </h4>
               <div className="flex items-center gap-2 font-mono text-xs text-cyan-300 bg-black/40 px-2.5 py-1 rounded-lg border border-white/5">
                 <Terminal className="size-3" />
@@ -327,7 +356,10 @@ export default function AiUnitTestGenerator() {
                 >
                   <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
                   <span className="text-slate-200 font-medium">{tc.name}</span>
-                  <Badge variant="outline" className="ml-auto text-[9px] border-purple-500/30 text-purple-300">
+                  <Badge
+                    variant="outline"
+                    className="ml-auto text-[9px] border-purple-500/30 text-purple-300"
+                  >
                     {tc.category}
                   </Badge>
                 </div>
@@ -337,5 +369,5 @@ export default function AiUnitTestGenerator() {
         </Card>
       )}
     </div>
-  )
+  );
 }

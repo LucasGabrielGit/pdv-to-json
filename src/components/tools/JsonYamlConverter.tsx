@@ -358,7 +358,7 @@ export default function JsonYamlConverter() {
               height="500px"
             />
           ) : (
-            <div className="h-[500px] rounded-2xl border border-purple-500/30 bg-black/40 p-4 flex flex-col justify-center">
+            <div className="h-125 rounded-2xl border border-purple-500/30 bg-black/40 p-4 flex flex-col justify-center">
               <FileDropZone
                 onFileContent={handleFileContent}
                 fileType={isJsonToYaml ? 'json' : 'yaml'}

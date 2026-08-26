@@ -68,7 +68,7 @@ export function Header({
         {currentTool && (
           <>
             <span className="text-muted-foreground/40">/</span>
-            <span className="font-medium text-foreground truncate max-w-[160px] sm:max-w-none">
+            <span className="font-medium text-foreground truncate max-w-40 sm:max-w-none">
               {currentTool.name}
             </span>
           </>

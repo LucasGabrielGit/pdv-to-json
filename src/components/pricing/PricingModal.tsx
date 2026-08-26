@@ -111,7 +111,7 @@ export function PricingModal({ isOpen, onClose, defaultPlan: _defaultPlan = 'pow
             <div className="rounded-2xl border border-white/10 bg-black/30 p-5 flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition-all">
               <div className="space-y-2">
                 <h3 className="font-bold text-base text-white">{STRIPE_PLANS.starter.name}</h3>
-                <p className="text-xs text-slate-400 min-h-[32px]">
+                <p className="text-xs text-slate-400 min-h-8">
                   {STRIPE_PLANS.starter.description}
                 </p>
                 <div className="text-2xl font-black text-white pt-2">
@@ -147,7 +147,7 @@ export function PricingModal({ isOpen, onClose, defaultPlan: _defaultPlan = 'pow
 
               <div className="space-y-2 pt-1">
                 <h3 className="font-bold text-base text-white">{STRIPE_PLANS.power.name}</h3>
-                <p className="text-xs text-slate-300 min-h-[32px]">
+                <p className="text-xs text-slate-300 min-h-8">
                   {STRIPE_PLANS.power.description}
                 </p>
                 <div className="text-2xl font-black text-purple-300 pt-2">
@@ -183,7 +183,7 @@ export function PricingModal({ isOpen, onClose, defaultPlan: _defaultPlan = 'pow
                     👑 Unlimited
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-300 min-h-[32px]">
+                <p className="text-xs text-slate-300 min-h-8">
                   {STRIPE_PLANS.pro_subscription.description}
                 </p>
                 <div className="text-2xl font-black text-cyan-300 pt-2">

@@ -251,7 +251,7 @@ export default function CodeGenerator() {
               ))}
             </div>
 
-            <div className="h-4 w-[1px] bg-white/10 hidden md:block" />
+            <div className="h-4 w-px bg-white/10 hidden md:block" />
 
             <div className="flex items-center gap-1.5">
               <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider mr-1">
@@ -323,7 +323,7 @@ export default function CodeGenerator() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="e.g. Write a TypeScript function with clean error handling to validate email addresses and detect disposable domains..."
-              className="w-full h-[500px] font-sans text-sm leading-relaxed p-4 bg-transparent text-slate-100 border-0 resize-none focus-visible:ring-0"
+              className="w-full h-125 font-sans text-sm leading-relaxed p-4 bg-transparent text-slate-100 border-0 resize-none focus-visible:ring-0"
               spellCheck={false}
             />
           </div>

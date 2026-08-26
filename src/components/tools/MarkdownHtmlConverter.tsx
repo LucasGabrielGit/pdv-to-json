@@ -363,7 +363,7 @@ export default function MarkdownHtmlConverter() {
               height="500px"
             />
           ) : (
-            <div className="h-[500px] rounded-2xl border border-purple-500/30 bg-black/40 p-4 flex flex-col justify-center">
+            <div className="h-125 rounded-2xl border border-purple-500/30 bg-black/40 p-4 flex flex-col justify-center">
               <FileDropZone
                 fileType={isMdToHtml ? "markdown" : "code"}
                 customAccept={
@@ -457,7 +457,7 @@ export default function MarkdownHtmlConverter() {
             />
           ) : (
             <div
-              className="w-full h-[500px] overflow-y-auto p-6 rounded-2xl border border-purple-500/30 bg-[#0d1527] text-slate-100 markdown-preview shadow-xl"
+              className="w-full h-125 overflow-y-auto p-6 rounded-2xl border border-purple-500/30 bg-[#0d1527] text-slate-100 markdown-preview shadow-xl"
               dangerouslySetInnerHTML={{
                 __html:
                   result?.renderedHtml ||

@@ -222,7 +222,7 @@ export default function AiSqlGenerator() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="e.g. Find users who have registered in the past 30 days and have made at least 3 distinct orders, calculate average order value and sort by highest spender..."
-              className="w-full h-[440px] font-sans text-sm leading-relaxed p-4 bg-transparent text-slate-100 border-0 resize-none focus-visible:ring-0"
+              className="w-full h-110 font-sans text-sm leading-relaxed p-4 bg-transparent text-slate-100 border-0 resize-none focus-visible:ring-0"
               spellCheck={false}
             />
 
@@ -271,7 +271,7 @@ export default function AiSqlGenerator() {
           </div>
 
           {result ? (
-            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+            <div className="space-y-4 max-h-125 overflow-y-auto pr-1">
               <div className="rounded-2xl border border-purple-500/30 overflow-hidden bg-black/40 shadow-inner">
                 <CodeEditor
                   value={result.query}
@@ -311,7 +311,7 @@ export default function AiSqlGenerator() {
               </Card>
             </div>
           ) : (
-            <div className="h-[500px] flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-purple-500/20 bg-[#16213e]/30 space-y-3">
+            <div className="h-125 flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-purple-500/20 bg-[#16213e]/30 space-y-3">
               <Database className="size-10 text-cyan-400/60 animate-pulse" />
               <p className="text-sm font-semibold text-slate-200">Generated Query Canvas</p>
               <p className="text-xs text-slate-400 max-w-xs leading-relaxed">

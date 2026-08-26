@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   ShieldCheck,
   KeyRound,
@@ -14,98 +14,105 @@ import {
   Eye,
   EyeOff,
   Clock,
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { ToolHeader } from '@/components/converter/ToolHeader'
-import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+} from "lucide-react";
+import { toast } from "sonner";
+import { ToolHeader } from "@/components/converter/ToolHeader";
+import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   generateBcryptHash,
   verifyBcryptHash,
   inspectBcryptHash,
   type BcryptGenerateResult,
   type BcryptVerifyResult,
-} from '@/utils/bcryptTool'
+} from "@/utils/bcryptTool";
 
-const SAMPLE_HASH = '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy'
+const SAMPLE_HASH =
+  "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
 
 export default function BcryptGenerator() {
-  const [activeTab, setActiveTab] = useState<'generate' | 'verify'>('generate')
+  const [activeTab, setActiveTab] = useState<"generate" | "verify">("generate");
 
   // Generate tab state
-  const [plainPassword, setPlainPassword] = useState('SuperSecretP@ssw0rd!')
-  const [showPassword, setShowPassword] = useState(false)
-  const [rounds, setRounds] = useState(10)
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generateResult, setGenerateResult] = useState<BcryptGenerateResult | null>(null)
+  const [plainPassword, setPlainPassword] = useState("SuperSecretP@ssw0rd!");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rounds, setRounds] = useState(10);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateResult, setGenerateResult] =
+    useState<BcryptGenerateResult | null>(null);
 
   // Verify tab state
-  const [verifyPassword, setVerifyPassword] = useState('SuperSecretP@ssw0rd!')
-  const [verifyHashInput, setVerifyHashInput] = useState(SAMPLE_HASH)
-  const [isVerifying, setIsVerifying] = useState(false)
-  const [verifyResult, setVerifyResult] = useState<BcryptVerifyResult | null>(null)
+  const [verifyPassword, setVerifyPassword] = useState("SuperSecretP@ssw0rd!");
+  const [verifyHashInput, setVerifyHashInput] = useState(SAMPLE_HASH);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<BcryptVerifyResult | null>(
+    null,
+  );
 
-  const [copied, setCopied] = useState<string | null>(null)
+  const [copied, setCopied] = useState<string | null>(null);
 
   const handleGenerate = async () => {
     if (!plainPassword) {
-      toast.error('Please enter a password to hash.')
-      return
+      toast.error("Please enter a password to hash.");
+      return;
     }
 
-    setIsGenerating(true)
+    setIsGenerating(true);
     try {
-      const res = await generateBcryptHash(plainPassword, rounds)
-      setGenerateResult(res)
-      toast.success(`Generated Bcrypt hash in ${res.durationMs}ms!`)
+      const res = await generateBcryptHash(plainPassword, rounds);
+      setGenerateResult(res);
+      toast.success(`Generated Bcrypt hash in ${res.durationMs}ms!`);
     } catch (e) {
-      toast.error('Hash generation error', {
+      toast.error("Hash generation error", {
         description: (e as Error).message,
-      })
+      });
     } finally {
-      setIsGenerating(false)
+      setIsGenerating(false);
     }
-  }
+  };
 
   const handleVerify = async () => {
     if (!verifyPassword || !verifyHashInput.trim()) {
-      toast.error('Please enter both the password and the hash.')
-      return
+      toast.error("Please enter both the password and the hash.");
+      return;
     }
 
-    setIsVerifying(true)
+    setIsVerifying(true);
     try {
-      const res = await verifyBcryptHash(verifyPassword, verifyHashInput.trim())
-      setVerifyResult(res)
+      const res = await verifyBcryptHash(
+        verifyPassword,
+        verifyHashInput.trim(),
+      );
+      setVerifyResult(res);
       if (res.isMatch) {
-        toast.success('Password MATCHES the hash! ✅')
+        toast.success("Password MATCHES the hash! ✅");
       } else {
-        toast.error('Password does NOT match the hash ❌')
+        toast.error("Password does NOT match the hash ❌");
       }
     } catch (e) {
-      toast.error('Verification error', {
+      toast.error("Verification error", {
         description: (e as Error).message,
-      })
+      });
     } finally {
-      setIsVerifying(false)
+      setIsVerifying(false);
     }
-  }
+  };
 
   const handleCopy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(label)
-    toast.success(`Copied ${label} to clipboard!`)
-    setTimeout(() => setCopied(null), 2000)
-  }
+    navigator.clipboard.writeText(text);
+    setCopied(label);
+    toast.success(`Copied ${label} to clipboard!`);
+    setTimeout(() => setCopied(null), 2000);
+  };
 
   const inspected = generateResult
     ? inspectBcryptHash(generateResult.hash)
-    : inspectBcryptHash(verifyHashInput)
+    : inspectBcryptHash(verifyHashInput);
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
@@ -141,14 +148,17 @@ export default function BcryptGenerator() {
             </TabsList>
           </Tabs>
 
-          <Badge variant="outline" className="border-emerald-500/30 text-emerald-300 text-xs font-mono">
+          <Badge
+            variant="outline"
+            className="border-emerald-500/30 text-emerald-300 text-xs font-mono"
+          >
             Zero Server Uploads • Pure Web Crypto
           </Badge>
         </CardContent>
       </Card>
 
       {/* ── Mode 1: Hash Generator ── */}
-      {activeTab === 'generate' ? (
+      {activeTab === "generate" ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column: Input Form */}
           <Card className="border border-purple-500/30 bg-[#0d1527] shadow-xl">
@@ -161,12 +171,16 @@ export default function BcryptGenerator() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="text-slate-400 hover:text-purple-300 flex items-center gap-1 text-[11px] font-normal"
                   >
-                    {showPassword ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
-                    <span>{showPassword ? 'Hide' : 'Show'}</span>
+                    {showPassword ? (
+                      <EyeOff className="size-3" />
+                    ) : (
+                      <Eye className="size-3" />
+                    )}
+                    <span>{showPassword ? "Hide" : "Show"}</span>
                   </button>
                 </Label>
                 <Input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={plainPassword}
                   onChange={(e) => setPlainPassword(e.target.value)}
                   placeholder="Enter password to hash..."
@@ -178,9 +192,12 @@ export default function BcryptGenerator() {
               <div className="space-y-2 pt-2 border-t border-white/5">
                 <div className="flex items-center justify-between text-xs">
                   <Label className="text-slate-300 flex items-center gap-1.5">
-                    <Sliders className="size-3.5 text-purple-400" /> Salt Rounds (Cost Factor):
+                    <Sliders className="size-3.5 text-purple-400" /> Salt Rounds
+                    (Cost Factor):
                   </Label>
-                  <span className="text-purple-400 font-mono font-bold">{rounds} rounds</span>
+                  <span className="text-purple-400 font-mono font-bold">
+                    {rounds} rounds
+                  </span>
                 </div>
                 <input
                   type="range"
@@ -201,14 +218,16 @@ export default function BcryptGenerator() {
                 <Button
                   onClick={handleGenerate}
                   disabled={isGenerating}
-                  className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs h-10 gap-2 shadow-md cursor-pointer"
+                  className="w-full bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs h-10 gap-2 shadow-md cursor-pointer"
                 >
                   {isGenerating ? (
                     <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <Lock className="size-4" />
                   )}
-                  {isGenerating ? 'Hashing Password...' : 'Generate Bcrypt Hash'}
+                  {isGenerating
+                    ? "Hashing Password..."
+                    : "Generate Bcrypt Hash"}
                 </Button>
               </div>
             </CardContent>
@@ -221,15 +240,22 @@ export default function BcryptGenerator() {
                 <div className="p-5 rounded-2xl border border-purple-500/30 bg-[#0d1527] shadow-xl space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
-                      <Lock className="size-3.5 text-purple-400" /> Generated Bcrypt Hash
+                      <Lock className="size-3.5 text-purple-400" /> Generated
+                      Bcrypt Hash
                     </span>
                     <Button
                       size="xs"
-                      onClick={() => handleCopy(generateResult.hash, 'Bcrypt Hash')}
+                      onClick={() =>
+                        handleCopy(generateResult.hash, "Bcrypt Hash")
+                      }
                       className="h-6 text-xs bg-purple-600 hover:bg-purple-500 text-white gap-1"
                     >
-                      {copied === 'Bcrypt Hash' ? <Check className="size-3" /> : <Copy className="size-3" />}
-                      {copied === 'Bcrypt Hash' ? 'Copied' : 'Copy'}
+                      {copied === "Bcrypt Hash" ? (
+                        <Check className="size-3" />
+                      ) : (
+                        <Copy className="size-3" />
+                      )}
+                      {copied === "Bcrypt Hash" ? "Copied" : "Copy"}
                     </Button>
                   </div>
 
@@ -253,20 +279,33 @@ export default function BcryptGenerator() {
                   <Card className="border border-purple-500/20 bg-[#0d1527] shadow-xl">
                     <CardContent className="p-5 space-y-3">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-purple-300 flex items-center gap-2">
-                        <Layers className="size-4" /> Bcrypt Hash Format Breakdown
+                        <Layers className="size-4" /> Bcrypt Hash Format
+                        Breakdown
                       </h4>
                       <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                         <div className="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-0.5">
-                          <div className="text-[10px] text-slate-500 uppercase">Algorithm Version</div>
-                          <div className="text-purple-300 font-bold">{inspected.version}</div>
+                          <div className="text-[10px] text-slate-500 uppercase">
+                            Algorithm Version
+                          </div>
+                          <div className="text-purple-300 font-bold">
+                            {inspected.version}
+                          </div>
                         </div>
                         <div className="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-0.5">
-                          <div className="text-[10px] text-slate-500 uppercase">Cost Factor (Rounds)</div>
-                          <div className="text-cyan-300 font-bold">{inspected.rounds}</div>
+                          <div className="text-[10px] text-slate-500 uppercase">
+                            Cost Factor (Rounds)
+                          </div>
+                          <div className="text-cyan-300 font-bold">
+                            {inspected.rounds}
+                          </div>
                         </div>
                         <div className="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-0.5 col-span-2">
-                          <div className="text-[10px] text-slate-500 uppercase">Salt (22 chars)</div>
-                          <div className="text-amber-300 font-bold truncate">{inspected.salt}</div>
+                          <div className="text-[10px] text-slate-500 uppercase">
+                            Salt (22 chars)
+                          </div>
+                          <div className="text-amber-300 font-bold truncate">
+                            {inspected.salt}
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -274,13 +313,16 @@ export default function BcryptGenerator() {
                 )}
               </div>
             ) : (
-              <div className="rounded-2xl border border-purple-500/30 bg-[#0d1527] p-8 h-full min-h-[300px] flex flex-col items-center justify-center text-center space-y-3 text-slate-400">
+              <div className="rounded-2xl border border-purple-500/30 bg-[#0d1527] p-8 h-full min-h-75 flex flex-col items-center justify-center text-center space-y-3 text-slate-400">
                 <div className="size-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
                   <KeyRound className="size-6" />
                 </div>
-                <h4 className="font-semibold text-slate-200 text-sm">Ready to Generate</h4>
+                <h4 className="font-semibold text-slate-200 text-sm">
+                  Ready to Generate
+                </h4>
                 <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
-                  Enter your password on the left, adjust salt rounds if needed, and click Generate.
+                  Enter your password on the left, adjust salt rounds if needed,
+                  and click Generate.
                 </p>
               </div>
             )}
@@ -319,14 +361,16 @@ export default function BcryptGenerator() {
                 <Button
                   onClick={handleVerify}
                   disabled={isVerifying}
-                  className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs h-10 gap-2 shadow-md cursor-pointer"
+                  className="w-full bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs h-10 gap-2 shadow-md cursor-pointer"
                 >
                   {isVerifying ? (
                     <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <ShieldCheck className="size-4" />
                   )}
-                  {isVerifying ? 'Testing Hash Match...' : 'Verify Password Match'}
+                  {isVerifying
+                    ? "Testing Hash Match..."
+                    : "Verify Password Match"}
                 </Button>
               </div>
             </CardContent>
@@ -339,8 +383,8 @@ export default function BcryptGenerator() {
                 <div
                   className={`p-6 rounded-2xl border shadow-xl flex flex-col items-center justify-center text-center space-y-3 ${
                     verifyResult.isMatch
-                      ? 'border-emerald-500/40 bg-emerald-950/20 text-emerald-300'
-                      : 'border-rose-500/40 bg-rose-950/20 text-rose-300'
+                      ? "border-emerald-500/40 bg-emerald-950/20 text-emerald-300"
+                      : "border-rose-500/40 bg-rose-950/20 text-rose-300"
                   }`}
                 >
                   {verifyResult.isMatch ? (
@@ -349,7 +393,9 @@ export default function BcryptGenerator() {
                     <XCircle className="size-12 text-rose-400" />
                   )}
                   <h3 className="text-lg font-bold">
-                    {verifyResult.isMatch ? 'Password Matches Hash! ✅' : 'Password Does NOT Match ❌'}
+                    {verifyResult.isMatch
+                      ? "Password Matches Hash! ✅"
+                      : "Password Does NOT Match ❌"}
                   </h3>
                   <p className="text-xs font-mono opacity-80">
                     Verification took {verifyResult.durationMs}ms
@@ -364,12 +410,20 @@ export default function BcryptGenerator() {
                       </h4>
                       <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                         <div className="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-0.5">
-                          <div className="text-[10px] text-slate-500 uppercase">Version</div>
-                          <div className="text-purple-300 font-bold">{verifyResult.hashDetails.version}</div>
+                          <div className="text-[10px] text-slate-500 uppercase">
+                            Version
+                          </div>
+                          <div className="text-purple-300 font-bold">
+                            {verifyResult.hashDetails.version}
+                          </div>
                         </div>
                         <div className="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-0.5">
-                          <div className="text-[10px] text-slate-500 uppercase">Rounds</div>
-                          <div className="text-cyan-300 font-bold">{verifyResult.hashDetails.rounds}</div>
+                          <div className="text-[10px] text-slate-500 uppercase">
+                            Rounds
+                          </div>
+                          <div className="text-cyan-300 font-bold">
+                            {verifyResult.hashDetails.rounds}
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -377,13 +431,16 @@ export default function BcryptGenerator() {
                 )}
               </div>
             ) : (
-              <div className="rounded-2xl border border-purple-500/30 bg-[#0d1527] p-8 h-full min-h-[300px] flex flex-col items-center justify-center text-center space-y-3 text-slate-400">
+              <div className="rounded-2xl border border-purple-500/30 bg-[#0d1527] p-8 h-full min-h-75 flex flex-col items-center justify-center text-center space-y-3 text-slate-400">
                 <div className="size-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
                   <ShieldCheck className="size-6" />
                 </div>
-                <h4 className="font-semibold text-slate-200 text-sm">Verify Password</h4>
+                <h4 className="font-semibold text-slate-200 text-sm">
+                  Verify Password
+                </h4>
                 <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
-                  Enter candidate plaintext and the target Bcrypt hash to verify whether they match.
+                  Enter candidate plaintext and the target Bcrypt hash to verify
+                  whether they match.
                 </p>
               </div>
             )}
@@ -391,5 +448,5 @@ export default function BcryptGenerator() {
         </div>
       )}
     </div>
-  )
+  );
 }
