@@ -3,20 +3,17 @@
 import React, { useState, useMemo } from 'react'
 import { toast } from 'sonner'
 import {
-  Diff as DiffIcon,
-  Copy,
+  Diff as Copy,
   Download,
   Trash2,
   Check,
   Sparkles,
   Columns,
   List,
-  Settings2,
   Clock,
   PlusCircle,
   MinusCircle,
-  FileCode,
-} from 'lucide-react'
+  } from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
 
@@ -187,7 +184,18 @@ export default function DiffViewer() {
                 />
                 <span>Ignore Whitespace</span>
               </label>
+
+              <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+                <input
+                  type="checkbox"
+                  checked={ignoreCase}
+                  onChange={(e) => setIgnoreCase(e.target.checked)}
+                  className="rounded border-purple-500/30 bg-black/40 text-purple-600 focus:ring-purple-500"
+                />
+                <span>Ignore Case</span>
+              </label>
             </div>
+
 
             <div className="flex items-center gap-2 ml-auto">
               <Button

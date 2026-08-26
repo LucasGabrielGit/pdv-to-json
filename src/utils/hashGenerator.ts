@@ -9,9 +9,8 @@ function md5(string: string): string {
   function addUnsigned(lX: number, lY: number) {
     const lX4 = lX & 0x40000000
     const lY4 = lY & 0x40000000
-    const lX8 = lX & 0x80000000
-    const lY8 = lY & 0x80000000
     const lResult = (lX & 0x3fffffff) + (lY & 0x3fffffff)
+
     if (lX4 & lY4) return lResult ^ 0x80000000 ^ lX4 ^ lY4
     if (lX4 | lY4) {
       if (lResult & 0x40000000) return lResult ^ 0xc0000000 ^ lX4 ^ lY4

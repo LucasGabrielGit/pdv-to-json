@@ -9,9 +9,6 @@ import {
   RotateCcw,
   Key,
   Download,
-  FileCode,
-  Layers,
-  Code2,
   Table,
 } from 'lucide-react'
 import { toast } from 'sonner'

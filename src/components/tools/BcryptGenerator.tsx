@@ -9,8 +9,6 @@ import {
   XCircle,
   Copy,
   Check,
-  RotateCcw,
-  Sparkles,
   Layers,
   Sliders,
   Eye,

@@ -9,11 +9,8 @@ import {
   Check,
   RotateCcw,
   Key,
-  ShieldCheck,
   FileCode,
-  CheckCircle2,
-  Terminal,
-} from 'lucide-react'
+  } from 'lucide-react'
 import { toast } from 'sonner'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'

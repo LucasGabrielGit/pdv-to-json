@@ -10,10 +10,7 @@ import {
   Key,
   Download,
   FileCode,
-  Layers,
-  Code2,
-  FileText,
-} from 'lucide-react'
+  } from 'lucide-react'
 import { toast } from 'sonner'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'

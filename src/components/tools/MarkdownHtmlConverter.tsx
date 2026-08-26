@@ -73,7 +73,6 @@ export default function MarkdownHtmlConverter() {
   const [result, setResult] = useState<MarkdownConversionResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [viewMode, setViewMode] = useState<"code" | "preview">("code");
-  const [activeTab, setActiveTab] = useState<"text" | "file">("text");
 
   const outputRef = useRef<HTMLDivElement>(null);
 
@@ -84,8 +83,8 @@ export default function MarkdownHtmlConverter() {
     setInputText("");
     setResult(null);
     setInputMode("text");
-    setActiveTab("text");
   };
+
 
   const convert = (
     text: string,

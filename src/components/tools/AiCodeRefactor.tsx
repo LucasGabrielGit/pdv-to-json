@@ -10,11 +10,9 @@ import {
   Key,
   Download,
   FileCode,
-  Layers,
   Zap,
   TrendingUp,
-  ShieldCheck,
-} from 'lucide-react'
+  } from 'lucide-react'
 import { toast } from 'sonner'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
@@ -131,8 +129,24 @@ export default function AiCodeRefactor() {
       <Card className="border border-purple-500/25 bg-[#16213e] shadow-xl">
         <CardContent className="p-4 md:p-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4 text-xs">
+            {/* Language Selector */}
+            <div className="flex items-center gap-2">
+              <Label className="text-slate-400">Language:</Label>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as typeof language)}
+                className="h-8 px-2.5 rounded-md bg-black/40 border border-purple-500/30 text-slate-200 text-xs font-mono outline-none"
+              >
+                <option value="typescript">TypeScript</option>
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="go">Go</option>
+              </select>
+            </div>
+
             {/* Goal Selector */}
             <Tabs value={goal} onValueChange={(v) => setGoal(v as typeof goal)}>
+
               <TabsList className="bg-black/40 border border-white/5 p-0.5 h-8">
                 <TabsTrigger value="optimize-performance" className="text-xs px-2.5 h-7 data-[state=active]:bg-purple-600 data-[state=active]:text-white">
                   ⚡ Optimize Big-O

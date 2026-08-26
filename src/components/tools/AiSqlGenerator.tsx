@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import {
   Database,
@@ -10,10 +10,7 @@ import {
   RotateCcw,
   Zap,
   Key,
-  Layers,
-  HelpCircle,
   Lightbulb,
-  ShieldCheck,
   CheckCircle2,
 } from 'lucide-react'
 import {
@@ -35,7 +32,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -69,7 +65,7 @@ export default function AiSqlGenerator() {
   const [copied, setCopied] = useState(false)
 
 
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     const creds = getUserCredits()
@@ -84,7 +80,7 @@ export default function AiSqlGenerator() {
         setCustomKeyInput(synced.userCustomApiKey)
       }
     })
-  }, [])
+  }, [supabase])
 
   const handleSaveApiKey = () => {
     setCustomApiKey(customKeyInput)

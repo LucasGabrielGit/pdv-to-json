@@ -9,7 +9,6 @@ import {
   RotateCcw,
   Sparkles,
   Minimize2,
-  Maximize2,
   Code2,
 } from 'lucide-react'
 import { formatSql, minifySql, type SqlFormatterOptions } from '@/utils/sqlFormatter'

@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Search, Sparkles, ArrowRight } from 'lucide-react'
+import { Search, ArrowRight } from 'lucide-react'
 import { tools, searchTools, type Tool } from '@/lib/tools-registry'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'

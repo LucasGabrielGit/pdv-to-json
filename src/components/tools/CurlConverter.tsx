@@ -7,10 +7,8 @@ import {
   Copy,
   Check,
   RotateCcw,
-  Sparkles,
   Code2,
-  Globe,
-} from 'lucide-react'
+  } from 'lucide-react'
 import { parseCurl, generateCodeFromCurl } from '@/utils/curlConverter'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'

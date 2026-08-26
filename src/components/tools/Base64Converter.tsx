@@ -10,8 +10,6 @@ import {
   Check,
   Binary,
   Sparkles,
-  Zap,
-  ShieldCheck,
   Settings2,
   Image as ImageIcon,
   FileText,

@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo } from 'react'
 import {
-  Sparkles,
   Copy,
   Check,
   RotateCcw,

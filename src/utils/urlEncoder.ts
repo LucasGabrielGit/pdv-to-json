@@ -43,7 +43,7 @@ export function parseUrlDetails(rawUrl: string): ParsedUrlDetails {
     })
 
     return result
-  } catch (err) {
+  } catch {
     // If URL parsing fails, extract manual query string
     const searchPart = rawUrl.includes('?') ? rawUrl.split('?')[1] : rawUrl
     const pairs = searchPart.split('&').filter(Boolean)
@@ -77,8 +77,8 @@ export function buildUrlFromParams(
   if (!baseUrl) return ''
 
   try {
-    const isFull = baseUrl.startsWith('http://') || baseUrl.startsWith('https://')
     const baseWithoutQuery = baseUrl.split('?')[0]
+
     
     const searchParams = new URLSearchParams()
     params.forEach((p) => {

@@ -1,9 +1,12 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { Check, ChevronDown, Globe } from 'lucide-react'
+
+import { Check, ChevronDown } from 'lucide-react'
 import { useTranslation } from '@/contexts/I18nContext'
-import { SUPPORTED_LOCALES, type SupportedLocale } from '@/locales/types'
+import { SUPPORTED_LOCALES } from '@/locales/types'
+
+
 
 export function LanguageSelector() {
   const { locale, setLocale, localeInfo } = useTranslation()

@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+
 import { toast } from "sonner";
 import {
   User as UserIcon,
   LogOut,
   Zap,
-  ShieldCheck,
   Crown,
-  Key,
   ChevronDown,
   Sparkles,
 } from "lucide-react";
@@ -36,16 +35,13 @@ export function UserMenu() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [pricingModalOpen, setPricingModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const supabase = createClient();
-
+  const supabase = useMemo(() => createClient(), []);
 
   // Fetch user and profile
   useEffect(() => {
     if (!isSupabaseConfigured()) {
-      setIsLoading(false);
       return;
     }
 
@@ -71,10 +67,9 @@ export function UserMenu() {
         }
       } catch {
         // Ignore auth error in offline or unconfigured env
-      } finally {
-        setIsLoading(false);
       }
     }
+
 
     loadUser();
 
@@ -118,7 +113,7 @@ export function UserMenu() {
       subscription.unsubscribe();
       window.removeEventListener('devkit_credits_updated', handleCreditsUpdated);
     };
-  }, []);
+  }, [supabase]);
 
 
   // Close dropdown on outside click

@@ -3,13 +3,10 @@
 import React, { useState, useMemo } from 'react'
 import { toast } from 'sonner'
 import {
-  Key,
   Copy,
-  Download,
   Trash2,
   Check,
   Sparkles,
-  ShieldCheck,
   CheckCircle2,
   AlertTriangle,
   Clock,

@@ -85,7 +85,6 @@ export default function JsonYamlConverter() {
   const [result, setResult] = useState<YamlConversionResult | null>(null)
   const [copied, setCopied] = useState(false)
   const [isConverting, setIsConverting] = useState(false)
-  const [activeTab, setActiveTab] = useState<'text' | 'file'>('text')
 
   const outputRef = useRef<HTMLDivElement>(null)
 
@@ -96,8 +95,8 @@ export default function JsonYamlConverter() {
     setInputText('')
     setResult(null)
     setInputMode('text')
-    setActiveTab('text')
   }
+
 
   const convert = (text: string, dir: Direction = direction) => {
     setResult(null)

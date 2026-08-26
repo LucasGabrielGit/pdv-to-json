@@ -3,14 +3,9 @@
 import React, { useState, useMemo } from 'react'
 import { toast } from 'sonner'
 import {
-  Regex as RegexIcon,
-  Copy,
-  Download,
+  Regex as Copy,
   Trash2,
   Check,
-  Sparkles,
-  Zap,
-  CheckCircle2,
   AlertTriangle,
   Replace,
   Clock,

@@ -158,6 +158,22 @@ export default function AiUnitTestGenerator() {
               </select>
             </div>
 
+            {/* Coverage Focus */}
+            <div className="flex items-center gap-2">
+              <Label className="text-slate-400">Focus:</Label>
+              <select
+                value={coverageFocus}
+                onChange={(e) => setCoverageFocus(e.target.value)}
+                className="h-8 px-2.5 rounded-md bg-black/40 border border-purple-500/30 text-slate-200 text-xs font-mono outline-none"
+              >
+                <option value="comprehensive">Comprehensive</option>
+                <option value="edge-cases">Edge Cases &amp; Errors</option>
+                <option value="happy-path">Happy Path</option>
+                <option value="integration-mocks">With Mocks</option>
+              </select>
+            </div>
+
+
             <Button
               size="xs"
               variant="outline"

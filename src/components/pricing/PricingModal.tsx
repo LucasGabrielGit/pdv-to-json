@@ -3,15 +3,11 @@
 import React, { useState } from 'react'
 import { toast } from 'sonner'
 import {
-  Zap,
   Check,
   Sparkles,
-  CreditCard,
-  Crown,
   ShieldCheck,
   Loader2,
-  X,
-} from 'lucide-react'
+  } from 'lucide-react'
 import { STRIPE_PLANS, type PlanKey } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/client'
 import { AuthModal } from '@/components/auth/AuthModal'
@@ -32,7 +28,8 @@ interface PricingModalProps {
   defaultPlan?: PlanKey
 }
 
-export function PricingModal({ isOpen, onClose, defaultPlan = 'power' }: PricingModalProps) {
+export function PricingModal({ isOpen, onClose, defaultPlan: _defaultPlan = 'power' }: PricingModalProps) {
+
   const [currency, setCurrency] = useState<'usd' | 'brl'>('usd')
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)

@@ -10,11 +10,9 @@ import {
   Check,
   Sparkles,
   Sliders,
-  ArrowRight,
   TrendingDown,
   ExternalLink,
-  Layers,
-} from 'lucide-react'
+  } from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
 

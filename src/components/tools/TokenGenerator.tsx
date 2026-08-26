@@ -1,19 +1,16 @@
 'use client'
 
-import React, { useState, useEffect, useId } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import {
   KeyRound,
-  ShieldCheck,
   Copy,
   Check,
   RefreshCw,
   Download,
   Terminal,
-  Sparkles,
   Lock,
   Sliders,
-  FileCode,
 } from 'lucide-react'
 import {
   generateSecurePassword,
@@ -28,7 +25,7 @@ import CodeEditor from '@/components/CodeEditor'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -58,24 +55,25 @@ export default function TokenGenerator() {
   const [copiedTokens, setCopiedTokens] = useState(false)
 
   // Regenerate Password on Options Change
-  const handleRegeneratePassword = () => {
+  const handleRegeneratePassword = useCallback(() => {
     const pwd = generateSecurePassword(pwdOptions)
     setPassword(pwd)
-  }
+  }, [pwdOptions])
 
   useEffect(() => {
     handleRegeneratePassword()
-  }, [pwdOptions])
+  }, [handleRegeneratePassword])
 
   // Regenerate API Tokens on Options Change
-  const handleRegenerateTokens = () => {
+  const handleRegenerateTokens = useCallback(() => {
     const tokens = generateApiTokens(tokenOptions)
     setGeneratedTokens(tokens)
-  }
+  }, [tokenOptions])
 
   useEffect(() => {
     handleRegenerateTokens()
-  }, [tokenOptions])
+  }, [handleRegenerateTokens])
+
 
   const strength = calculatePasswordStrength(password)
 

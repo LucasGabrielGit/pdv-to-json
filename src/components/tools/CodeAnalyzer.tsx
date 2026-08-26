@@ -15,10 +15,10 @@ import {
   RotateCcw,
   Sparkles,
   Zap,
-  UploadCloud,
   FileUp,
 } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
 import { toast } from 'sonner'
 
 import { ToolHeader } from '@/components/converter/ToolHeader'
@@ -115,7 +115,7 @@ export default function CodeAnalyzer() {
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     const creds = getUserCredits()
@@ -131,7 +131,8 @@ export default function CodeAnalyzer() {
         setCustomKeyInput(synced.userCustomApiKey)
       }
     })
-  }, [])
+  }, [supabase])
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

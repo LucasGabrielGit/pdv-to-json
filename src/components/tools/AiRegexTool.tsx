@@ -7,20 +7,13 @@ import {
   Search,
   Copy,
   Check,
-  RotateCcw,
   Key,
   ShieldCheck,
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  Code2,
   Layers,
-  FileCode,
-} from 'lucide-react'
+  } from 'lucide-react'
 import { toast } from 'sonner'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
-import CodeEditor from '@/components/CodeEditor'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'

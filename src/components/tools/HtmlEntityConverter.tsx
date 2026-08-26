@@ -2,12 +2,10 @@
 
 import React, { useState, useMemo } from 'react'
 import {
-  Code2,
   Copy,
   Check,
   RotateCcw,
   Sparkles,
-  ArrowLeftRight,
   Download,
   FileCode,
   Layers,

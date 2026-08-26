@@ -10,9 +10,9 @@ export async function POST(req: Request) {
     const body = await req.json()
     const {
       apiCode = '',
-      format = 'openapi-yaml',
       customApiKey,
     } = body
+
 
     if (!apiCode || !apiCode.trim()) {
       return NextResponse.json(

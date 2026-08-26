@@ -7,12 +7,8 @@ import {
   Copy,
   Check,
   Sparkles,
-  ShieldCheck,
   CheckCircle2,
   XCircle,
-  Eye,
-  Sliders,
-  Layers,
   Wand2,
 } from 'lucide-react'
 import AdSense from '@/components/AdSense'

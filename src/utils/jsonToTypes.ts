@@ -29,11 +29,6 @@ function toPascalCase(str: string): string {
     .join('') || 'Type'
 }
 
-function toCamelCase(str: string): string {
-  const pascal = toPascalCase(str)
-  return pascal.charAt(0).toLowerCase() + pascal.slice(1)
-}
-
 function toSnakeCase(str: string): string {
   return str
     .replace(/([a-z])([A-Z])/g, '$1_$2')
@@ -54,9 +49,10 @@ export function generateTypeScript(obj: unknown, rootName = 'RootObject', readOn
 
     if (Array.isArray(val)) {
       if (val.length === 0) return 'unknown[]'
-      const itemTypes = Array.from(new Set(val.map((item, idx) => parseObject(item, `${name}Item`))))
+      const itemTypes = Array.from(new Set(val.map((item) => parseObject(item, `${name}Item`))))
       return itemTypes.length === 1 ? `${itemTypes[0]}[]` : `(${itemTypes.join(' | ')})[]`
     }
+
 
     if (typeof val === 'object') {
       const typeName = toPascalCase(name)

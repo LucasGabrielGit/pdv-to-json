@@ -188,8 +188,19 @@ export default function SvgToJsxConverter() {
                   />
                   <span>fill=&quot;currentColor&quot;</span>
                 </label>
+
+                <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={addPropsSpread}
+                    onChange={(e) => setAddPropsSpread(e.target.checked)}
+                    className="rounded border-purple-500/30 accent-purple-500"
+                  />
+                  <span>{`{...props}`}</span>
+                </label>
               </div>
             </div>
+
 
             {/* Actions */}
             <div className="flex flex-wrap items-center gap-2">

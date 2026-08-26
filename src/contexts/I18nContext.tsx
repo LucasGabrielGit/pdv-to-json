@@ -46,14 +46,13 @@ function detectBrowserLocale(): SupportedLocale {
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<SupportedLocale>('en')
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const detected = detectBrowserLocale()
     setLocaleState(detected)
-    setMounted(true)
     document.documentElement.lang = detected
   }, [])
+
 
   const setLocale = (newLocale: SupportedLocale) => {
     setLocaleState(newLocale)

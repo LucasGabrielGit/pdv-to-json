@@ -51,9 +51,10 @@ export function AdSense({ slot, format = 'auto', className = '' }: AdSenseProps)
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({})
-    } catch (_) {
+    } catch {
       // AdSense may throw in dev or adblocker environments — silently ignore
     }
+
   }, [])
 
   if (!ADS_CONFIG.enabled) return null

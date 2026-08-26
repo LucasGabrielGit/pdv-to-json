@@ -3,21 +3,12 @@
 import React, { useState, useMemo } from 'react'
 import { toast } from 'sonner'
 import {
-  Fingerprint,
   Copy,
   Download,
-  Trash2,
   Check,
   RefreshCw,
-  Sparkles,
-  ShieldCheck,
-  Layers,
   Settings2,
-  FileCode,
-  Info,
-  Clock,
-  Database,
-} from 'lucide-react'
+  } from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
 
@@ -60,6 +51,7 @@ export default function UuidGenerator() {
 
   // Compute generated IDs live
   const result: UuidGeneratorResult = useMemo(() => {
+    void seed;
     return generateIds(
       {
         type: idType,
@@ -72,6 +64,7 @@ export default function UuidGenerator() {
       exportFormat
     )
   }, [idType, quantity, uppercase, noHyphens, braces, exportFormat, tableName, seed])
+
 
   const handleRefresh = () => {
     setSeed((s) => s + 1)
@@ -276,9 +269,21 @@ export default function UuidGenerator() {
                       <span>Remove Hyphens (-)</span>
                     </label>
                   )}
+
+                  <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={braces}
+                      onChange={(e) => setBraces(e.target.checked)}
+                      className="rounded border-purple-500/30 bg-black/40 text-purple-600 focus:ring-purple-500"
+                    />
+                    <span>Enclose in braces {`{...}`}</span>
+                  </label>
                 </div>
               )}
             </div>
+
+
 
             <div className="flex justify-end pt-2">
               <Button

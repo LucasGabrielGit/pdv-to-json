@@ -10,7 +10,6 @@ import {
   Radio,
   Binary,
   Layers,
-  Sparkles,
   Info,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -21,7 +20,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { calculateSubnet, type SubnetResult } from '@/utils/cidrCalculator'
+import { calculateSubnet } from '@/utils/cidrCalculator'
+
 
 export default function CidrCalculator() {
   const [ipInput, setIpInput] = useState('192.168.1.100')

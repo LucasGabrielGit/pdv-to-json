@@ -8,9 +8,6 @@ import {
   Download,
   Trash2,
   Check,
-  Sparkles,
-  Zap,
-  ShieldCheck,
   Settings2,
   CheckCircle2,
   AlertTriangle,
@@ -20,6 +17,10 @@ import {
 } from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
+import FileDropZone from '@/components/FileDropZone'
+import CodeEditor from '@/components/CodeEditor'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
 
 import {
   formatJson,
@@ -27,16 +28,9 @@ import {
   formatBytes,
   type JsonFormattingResult,
 } from '@/utils/jsonFormatter'
-import FileDropZone from '@/components/FileDropZone'
 import { ToolHeader } from '@/components/converter/ToolHeader'
-
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Label } from '@/components/ui/label'
-import CodeEditor from '@/components/CodeEditor'
 import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 
 import {
   Select,
@@ -80,7 +74,6 @@ export default function JsonFormatter() {
   const [liveMode, setLiveMode] = useState(true)
   const [result, setResult] = useState<JsonFormattingResult | null>(null)
   const [copied, setCopied] = useState(false)
-  const [activeTab, setActiveTab] = useState<'text' | 'file'>('text')
 
   const isFormat = actionMode === 'format'
 
@@ -121,7 +114,6 @@ export default function JsonFormatter() {
   }
 
   const handleModeToggle = handleActionModeChange
-
 
   const handleRunAction = () => {
     if (!inputText.trim()) {
@@ -311,10 +303,9 @@ export default function JsonFormatter() {
               <Button
                 size="sm"
                 onClick={handleRunAction}
-                className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs px-4 h-8 gap-1.5 shadow-md"
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs px-4"
               >
-                <Sparkles className="size-3.5" />
-                {isFormat ? 'Format' : 'Minify'}
+                Execute
               </Button>
             )}
           </div>
@@ -469,14 +460,10 @@ export default function JsonFormatter() {
         </div>
       </div>
 
-      <Separator className="my-8 bg-purple-500/20" />
+      <div className="mt-8 flex justify-center">
+        <AdSense slot={ADS_CONFIG.slots.betweenIO} format="horizontal" />
+      </div>
 
-      {/* AdSense Placement */}
-      <AdSense
-        slot={ADS_CONFIG.slots.betweenIO}
-        format="auto"
-        className="rounded-xl overflow-hidden mb-4"
-      />
     </div>
   )
 }

@@ -3,18 +3,13 @@
 import React, { useState, useMemo } from 'react'
 import { toast } from 'sonner'
 import {
-  Calendar,
   Copy,
   Trash2,
   Check,
-  Sparkles,
-  ShieldCheck,
-  CheckCircle2,
   AlertTriangle,
   Clock,
   BookOpen,
-  Info,
-} from 'lucide-react'
+  } from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
 
@@ -31,8 +26,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
+
 
 export default function CronBuilder() {
   const [expression, setExpression] = useState('*/5 * * * *')

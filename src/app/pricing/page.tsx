@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
+
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
   Check,
-  Zap,
   Sparkles,
   Crown,
-  ShieldCheck,
-  CreditCard,
   Loader2,
   HelpCircle,
   ArrowLeft,
@@ -39,8 +37,8 @@ function PricingContent() {
   const [user, setUser] = useState<any>(null);
   const [isPro, setIsPro] = useState(false);
   const [isLoadingPortal, setIsLoadingPortal] = useState(false);
+  const supabase = useMemo(() => createClient(), []);
 
-  const supabase = createClient();
 
   useEffect(() => {
     if (locale === "pt") {
@@ -68,7 +66,7 @@ function PricingContent() {
           });
       }
     });
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     if (isSuccess && sessionId) {
@@ -107,7 +105,8 @@ function PricingContent() {
     } else if (isCanceled) {
       toast.info("Checkout was cancelled.");
     }
-  }, [isSuccess, sessionId, isCanceled]);
+  }, [isSuccess, sessionId, isCanceled, supabase]);
+
 
   const handleCheckout = async (planKey: PlanKey) => {
     if (!user) {

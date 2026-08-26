@@ -8,14 +8,10 @@ import {
   Trash2,
   Check,
   Sparkles,
-  ShieldCheck,
-  Calendar,
   Globe,
   Play,
   Pause,
-  RefreshCw,
-  Zap,
-} from 'lucide-react'
+  } from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
 

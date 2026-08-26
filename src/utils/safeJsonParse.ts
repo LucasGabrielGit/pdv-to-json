@@ -25,12 +25,14 @@ export function safeParseLlmJson<T = any>(rawText: string, fallback: Partial<T> 
       // Replace single backslashes that are not valid JSON escape sequences with double backslashes
       .replace(/\\(?!["\\/bfnrtu|u[0-9a-fA-F]{4}])/g, '\\\\')
       // Fix unescaped control characters
+      // eslint-disable-next-line no-control-regex
       .replace(/[\u0000-\u001F]+/g, (match) => {
         if (match === '\n') return '\\n'
         if (match === '\r') return '\\r'
         if (match === '\t') return '\\t'
         return ''
       })
+
 
     return JSON.parse(repaired) as T
   } catch {

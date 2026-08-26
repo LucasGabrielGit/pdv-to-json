@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+
 import { toast } from "sonner";
 import {
   Sparkles,
@@ -82,7 +83,7 @@ export default function CodeGenerator() {
   } | null>(null);
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     const creds = getUserCredits();
@@ -98,7 +99,8 @@ export default function CodeGenerator() {
         setCustomKeyInput(synced.userCustomApiKey);
       }
     });
-  }, []);
+  }, [supabase]);
+
 
   const handleSaveApiKey = () => {
     setCustomApiKey(customKeyInput);

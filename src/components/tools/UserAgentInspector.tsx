@@ -11,21 +11,19 @@ import {
   Monitor,
   Copy,
   Check,
-  RotateCcw,
   Sparkles,
   Layers,
-  ShieldCheck,
-  Search,
-} from 'lucide-react'
+  } from 'lucide-react'
 import { toast } from 'sonner'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { parseUserAgent, type ParsedUserAgent } from '@/utils/userAgentParser'
+
+
 
 const PRESET_UAS = [
   {

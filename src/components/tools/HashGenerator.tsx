@@ -3,19 +3,15 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import {
-  Hash,
   Copy,
-  Download,
   Trash2,
   Check,
   Sparkles,
-  ShieldCheck,
   CheckCircle2,
   XCircle,
   Clock,
   FileCode,
-  Lock,
-} from 'lucide-react'
+  } from 'lucide-react'
 import AdSense from '@/components/AdSense'
 import { ADS_CONFIG } from '@/config/ads'
 
@@ -50,7 +46,6 @@ export default function HashGenerator() {
   const [isComputing, setIsComputing] = useState(false)
   const [hashes, setHashes] = useState<GeneratedHashes | null>(null)
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'text' | 'file'>('text')
 
   // Compute text hashes
   useEffect(() => {
@@ -92,9 +87,9 @@ export default function HashGenerator() {
     setInputText(SAMPLE_TEXT)
     setSelectedFile(null)
     setInputMode('text')
-    setActiveTab('text')
     toast.success('Loaded sample text')
   }
+
 
   const handleClear = () => {
     setInputText('')
@@ -151,26 +146,25 @@ export default function HashGenerator() {
                 <TabsTrigger
                   value="text"
                   className={`px-5 py-2 rounded-lg transition-all ${
-                    activeTab === 'text'
+                    inputMode === 'text'
                       ? 'bg-white text-zinc-900 font-semibold shadow-md'
                       : 'text-slate-400 hover:text-white'
                   }`}
-                  onClick={() => setActiveTab('text')}
                 >
                   ✏️ Text Hashing
                 </TabsTrigger>
                 <TabsTrigger
                   value="file"
                   className={`px-5 py-2 rounded-lg transition-all ${
-                    activeTab === 'file'
+                    inputMode === 'file'
                       ? 'bg-white text-zinc-900 font-semibold shadow-md'
                       : 'text-slate-400 hover:text-white'
                   }`}
-                  onClick={() => setActiveTab('file')}
                 >
                   📁 File Checksum Hashing
                 </TabsTrigger>
               </TabsList>
+
 
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer hover:text-white transition-colors">
@@ -233,6 +227,12 @@ export default function HashGenerator() {
                 onFileContent={handleFileSelect}
               />
 
+              {isComputing && (
+                <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center gap-2 text-xs text-purple-300">
+                  <span className="size-3.5 border-2 border-purple-300/30 border-t-purple-300 rounded-full animate-spin" />
+                  <span>Computing cryptographic checksums...</span>
+                </div>
+              )}
 
               {selectedFile && (
                 <div className="p-3.5 rounded-xl bg-black/40 border border-purple-500/30 flex items-center justify-between text-xs text-slate-300">
@@ -252,6 +252,7 @@ export default function HashGenerator() {
                 </div>
               )}
             </div>
+
           )}
 
           {/* Checksum Verifier Matcher */}

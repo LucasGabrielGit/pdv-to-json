@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
-  Sparkles,
   Copy,
   Check,
   RotateCcw,
@@ -54,7 +53,7 @@ export default function MockDataGenerator() {
   const [copied, setCopied] = useState(false);
 
   // Generate output whenever fields, count or format change
-  const handleRegenerate = () => {
+  const handleRegenerate = React.useCallback(() => {
     const data = generateMockDataset(fields, rowCount);
     if (format === "json") {
       setOutputCode(JSON.stringify(data, null, 2));
@@ -64,11 +63,12 @@ export default function MockDataGenerator() {
     } else if (format === "sql") {
       setOutputCode(exportToSqlInserts("users", data));
     }
-  };
+  }, [fields, rowCount, format]);
 
   useEffect(() => {
     handleRegenerate();
-  }, [fields, rowCount, format]);
+  }, [handleRegenerate]);
+
 
   const handleAddField = () => {
     setFields([
