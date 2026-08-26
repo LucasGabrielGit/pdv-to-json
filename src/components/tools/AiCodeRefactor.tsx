@@ -17,6 +17,9 @@ import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
 import { AiLoadingState } from "@/components/ai/AiLoadingState";
+import { ProGateModal } from "@/components/pro/ProGateModal";
+import { ProBadge } from "@/components/pro/ProBadge";
+import { useProStatus } from "@/hooks/useProStatus";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -127,6 +130,14 @@ export default function AiCodeRefactor() {
     toast.success("Downloaded refactored file");
   };
 
+  const {
+    requirePro,
+    isProModalOpen,
+    setIsProModalOpen,
+    proModalFeature,
+    isProOrByok,
+  } = useProStatus();
+
   useKeyboardShortcut({
     onExecute: handleRefactor,
     onCopy: handleCopy,
@@ -134,10 +145,15 @@ export default function AiCodeRefactor() {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
+      <ProGateModal
+        isOpen={isProModalOpen}
+        onClose={() => setIsProModalOpen(false)}
+        featureName={proModalFeature}
+      />
       <ToolHeader
-        title="AI Code Refactor & Optimizer"
-        description="Modernize legacy code, optimize Big-O performance, convert JavaScript to strictly-typed TypeScript, and apply Clean Architecture / SOLID principles."
-        badgeText="AI Code Modernizer"
+        title="AI Code Modernizer & Refactoring Engine"
+        description="Transform legacy code, optimize performance, modernize into React 19 / TypeScript, and enforce Clean Architecture principles."
+        badgeText="AI Code Architect"
         toolId="ai-refactor"
       />
 
@@ -146,48 +162,46 @@ export default function AiCodeRefactor() {
       {/* Toolbar */}
       <Card className="border border-purple-500/25 bg-[#16213e] shadow-xl">
         <CardContent className="p-4 md:p-5 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-4 text-xs">
-            {/* Language Selector */}
-            <div className="flex items-center gap-2">
-              <Label className="text-slate-400">Language:</Label>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as typeof language)}
-                className="h-8 px-2.5 rounded-md bg-black/40 border border-purple-500/30 text-slate-200 text-xs font-mono outline-none"
-              >
-                <option value="typescript">TypeScript</option>
-                <option value="javascript">JavaScript</option>
-                <option value="python">Python</option>
-                <option value="go">Go</option>
-              </select>
-            </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as typeof language)}
+              className="h-8 px-2.5 rounded-md bg-black/40 border border-purple-500/30 text-slate-200 text-xs font-mono outline-none"
+            >
+              <option value="typescript">TypeScript</option>
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="go">Go</option>
+            </select>
 
-            {/* Goal Selector */}
-            <Tabs value={goal} onValueChange={(v) => setGoal(v as typeof goal)}>
-              <TabsList className="bg-black/40 border border-white/5 p-0.5 h-8">
+            <Tabs
+              value={goal}
+              onValueChange={(v) => setGoal(v as typeof goal)}
+            >
+              <TabsList className="bg-black/40 border border-white/5 p-1 h-9">
+                <TabsTrigger
+                  value="modernize-react19"
+                  className="text-xs px-2.5 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-medium cursor-pointer"
+                >
+                  ⚡ React 19
+                </TabsTrigger>
                 <TabsTrigger
                   value="optimize-performance"
-                  className="text-xs px-2.5 h-7 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                  className="text-xs px-2.5 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-medium cursor-pointer"
                 >
-                  ⚡ Optimize Big-O
+                  🚀 Performance
                 </TabsTrigger>
                 <TabsTrigger
                   value="convert-to-ts"
-                  className="text-xs px-2.5 h-7 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                  className="text-xs px-2.5 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-medium cursor-pointer"
                 >
-                  🛡️ Convert to TS
-                </TabsTrigger>
-                <TabsTrigger
-                  value="modernize-react19"
-                  className="text-xs px-2.5 h-7 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-                >
-                  ✨ Modernize React 19
+                  🔷 TypeScript
                 </TabsTrigger>
                 <TabsTrigger
                   value="clean-solid"
-                  className="text-xs px-2.5 h-7 data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+                  className="text-xs px-2.5 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-medium cursor-pointer"
                 >
-                  🏛️ Clean Code / SOLID
+                  🏛️ Clean Code
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -207,15 +221,21 @@ export default function AiCodeRefactor() {
               </button>
               <button
                 type="button"
-                onClick={() => setAiMode("deep")}
-                className={`px-2.5 py-1 rounded-md transition-all font-semibold flex items-center gap-1 text-[11px] cursor-pointer ${
+                onClick={() =>
+                  requirePro("Deep Reasoning AI Engine", () =>
+                    setAiMode("deep")
+                  )
+                }
+                className={`px-2.5 py-1 rounded-md transition-all font-semibold flex items-center gap-1.5 text-[11px] cursor-pointer ${
                   aiMode === "deep"
                     ? "bg-purple-600 text-white shadow-xs"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
                 title="Deep chain-of-thought analysis (~3.5s)"
               >
-                <Sparkles className="size-3 text-cyan-400" /> Deep (~3.5s)
+                <Sparkles className="size-3 text-cyan-400" />
+                <span>Deep (~3.5s)</span>
+                {!isProOrByok && <ProBadge />}
               </button>
             </div>
 
