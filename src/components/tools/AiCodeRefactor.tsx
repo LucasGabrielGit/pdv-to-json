@@ -23,6 +23,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 const SAMPLE_CODE = `function findDuplicates(arr1, arr2) {
   var result = [];
@@ -123,6 +124,11 @@ export default function AiCodeRefactor() {
     toast.success("Downloaded refactored file");
   };
 
+  useKeyboardShortcut({
+    onExecute: handleRefactor,
+    onCopy: handleCopy,
+  });
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
       <ToolHeader
@@ -221,7 +227,10 @@ export default function AiCodeRefactor() {
               ) : (
                 <Wand2 className="size-3.5" />
               )}
-              {isLoading ? "Refactoring Code..." : "Refactor & Optimize"}
+              <span>{isLoading ? "Refactoring Code..." : "Refactor & Optimize"}</span>
+              <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded bg-black/30 border border-white/20 font-mono text-[9px] text-white/80">
+                Ctrl ↵
+              </kbd>
             </Button>
           </div>
         </CardContent>

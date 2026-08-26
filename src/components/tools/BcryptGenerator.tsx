@@ -24,6 +24,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import {
   generateBcryptHash,
   verifyBcryptHash,
@@ -113,6 +114,19 @@ export default function BcryptGenerator() {
   const inspected = generateResult
     ? inspectBcryptHash(generateResult.hash)
     : inspectBcryptHash(verifyHashInput);
+
+  useKeyboardShortcut({
+    onExecute: () => {
+      if (activeTab === "generate") {
+        handleGenerate();
+      } else {
+        handleVerify();
+      }
+    },
+    onCopy: () => {
+      if (generateResult) handleCopy(generateResult.hash, "Bcrypt Hash");
+    },
+  });
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
@@ -225,9 +239,14 @@ export default function BcryptGenerator() {
                   ) : (
                     <Lock className="size-4" />
                   )}
-                  {isGenerating
-                    ? "Hashing Password..."
-                    : "Generate Bcrypt Hash"}
+                  <span>
+                    {isGenerating
+                      ? "Hashing Password..."
+                      : "Generate Bcrypt Hash"}
+                  </span>
+                  <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded bg-black/30 border border-white/20 font-mono text-[9px] text-white/80">
+                    Ctrl ↵
+                  </kbd>
                 </Button>
               </div>
             </CardContent>
@@ -368,9 +387,14 @@ export default function BcryptGenerator() {
                   ) : (
                     <ShieldCheck className="size-4" />
                   )}
-                  {isVerifying
-                    ? "Testing Hash Match..."
-                    : "Verify Password Match"}
+                  <span>
+                    {isVerifying
+                      ? "Testing Hash Match..."
+                      : "Verify Password Match"}
+                  </span>
+                  <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded bg-black/30 border border-white/20 font-mono text-[9px] text-white/80">
+                    Ctrl ↵
+                  </kbd>
                 </Button>
               </div>
             </CardContent>

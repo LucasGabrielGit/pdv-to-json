@@ -21,6 +21,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 const SAMPLE_DIFF = `diff --git a/src/auth/session.ts b/src/auth/session.ts
 index 83a12bc..94b23cd 100644
@@ -104,6 +105,13 @@ export default function GitCommitGenerator() {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
+  useKeyboardShortcut({
+    onExecute: handleGenerate,
+    onCopy: () => {
+      if (result) handleCopy(result.commitTitle, "Commit Title");
+    },
+  });
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
       <ToolHeader
@@ -179,14 +187,17 @@ export default function GitCommitGenerator() {
             <Button
               onClick={handleGenerate}
               disabled={isLoading}
-              className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs px-5 h-8 gap-1.5 shadow-md"
+              className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs px-5 h-8 gap-1.5 shadow-md cursor-pointer"
             >
               {isLoading ? (
                 <span className="size-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <GitCommit className="size-3.5" />
               )}
-              {isLoading ? "Analyzing Diff..." : "Generate Commit & PR"}
+              <span>{isLoading ? "Analyzing Diff..." : "Generate Commit & PR"}</span>
+              <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded bg-black/30 border border-white/20 font-mono text-[9px] text-white/80">
+                Ctrl ↵
+              </kbd>
             </Button>
           </div>
         </CardContent>

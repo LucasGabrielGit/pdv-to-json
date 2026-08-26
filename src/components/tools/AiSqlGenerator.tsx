@@ -32,6 +32,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut'
 import {
   Select,
   SelectContent,
@@ -136,9 +137,16 @@ export default function AiSqlGenerator() {
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text)
     setCopied(true)
-    toast.success('SQL copied to clipboard!')
+    toast.success('SQL query copied to clipboard!')
     setTimeout(() => setCopied(false), 2000)
   }
+
+  useKeyboardShortcut({
+    onExecute: handleGenerate,
+    onCopy: () => {
+      if (result) handleCopy(result.query)
+    },
+  })
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
@@ -245,7 +253,10 @@ export default function AiSqlGenerator() {
                 ) : (
                   <Sparkles className="size-3.5" />
                 )}
-                {isLoading ? 'Generating SQL...' : 'Generate SQL Query'}
+                <span>{isLoading ? 'Generating SQL...' : 'Generate SQL Query'}</span>
+                <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded bg-black/30 border border-white/20 font-mono text-[9px] text-white/80">
+                  Ctrl ↵
+                </kbd>
               </Button>
             </div>
           </div>

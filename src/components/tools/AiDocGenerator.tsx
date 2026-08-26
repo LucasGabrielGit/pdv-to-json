@@ -21,6 +21,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 const SAMPLE_API = `// POST /api/v1/users/register
 export async function POST(req: Request) {
@@ -151,6 +152,11 @@ export default function AiDocGenerator() {
     toast.success(`Downloaded ${filename}`);
   };
 
+  useKeyboardShortcut({
+    onExecute: handleGenerate,
+    onCopy: handleCopy,
+  });
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
       <ToolHeader
@@ -205,7 +211,10 @@ export default function AiDocGenerator() {
               ) : (
                 <BookOpen className="size-3.5" />
               )}
-              {isLoading ? "Documenting API..." : "Generate API Specs"}
+              <span>{isLoading ? "Documenting API..." : "Generate API Specs"}</span>
+              <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded bg-black/30 border border-white/20 font-mono text-[9px] text-white/80">
+                Ctrl ↵
+              </kbd>
             </Button>
           </div>
         </CardContent>

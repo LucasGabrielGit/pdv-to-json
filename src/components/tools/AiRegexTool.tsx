@@ -20,6 +20,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 interface RegexResult {
   pattern: string;
@@ -124,20 +125,27 @@ export default function AiRegexTool() {
     setTimeout(() => setCopied(null), 2000);
   };
 
+  useKeyboardShortcut({
+    onExecute: handleAction,
+    onCopy: () => {
+      if (result) handleCopy(`/${result.pattern}/${result.flags}`, "Regex");
+    },
+  });
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
       <ToolHeader
         title="AI Regex Explainer & Builder"
-        description="Generate complex Regular Expressions from natural language or break down cryptic regex patterns token by token with security and ReDoS checks."
-        badgeText="AI-Powered Regex Studio"
+        description="Generate, explain token-by-token, optimize, and test regular expressions in real-time with comprehensive AI analysis."
+        badgeText="AI Regular Expression Engineer"
         toolId="ai-regex"
       />
 
       <PrivacyBanner />
 
-      {/* Main Mode Navigation */}
-      <Card className="border border-purple-500/20 bg-[#16213e]/60 backdrop-blur-md">
-        <CardContent className="p-3 md:p-4 flex flex-wrap items-center justify-between gap-4">
+      {/* Toolbar Mode Selector */}
+      <Card className="border border-purple-500/25 bg-[#16213e] shadow-xl">
+        <CardContent className="p-4 md:p-5 flex flex-wrap items-center justify-between gap-4">
           <Tabs
             value={activeTab}
             onValueChange={(v) => {
@@ -148,13 +156,13 @@ export default function AiRegexTool() {
             <TabsList className="bg-black/40 border border-white/5 p-1 h-9">
               <TabsTrigger
                 value="generate"
-                className="gap-2 text-xs data-[state=active]:bg-purple-600 data-[state=active]:text-white font-medium"
+                className="text-xs px-3 gap-1.5 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold cursor-pointer"
               >
-                <Sparkles className="size-3.5" /> Generate from Prompt
+                <Sparkles className="size-3.5" /> Prompt ➔ Regex
               </TabsTrigger>
               <TabsTrigger
                 value="explain"
-                className="gap-2 text-xs data-[state=active]:bg-purple-600 data-[state=active]:text-white font-medium"
+                className="text-xs px-3 gap-1.5 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold cursor-pointer"
               >
                 <Search className="size-3.5" /> Explain Existing Regex
               </TabsTrigger>
@@ -168,7 +176,7 @@ export default function AiRegexTool() {
               className="h-8 px-2.5 rounded-md bg-black/40 border border-purple-500/30 text-slate-200 text-xs font-mono outline-none"
             >
               <option value="en">English</option>
-              <option value="pt">Português (BR)</option>
+              <option value="pt">Português</option>
             </select>
 
             <Button
@@ -198,8 +206,8 @@ export default function AiRegexTool() {
                 type="password"
                 value={customApiKey}
                 onChange={(e) => setCustomApiKey(e.target.value)}
-                placeholder="AIzaSy..."
-                className="bg-black/60 border-purple-500/30 h-8 font-mono text-xs text-white"
+                placeholder="Paste your Gemini API key (AI Studio)..."
+                className="bg-black/60 border-purple-500/30 text-xs font-mono text-white"
               />
             </div>
 
@@ -240,13 +248,14 @@ export default function AiRegexTool() {
               <Input
                 value={regexInput}
                 onChange={(e) => setRegexInput(e.target.value)}
-                placeholder="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                className="h-10 bg-black/50 border-purple-500/30 font-mono text-xs text-white"
+                placeholder="e.g. ^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+                className="bg-black/50 border border-purple-500/30 text-xs font-mono text-cyan-300 h-10"
               />
             </div>
           )}
 
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-white/5">
+          {/* Action Row */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
             <div className="flex items-center gap-2 text-xs">
               <Label className="text-slate-400">Regex Flags:</Label>
               <Input
@@ -272,11 +281,16 @@ export default function AiRegexTool() {
               ) : (
                 <Sparkles className="size-3.5" />
               )}
-              {isLoading
-                ? "Processing with AI..."
-                : activeTab === "generate"
-                  ? "Generate Regex Pattern"
-                  : "Explain & Breakdown Regex"}
+              <span>
+                {isLoading
+                  ? "Processing with AI..."
+                  : activeTab === "generate"
+                    ? "Generate Regex Pattern"
+                    : "Explain & Breakdown Regex"}
+              </span>
+              <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded bg-black/30 border border-white/20 font-mono text-[9px] text-white/80">
+                Ctrl ↵
+              </kbd>
             </Button>
           </div>
         </CardContent>

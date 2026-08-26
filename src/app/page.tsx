@@ -4,12 +4,13 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { categories, getToolsByCategory, type Tool } from '@/lib/tools-registry'
+import { HomeFavoritesSection } from '@/components/home/HomeFavoritesSection'
 
 export default function HomePage() {
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-12">
       {/* ── Hero Section ── */}
-      <section className="text-center mb-16">
+      <section className="text-center mb-14">
         <div className="flex flex-wrap items-center justify-center gap-2 mb-5">
           <Badge
             variant="outline"
@@ -57,6 +58,9 @@ export default function HomePage() {
           Convert, analyze, generate — all in one place.
         </p>
       </section>
+
+      {/* ── Personalized Dynamic Favorites & Recents ── */}
+      <HomeFavoritesSection />
 
       {/* ── Tools Grid by Category ── */}
       {categories.map((cat) => {

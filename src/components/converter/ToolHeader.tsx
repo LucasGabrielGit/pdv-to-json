@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Zap, ShieldCheck, Star } from 'lucide-react'
+import { Zap, ShieldCheck, Star, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -79,24 +79,42 @@ export function ToolHeader({
           {privacyText}
         </Badge>
         {currentId && (
-          <Button
-            size="xs"
-            variant="outline"
-            onClick={handleToggleFavorite}
-            className={`h-7 px-2.5 rounded-full border transition-all text-xs gap-1.5 cursor-pointer ${
-              isFav
-                ? 'border-amber-400/50 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 shadow-sm shadow-amber-500/20'
-                : 'border-white/10 bg-white/5 text-slate-400 hover:text-amber-300 hover:border-amber-400/30'
-            }`}
-            title={isFav ? 'Remove from favorites' : 'Add to favorites'}
-          >
-            <Star
-              className={`size-3.5 transition-transform duration-200 ${
-                isFav ? 'fill-amber-400 text-amber-400 scale-110' : 'text-slate-400 hover:scale-110'
+          <>
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={handleToggleFavorite}
+              className={`h-7 px-2.5 rounded-full border transition-all text-xs gap-1.5 cursor-pointer ${
+                isFav
+                  ? 'border-amber-400/50 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 shadow-xs shadow-amber-500/20'
+                  : 'border-white/10 bg-white/5 text-slate-400 hover:text-amber-300 hover:border-amber-400/30'
               }`}
-            />
-            <span>{isFav ? 'Favorited' : 'Favorite'}</span>
-          </Button>
+              title={isFav ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Star
+                className={`size-3.5 transition-transform duration-200 ${
+                  isFav ? 'fill-amber-400 text-amber-400 scale-110' : 'text-slate-400 hover:scale-110'
+                }`}
+              />
+              <span>{isFav ? 'Favorited' : 'Favorite'}</span>
+            </Button>
+
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  navigator.clipboard.writeText(window.location.href)
+                  toast.success('Tool link copied to clipboard! 🔗')
+                }
+              }}
+              className="h-7 px-2.5 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:border-purple-400/30 transition-all text-xs gap-1.5 cursor-pointer"
+              title="Share tool link"
+            >
+              <Share2 className="size-3.5" />
+              <span>Share</span>
+            </Button>
+          </>
         )}
       </div>
 

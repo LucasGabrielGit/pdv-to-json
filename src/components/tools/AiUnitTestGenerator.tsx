@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 const SAMPLE_CODE = `export function calculateDiscount(price: number, couponCode?: string): number {
   if (price < 0) {
@@ -122,6 +123,11 @@ export default function AiUnitTestGenerator() {
     toast.success(`Downloaded ${ext}`);
   };
 
+  useKeyboardShortcut({
+    onExecute: handleGenerate,
+    onCopy: handleCopy,
+  });
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
       <ToolHeader
@@ -220,7 +226,10 @@ export default function AiUnitTestGenerator() {
               ) : (
                 <FlaskConical className="size-3.5" />
               )}
-              {isLoading ? "Generating Tests..." : "Generate Test Suite"}
+              <span>{isLoading ? "Generating Tests..." : "Generate Test Suite"}</span>
+              <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.5 rounded bg-black/30 border border-white/20 font-mono text-[9px] text-white/80">
+                Ctrl ↵
+              </kbd>
             </Button>
           </div>
         </CardContent>

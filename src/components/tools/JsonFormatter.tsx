@@ -21,6 +21,7 @@ import FileDropZone from "@/components/FileDropZone";
 import CodeEditor from "@/components/CodeEditor";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 import {
   formatJson,
@@ -192,6 +193,12 @@ export default function JsonFormatter() {
     setResult(null);
     toast.info("Cleared");
   };
+
+  useKeyboardShortcut({
+    onExecute: handleRunAction,
+    onCopy: handleCopy,
+    onClear: handleClear,
+  });
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
