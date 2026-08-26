@@ -226,7 +226,7 @@ export default function AiRegexTool() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="e.g. Match international phone numbers with optional + country code..."
-                className="w-full h-20 p-3 rounded-xl bg-black/50 border border-purple-500/30 font-sans text-xs text-slate-200 focus:outline-none focus:border-purple-400/80 resize-none leading-relaxed"
+                className="w-full h-20 p-3 rounded-xl bg-black/50 border font-sans text-xs text-slate-200 focus:outline-none focus:border-purple-400/80 resize-none leading-relaxed"
               />
             </div>
           ) : (
@@ -417,7 +417,7 @@ export default function AiRegexTool() {
                   <textarea
                     value={testString}
                     onChange={(e) => setTestString(e.target.value)}
-                    className="w-full h-32 p-3 rounded-xl bg-black/50 border border-cyan-500/30 font-mono text-xs text-slate-200 focus:outline-none focus:border-cyan-400 resize-none"
+                    className="w-full h-32 p-3 rounded-xl bg-black/50 border font-mono text-xs text-slate-200 focus:outline-none focus:border-cyan-400 resize-none"
                   />
                 </div>
 

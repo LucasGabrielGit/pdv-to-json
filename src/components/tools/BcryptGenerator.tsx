@@ -353,7 +353,7 @@ export default function BcryptGenerator() {
                   value={verifyHashInput}
                   onChange={(e) => setVerifyHashInput(e.target.value)}
                   placeholder="$2a$10$..."
-                  className="w-full h-24 p-3 rounded-xl bg-black/50 border border-purple-500/30 font-mono text-xs text-slate-200 focus:outline-none focus:border-purple-400/80 resize-none leading-relaxed"
+                  className="w-full h-24 p-3 rounded-xl bg-black/50 border font-mono text-xs text-slate-200 focus:outline-none focus:border-purple-400/80 resize-none leading-relaxed"
                 />
               </div>
 

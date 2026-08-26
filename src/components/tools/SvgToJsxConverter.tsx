@@ -201,7 +201,6 @@ export default function SvgToJsxConverter() {
               </div>
             </div>
 
-
             {/* Actions */}
             <div className="flex flex-wrap items-center gap-2">
               <input
@@ -282,7 +281,7 @@ export default function SvgToJsxConverter() {
               <Eye className="size-4 text-cyan-400" /> Live Icon Render:
             </div>
             <div
-              className="size-12 rounded-xl bg-black/50 border border-white/10 flex items-center justify-center p-2 text-white shadow-inner [&>svg]:size-full"
+              className="size-12 rounded-xl bg-black/50 border border-white/10 flex items-center justify-center p-2 text-white shadow-inner"
               dangerouslySetInnerHTML={{
                 __html: svgInput.includes("<svg") ? svgInput : "",
               }}
