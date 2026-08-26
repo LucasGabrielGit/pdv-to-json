@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useFavorites } from '@/hooks/useFavorites'
 import { tools } from '@/lib/tools-registry'
+import { ToolJsonLd } from '@/components/seo/ToolJsonLd'
 
 export interface ToolHeaderProps {
   title: string
@@ -17,6 +18,7 @@ export interface ToolHeaderProps {
   category?: string
   toolId?: string
 }
+
 
 export function ToolHeader({
   title,
@@ -55,7 +57,13 @@ export function ToolHeader({
 
   return (
     <div className="text-center mb-8">
+      <ToolJsonLd
+        name={title}
+        description={description}
+        url={`https://dev-kit.tech${currentTool?.href || pathname}`}
+      />
       <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+
         <Badge
           variant="outline"
           className="gap-1.5 border-purple-500/40 bg-purple-500/10 text-purple-400 font-medium py-1 px-3"

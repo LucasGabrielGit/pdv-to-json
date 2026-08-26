@@ -22,9 +22,13 @@ import {
   Sliders,
   Network,
   Type,
+  GitCommit,
+  Laptop,
+  ShieldCheck,
   type LucideIcon,
   Database,
 } from "lucide-react";
+
 
 export type ToolCategory = "converters" | "utilities" | "ai";
 export type ToolStatus = "active" | "coming-soon";
@@ -406,7 +410,68 @@ export const tools: Tool[] = [
     ],
   },
 
+  {
+    id: "user-agent",
+    name: "User-Agent Inspector",
+    description:
+      "Decode and inspect User-Agent strings, browser engine, operating system, hardware, and bots.",
+    href: "/tools/user-agent",
+    icon: Laptop,
+    category: "utilities",
+    status: "active",
+    keywords: [
+      "user-agent",
+      "ua",
+      "browser",
+      "os",
+      "device",
+      "hardware",
+      "bot",
+      "crawler",
+      "screen",
+    ],
+  },
+  {
+    id: "bcrypt-generator",
+    name: "Bcrypt Hash & Verifier",
+    description:
+      "Generate secure Bcrypt password hashes with custom salt rounds and test hash matches locally.",
+    href: "/tools/bcrypt-generator",
+    icon: ShieldCheck,
+    category: "utilities",
+    status: "active",
+    keywords: [
+      "bcrypt",
+      "password",
+      "hash",
+      "salt",
+      "verify",
+      "crypto",
+      "security",
+    ],
+  },
+
   // ── AI-Powered ──
+  {
+    id: "git-commit",
+    name: "AI Git Commit & PR Generator",
+    description:
+      "Generate Conventional Commits messages, Gitmojis, and Pull Request descriptions from git diffs.",
+    href: "/tools/git-commit",
+    icon: GitCommit,
+    category: "ai",
+    status: "active",
+    keywords: [
+      "git",
+      "commit",
+      "pr",
+      "pull request",
+      "conventional commits",
+      "gitmoji",
+      "diff",
+      "ai",
+    ],
+  },
   {
     id: "ai-sql",
     name: "AI SQL Generator",
