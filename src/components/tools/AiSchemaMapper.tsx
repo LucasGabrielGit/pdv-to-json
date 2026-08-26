@@ -11,6 +11,7 @@ import {
   Download,
   Table,
   Archive,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
@@ -60,6 +61,7 @@ export default function AiSchemaMapper() {
   );
   const [customApiKey, setCustomApiKey] = useState("");
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [aiMode, setAiMode] = useState<"turbo" | "deep">("turbo");
 
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<SchemaResult | null>(null);
@@ -82,6 +84,7 @@ export default function AiSchemaMapper() {
         body: JSON.stringify({
           schemaInput: schemaInput.trim(),
           dialect,
+          aiMode,
           customApiKey: customApiKey.trim() || undefined,
         }),
       });
@@ -210,6 +213,39 @@ export default function AiSchemaMapper() {
                 <option value="mysql">MySQL / MariaDB</option>
                 <option value="sqlite">SQLite</option>
               </select>
+            </div>
+
+            <div className="flex items-center bg-black/40 border border-purple-500/30 rounded-lg p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => setAiMode("turbo")}
+                className={`px-2.5 py-1 rounded-md transition-all font-semibold flex items-center gap-1 text-[11px] cursor-pointer ${
+                  aiMode === "turbo"
+                    ? "bg-purple-600 text-white shadow-xs"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+                title="Ultra-fast generation (~1.2s)"
+              >
+                <Zap className="size-3 text-amber-400" /> Turbo (~1.2s)
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  requirePro("Deep Schema Architecture", () =>
+                    setAiMode("deep")
+                  )
+                }
+                className={`px-2.5 py-1 rounded-md transition-all font-semibold flex items-center gap-1.5 text-[11px] cursor-pointer ${
+                  aiMode === "deep"
+                    ? "bg-purple-600 text-white shadow-xs"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+                title="Deep relational & foreign-key mapping (~3.5s)"
+              >
+                <Sparkles className="size-3 text-cyan-400" />
+                <span>Deep (~3.5s)</span>
+                {!isProOrByok && <ProBadge />}
+              </button>
             </div>
 
             <Button

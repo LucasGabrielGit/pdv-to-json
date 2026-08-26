@@ -12,6 +12,7 @@ export async function POST(req: Request) {
       code = '',
       language = 'typescript',
       goal = 'modernize-react19',
+      aiMode = 'turbo',
       customApiKey,
     } = body
 
@@ -109,8 +110,10 @@ CRITICAL: Return strictly valid parseable JSON matching this schema:
   "spaceComplexity": "O(N)"
 }`
 
+    const selectedModel = aiMode === 'deep' ? 'gemini-2.5-pro' : 'gemini-2.5-flash'
+
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: selectedModel,
       contents: `${systemPrompt}\n\nCode to Refactor:\n${code.slice(0, 15000)}`,
       config: {
         responseMimeType: 'application/json',

@@ -8,7 +8,12 @@ export const dynamic = 'force-dynamic'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { code, language = 'javascript', customApiKey } = body
+    const {
+      code,
+      language = 'javascript',
+      aiMode = 'turbo',
+      customApiKey,
+    } = body
 
     if (!code || typeof code !== 'string' || !code.trim()) {
       return NextResponse.json(
@@ -107,8 +112,10 @@ Respond strictly in valid JSON format matching this schema:
   "unitTestCode": "// Unit test sample here"
 }`
 
+    const selectedModel = aiMode === 'deep' ? 'gemini-2.5-pro' : 'gemini-2.5-flash'
+
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: selectedModel,
       contents: `${systemPrompt}\n\nHere is the code to analyze:\n\`\`\`${language}\n${code}\n\`\`\``,
       config: {
         responseMimeType: 'application/json',
