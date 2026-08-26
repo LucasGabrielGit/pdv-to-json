@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
+import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -344,15 +345,22 @@ export default function AiDocGenerator() {
             )}
           </div>
 
-          <CodeEditor
-            value={
-              getCurrentCode() ||
-              '// Click "Generate API Specs" to produce OpenAPI and Markdown documentation...'
-            }
-            language={getLanguage()}
-            readOnly
-            height="500px"
-          />
+          {isLoading ? (
+            <AiLoadingState
+              title="Generating API Specs & Documentation..."
+              subtitle="Writing OpenAPI 3.0 specs, request/response schemas & developer guides"
+            />
+          ) : (
+            <CodeEditor
+              value={
+                getCurrentCode() ||
+                '// Click "Generate API Specs" to view OpenAPI & docs...'
+              }
+              language={getLanguage()}
+              readOnly
+              height="500px"
+            />
+          )}
         </div>
       </div>
     </div>

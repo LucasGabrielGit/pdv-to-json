@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
+import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -350,15 +351,22 @@ export default function AiSchemaMapper() {
             )}
           </div>
 
-          <CodeEditor
-            value={
-              getCurrentCode() ||
-              '// Click "Map to All ORMs" to generate schemas...'
-            }
-            language={getLanguage()}
-            readOnly
-            height="500px"
-          />
+          {isLoading ? (
+            <AiLoadingState
+              title="Mapping Database Schema..."
+              subtitle="Translating SQL DDL to Prisma, Drizzle, TypeORM & Zod models"
+            />
+          ) : (
+            <CodeEditor
+              value={
+                getCurrentCode() ||
+                '// Click "Map to All ORMs" to generate schemas...'
+              }
+              language={getLanguage()}
+              readOnly
+              height="500px"
+            />
+          )}
         </div>
       </div>
     </div>

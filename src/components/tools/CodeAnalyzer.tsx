@@ -34,6 +34,7 @@ import { createClient } from '@/lib/supabase/client'
 
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
 import { PricingModal } from '@/components/pricing/PricingModal'
+import { AiLoadingState } from '@/components/ai/AiLoadingState'
 import CodeEditor from '@/components/CodeEditor'
 
 import { Badge } from '@/components/ui/badge'
@@ -383,7 +384,12 @@ export default function CodeAnalyzer() {
             )}
           </div>
 
-          {analysisResult ? (
+          {isLoading ? (
+            <AiLoadingState
+              title="Running Deep Code Audit..."
+              subtitle="Auditing security vulnerabilities, time/space complexity & code smells"
+            />
+          ) : analysisResult ? (
             <div className="space-y-4 max-h-125 overflow-y-auto pr-1">
               {/* Score Header Card */}
               <div className="p-4 rounded-2xl bg-black/40 border border-purple-500/30 flex items-center gap-4">

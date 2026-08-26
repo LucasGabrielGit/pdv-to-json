@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
+import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -330,15 +331,22 @@ export default function AiUnitTestGenerator() {
             )}
           </div>
 
-          <CodeEditor
-            value={
-              result?.testCode ||
-              '// Click "Generate Test Suite" to create unit tests...'
-            }
-            language={language}
-            readOnly
-            height="500px"
-          />
+          {isLoading ? (
+            <AiLoadingState
+              title="Generating Comprehensive Test Suite..."
+              subtitle="Crafting Vitest/Jest mocks, assertions & edge-case coverage"
+            />
+          ) : (
+            <CodeEditor
+              value={
+                result?.testCode ||
+                '// Click "Generate Test Suite" to create unit tests...'
+              }
+              language={language}
+              readOnly
+              height="500px"
+            />
+          )}
         </div>
       </div>
 

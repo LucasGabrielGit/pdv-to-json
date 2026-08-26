@@ -25,6 +25,7 @@ import { createClient } from '@/lib/supabase/client'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
 import { PricingModal } from '@/components/pricing/PricingModal'
+import { AiLoadingState } from '@/components/ai/AiLoadingState'
 import CodeEditor from '@/components/CodeEditor'
 
 import { Button } from '@/components/ui/button'
@@ -281,7 +282,12 @@ export default function AiSqlGenerator() {
             )}
           </div>
 
-          {result ? (
+          {isLoading ? (
+            <AiLoadingState
+              title="Synthesizing SQL Query..."
+              subtitle="Structuring indexes, joins, CTEs and dialect optimizations"
+            />
+          ) : result ? (
             <div className="space-y-4 max-h-125 overflow-y-auto pr-1">
               <div className="rounded-2xl border border-purple-500/30 overflow-hidden bg-black/40 shadow-inner">
                 <CodeEditor

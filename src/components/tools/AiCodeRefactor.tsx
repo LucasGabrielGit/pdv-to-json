@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
+import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -330,15 +331,22 @@ export default function AiCodeRefactor() {
             )}
           </div>
 
-          <CodeEditor
-            value={
-              result?.refactoredCode ||
-              '// Click "Refactor & Optimize" to view improved code...'
-            }
-            language={language}
-            readOnly
-            height="500px"
-          />
+          {isLoading ? (
+            <AiLoadingState
+              title="Refactoring & Modernizing Code..."
+              subtitle="Applying AST transformations, Clean Code principles & strict typing"
+            />
+          ) : (
+            <CodeEditor
+              value={
+                result?.refactoredCode ||
+                '// Click "Refactor & Optimize" to view improved code...'
+              }
+              language={language}
+              readOnly
+              height="500px"
+            />
+          )}
         </div>
       </div>
 

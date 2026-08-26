@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
+import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -296,8 +297,16 @@ export default function AiRegexTool() {
         </CardContent>
       </Card>
 
+      {/* Loading State */}
+      {isLoading && (
+        <AiLoadingState
+          title="Analyzing & Building Regex Pattern..."
+          subtitle="Compiling token patterns, boundary conditions & ReDoS security checks"
+        />
+      )}
+
       {/* Results Section */}
-      {result && (
+      {result && !isLoading && (
         <div className="space-y-6">
           {/* Main Pattern Output Card */}
           <div className="p-5 rounded-2xl border border-purple-500/30 bg-[#0d1527] shadow-xl space-y-3">

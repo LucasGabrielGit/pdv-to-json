@@ -39,6 +39,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
 import { PricingModal } from "@/components/pricing/PricingModal";
+import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import CodeEditor from "@/components/CodeEditor";
 
 const TYPES = [
@@ -346,7 +347,12 @@ export default function CodeGenerator() {
             )}
           </div>
 
-          {generatorResult ? (
+          {isLoading ? (
+            <AiLoadingState
+              title="Generating Code with AI..."
+              subtitle="Writing production-ready code with type safety, documentation & clean patterns"
+            />
+          ) : generatorResult ? (
             <div className="space-y-4 max-h-130 overflow-y-auto pr-1">
               {/* Generated Code Box */}
               <div className="p-3.5 rounded-2xl bg-black/40 border border-emerald-500/30 space-y-2">

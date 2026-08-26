@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
+import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -296,7 +297,12 @@ export default function GitCommitGenerator() {
             )}
           </div>
 
-          {result ? (
+          {isLoading ? (
+            <AiLoadingState
+              title="Analyzing Git Changes & Diff..."
+              subtitle="Synthesizing Conventional Commits, Gitmojis & Pull Request templates"
+            />
+          ) : result ? (
             <div className="space-y-4 max-h-125 overflow-y-auto pr-1">
               {activeOutputTab === "conventional" && (
                 <div className="space-y-3">
