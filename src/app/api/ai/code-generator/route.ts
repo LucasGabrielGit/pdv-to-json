@@ -8,7 +8,13 @@ export const dynamic = 'force-dynamic'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { prompt, language = 'typescript', type = 'full', customApiKey } = body
+    const {
+      prompt,
+      language = 'typescript',
+      type = 'full',
+      aiMode = 'turbo', // 'turbo' (~1.2s) | 'deep' (~3.5s)
+      customApiKey,
+    } = body
 
     if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
       return NextResponse.json(
@@ -99,11 +105,14 @@ Respond strictly in valid JSON format matching this schema:
   "usageExample": "// How to call/use this code in an application"
 }`
 
+    const selectedModel = aiMode === 'deep' ? 'gemini-2.5-flash' : 'gemini-2.0-flash'
+
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: selectedModel,
       contents: `${systemPrompt}\n\nUser Prompt:\n${prompt}`,
       config: {
         responseMimeType: 'application/json',
+        temperature: 0.2,
       },
     })
 

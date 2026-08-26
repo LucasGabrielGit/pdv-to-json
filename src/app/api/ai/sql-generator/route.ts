@@ -106,10 +106,11 @@ Respond strictly in valid JSON format matching this schema:
 }`
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       contents: `${systemPrompt}\n\nUser Request:\n${prompt}`,
       config: {
         responseMimeType: 'application/json',
+        temperature: 0.1,
       },
     })
 

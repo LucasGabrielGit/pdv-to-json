@@ -11,6 +11,7 @@ export async function POST(req: Request) {
     const {
       schemaInput = '',
       dialect = 'postgres',
+      aiMode = 'turbo', // 'turbo' (~1.2s) | 'deep' (~3.5s)
       customApiKey,
     } = body
 
@@ -106,11 +107,14 @@ CRITICAL: Return strictly valid parseable JSON matching this schema:
   "summary": "Brief architectural summary of the tables, primary keys, and foreign relations detected."
 }`
 
+    const selectedModel = aiMode === 'deep' ? 'gemini-2.5-flash' : 'gemini-2.0-flash'
+
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: selectedModel,
       contents: `${systemPrompt}\n\nInput Schema:\n${schemaInput.slice(0, 15000)}`,
       config: {
         responseMimeType: 'application/json',
+        temperature: 0.2,
       },
     })
 

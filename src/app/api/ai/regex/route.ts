@@ -147,10 +147,11 @@ CRITICAL: Return strictly valid parseable JSON matching this schema:
     }
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       contents: `${systemPrompt}\n\n${userContent}`,
       config: {
         responseMimeType: 'application/json',
+        temperature: 0.1,
       },
     })
 

@@ -13,6 +13,7 @@ export async function POST(req: Request) {
       language = 'typescript',
       framework = 'vitest',
       coverageFocus = 'comprehensive',
+      aiMode = 'turbo', // 'turbo' (~1.2s) | 'deep' (~3.5s)
       customApiKey,
     } = body
 
@@ -111,11 +112,14 @@ CRITICAL: Return strictly valid parseable JSON matching this schema:
   "mockExplanation": "Explanation of mocks and fixtures created."
 }`
 
+    const selectedModel = aiMode === 'deep' ? 'gemini-2.5-flash' : 'gemini-2.0-flash'
+
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: selectedModel,
       contents: `${systemPrompt}\n\nSource Code:\n${code.slice(0, 15000)}`,
       config: {
         responseMimeType: 'application/json',
+        temperature: 0.2,
       },
     })
 
