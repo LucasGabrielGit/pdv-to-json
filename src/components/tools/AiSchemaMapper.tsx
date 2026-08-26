@@ -237,10 +237,10 @@ export default function AiSchemaMapper() {
       </Card>
 
       {/* Side-by-Side Editors (500px) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left: Input SQL / Schema */}
-        <div className="space-y-3 flex flex-col">
-          <div className="flex items-center justify-between">
+        <div className="space-y-2.5 flex flex-col">
+          <div className="flex items-center justify-between h-9 min-h-[36px]">
             <Label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
               <Table className="size-3.5 text-purple-400" /> SQL DDL / Schema Input
             </Label>
@@ -259,47 +259,47 @@ export default function AiSchemaMapper() {
         </div>
 
         {/* Right: Generated ORM Schema Output */}
-        <div className="space-y-3 flex flex-col">
-          <div className="flex items-center justify-between">
+        <div className="space-y-2.5 flex flex-col">
+          <div className="flex items-center justify-between h-9 min-h-[36px]">
             <Tabs
               value={activeOutputTab}
               onValueChange={(v) => setActiveOutputTab(v as typeof activeOutputTab)}
             >
-              <TabsList className="bg-black/40 border border-white/5 p-0.5 h-7">
+              <TabsList className="bg-black/40 border border-white/5 p-0.5 h-8">
                 <TabsTrigger
                   value="prisma"
-                  className="text-[10px] px-2.5 h-6 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold"
+                  className="text-[10px] px-2.5 h-7 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold"
                 >
                   Prisma
                 </TabsTrigger>
                 <TabsTrigger
                   value="drizzle"
-                  className="text-[10px] px-2.5 h-6 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold"
+                  className="text-[10px] px-2.5 h-7 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold"
                 >
                   Drizzle ORM
                 </TabsTrigger>
                 <TabsTrigger
                   value="typeorm"
-                  className="text-[10px] px-2.5 h-6 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold"
+                  className="text-[10px] px-2.5 h-7 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold"
                 >
                   TypeORM
                 </TabsTrigger>
                 <TabsTrigger
                   value="zod"
-                  className="text-[10px] px-2.5 h-6 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold"
+                  className="text-[10px] px-2.5 h-7 data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold"
                 >
                   Zod Schemas
                 </TabsTrigger>
               </TabsList>
             </Tabs>
 
-            {result && (
+            {result ? (
               <div className="flex items-center gap-1.5">
                 <Button
                   size="xs"
                   variant="outline"
                   onClick={handleCopy}
-                  className="h-6 text-xs border-purple-500/30 text-slate-200 hover:text-white"
+                  className="h-7 text-xs border-purple-500/30 text-slate-200 hover:text-white"
                 >
                   {copied ? <Check className="size-3 mr-1 text-emerald-400" /> : <Copy className="size-3 mr-1" />}
                   {copied ? 'Copied!' : 'Copy'}
@@ -307,12 +307,16 @@ export default function AiSchemaMapper() {
                 <Button
                   size="xs"
                   onClick={handleDownload}
-                  className="h-6 text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold"
+                  className="h-7 text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold"
                 >
                   <Download className="size-3 mr-1" />
                   Download
                 </Button>
               </div>
+            ) : (
+              <Badge variant="outline" className="text-[10px] border-white/10 text-slate-400 font-mono">
+                Output
+              </Badge>
             )}
           </div>
 

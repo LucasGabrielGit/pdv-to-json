@@ -223,10 +223,10 @@ export default function AiUnitTestGenerator() {
       </Card>
 
       {/* Side-by-Side Editors (500px) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left: Input Code */}
-        <div className="space-y-3 flex flex-col">
-          <div className="flex items-center justify-between">
+        <div className="space-y-2.5 flex flex-col">
+          <div className="flex items-center justify-between h-9 min-h-[36px]">
             <Label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
               <FileCode className="size-3.5 text-purple-400" /> Source Code to Test
             </Label>
@@ -245,19 +245,19 @@ export default function AiUnitTestGenerator() {
         </div>
 
         {/* Right: Generated Unit Tests */}
-        <div className="space-y-3 flex flex-col">
-          <div className="flex items-center justify-between">
+        <div className="space-y-2.5 flex flex-col">
+          <div className="flex items-center justify-between h-9 min-h-[36px]">
             <Label className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
               <FlaskConical className="size-3.5 text-cyan-400" /> Generated Test Suite ({framework})
             </Label>
 
-            {result && (
+            {result ? (
               <div className="flex items-center gap-1.5">
                 <Button
                   size="xs"
                   variant="outline"
                   onClick={handleCopy}
-                  className="h-6 text-xs border-purple-500/30 text-slate-200 hover:text-white"
+                  className="h-7 text-xs border-purple-500/30 text-slate-200 hover:text-white"
                 >
                   {copied ? <Check className="size-3 mr-1 text-emerald-400" /> : <Copy className="size-3 mr-1" />}
                   {copied ? 'Copied!' : 'Copy'}
@@ -265,12 +265,16 @@ export default function AiUnitTestGenerator() {
                 <Button
                   size="xs"
                   onClick={handleDownload}
-                  className="h-6 text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold"
+                  className="h-7 text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold"
                 >
                   <Download className="size-3 mr-1" />
                   Download
                 </Button>
               </div>
+            ) : (
+              <Badge variant="outline" className="text-[10px] border-white/10 text-slate-400 font-mono">
+                Output
+              </Badge>
             )}
           </div>
 

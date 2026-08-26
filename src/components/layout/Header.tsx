@@ -87,6 +87,5 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
         <UserMenu />
       </div>
     </header>
-
   );
 }
