@@ -1,40 +1,39 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import {
-  PanelLeftClose,
-  PanelLeft,
-  Wrench,
-  ExternalLink,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { PanelLeftClose, PanelLeft, Wrench, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   categories,
   getToolsByCategory,
   tools,
   type Tool,
-} from '@/lib/tools-registry'
-import { useFavorites } from '@/hooks/useFavorites'
-import { cn } from '@/lib/utils'
-import { useTranslation } from '@/contexts/I18nContext'
-import { Logo, LogoIcon } from './Logo'
+} from "@/lib/tools-registry";
+import { useFavorites } from "@/hooks/useFavorites";
+import { cn } from "@/lib/utils";
+import { useTranslation } from "@/contexts/I18nContext";
+import { Logo, LogoIcon } from "./Logo";
 
 interface SidebarProps {
-  isOpen?: boolean
-  onClose?: () => void
+  isOpen?: boolean;
+  collapsed?: boolean;
+  onClose?: () => void;
 }
 
-export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
-  const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
-  const { t } = useTranslation()
-  const { favorites } = useFavorites()
+export function Sidebar({
+  isOpen = false,
+  collapsed = false,
+  onClose,
+}: SidebarProps) {
+  const pathname = usePathname();
+  const { t } = useTranslation();
+  const { favorites } = useFavorites();
 
-  const favoriteTools = tools.filter((tool) => favorites.includes(tool.id))
+  const favoriteTools = tools.filter((tool) => favorites.includes(tool.id));
 
   const categoryTranslationMap: Record<string, string> = {
     converters: t.sidebar.categories.converters,
@@ -42,17 +41,15 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     formatters: t.sidebar.categories.formatters,
     generators: t.sidebar.categories.generators,
     ai: t.sidebar.categories.ai,
-  }
-
-
+  };
 
   return (
     <>
       {/* Mobile overlay */}
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity md:hidden',
-          isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+          "fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity md:hidden",
+          isOpen ? "opacity-100" : "pointer-events-none opacity-0",
         )}
         onClick={onClose}
         aria-hidden={!isOpen}
@@ -61,15 +58,17 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* Sidebar panel */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 md:sticky md:top-0 md:z-30 shrink-0',
+          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 md:sticky md:top-0 md:z-30 shrink-0",
           // Mobile state
-          isOpen ? 'translate-x-0 w-64 shadow-2xl' : '-translate-x-full md:translate-x-0',
+          isOpen
+            ? "translate-x-0 w-64 shadow-2xl"
+            : "-translate-x-full md:translate-x-0",
           // Desktop collapsed state
-          collapsed ? 'md:w-16' : 'md:w-64'
+          collapsed ? "md:w-16" : "md:w-64",
         )}
       >
         {/* Logo area */}
-        <div className="flex h-16 items-center justify-between px-4 shrink-0">
+        <div className="flex h-16 items-center justify-between px-3 shrink-0">
           {(!collapsed || isOpen) && (
             <Link
               href="/"
@@ -80,25 +79,13 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             </Link>
           )}
           {collapsed && !isOpen && (
-            <Link href="/" className="mx-auto hover:opacity-90 transition-opacity">
+            <Link
+              href="/"
+              className="mx-auto hover:opacity-90 transition-opacity flex items-center justify-center"
+            >
               <LogoIcon size={32} />
             </Link>
           )}
-
-
-          {/* Desktop collapse toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden size-8 text-muted-foreground hover:text-foreground md:flex shrink-0"
-            onClick={() => setCollapsed(!collapsed)}
-          >
-            {collapsed ? (
-              <PanelLeft className="size-4" />
-            ) : (
-              <PanelLeftClose className="size-4" />
-            )}
-          </Button>
 
           {/* Mobile close button */}
           <Button
@@ -138,8 +125,8 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           )}
 
           {categories.map((cat) => {
-            const catTools = getToolsByCategory(cat.id)
-            if (catTools.length === 0) return null
+            const catTools = getToolsByCategory(cat.id);
+            if (catTools.length === 0) return null;
 
             return (
               <div key={cat.id}>
@@ -148,7 +135,6 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     {cat.emoji} {categoryTranslationMap[cat.id] || cat.label}
                   </p>
                 )}
-
 
                 <ul className="space-y-0.5">
                   {catTools.map((tool) => (
@@ -162,41 +148,48 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                   ))}
                 </ul>
               </div>
-            )
+            );
           })}
         </nav>
       </aside>
     </>
-  )
+  );
 }
 
 /* ── Sidebar Item ── */
 interface SidebarItemProps {
-  tool: Tool
-  isActive: boolean
-  collapsed: boolean
-  onNavigate?: () => void
+  tool: Tool;
+  isActive: boolean;
+  collapsed: boolean;
+  onNavigate?: () => void;
 }
 
-function SidebarItem({ tool, isActive, collapsed, onNavigate }: SidebarItemProps) {
-  const Icon = tool.icon
-  const isComingSoon = tool.status === 'coming-soon'
+function SidebarItem({
+  tool,
+  isActive,
+  collapsed,
+  onNavigate,
+}: SidebarItemProps) {
+  const Icon = tool.icon;
+  const isComingSoon = tool.status === "coming-soon";
 
   const content = (
     <div
       className={cn(
-        'group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all',
+        "group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all",
         isActive
-          ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm'
-          : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground',
-        isComingSoon && 'opacity-50 cursor-not-allowed',
-        collapsed && 'justify-center px-0'
+          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm"
+          : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+        isComingSoon && "opacity-50 cursor-not-allowed",
+        collapsed && "justify-center px-0",
       )}
     >
       <Icon
         className={cn(
-          'size-4 shrink-0',
-          isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-primary/70'
+          "size-4 shrink-0",
+          isActive
+            ? "text-primary"
+            : "text-muted-foreground group-hover:text-primary/70",
         )}
       />
       {!collapsed && (
@@ -213,10 +206,10 @@ function SidebarItem({ tool, isActive, collapsed, onNavigate }: SidebarItemProps
         </>
       )}
     </div>
-  )
+  );
 
   if (isComingSoon) {
-    return <li title={`${tool.name} — Coming soon`}>{content}</li>
+    return <li title={`${tool.name} — Coming soon`}>{content}</li>;
   }
 
   return (
@@ -225,15 +218,11 @@ function SidebarItem({ tool, isActive, collapsed, onNavigate }: SidebarItemProps
         {content}
       </Link>
     </li>
-  )
+  );
 }
 
 /* ── Mobile trigger button (exported for Header) ── */
-export function SidebarMobileTrigger({
-  onClick,
-}: {
-  onClick: () => void
-}) {
+export function SidebarMobileTrigger({ onClick }: { onClick: () => void }) {
   return (
     <Button
       variant="ghost"
@@ -243,6 +232,5 @@ export function SidebarMobileTrigger({
     >
       <Wrench className="size-5" />
     </Button>
-  )
+  );
 }
-

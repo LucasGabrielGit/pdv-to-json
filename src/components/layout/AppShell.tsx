@@ -12,6 +12,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
 
   return (
@@ -19,14 +20,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <TooltipProvider>
         <div className="flex min-h-screen">
           {/* Sidebar */}
-          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          <Sidebar
+            isOpen={sidebarOpen}
+            collapsed={collapsed}
+            onClose={() => setSidebarOpen(false)}
+          />
 
           {/* Main content area */}
           <div className="flex flex-1 flex-col min-w-0">
             <Header
               onMenuClick={() => setSidebarOpen(!sidebarOpen)}
               onSearchClick={() => setCommandOpen(true)}
+              collapsed={collapsed}
+              onToggleCollapse={() => setCollapsed(!collapsed)}
             />
+
 
             {/* Page content */}
             <main

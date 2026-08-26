@@ -2,9 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-
 import { usePathname } from "next/navigation";
-import { Menu, Search, Sparkles } from "lucide-react";
+
+import { Menu, Search, Sparkles, PanelLeft, PanelLeftClose } from "lucide-react";
+
 
 import { useTranslation } from "@/contexts/I18nContext";
 import { Button } from "@/components/ui/button";
@@ -16,16 +17,23 @@ import { LogoIcon } from "./Logo";
 interface HeaderProps {
   onMenuClick: () => void;
   onSearchClick?: () => void;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
-export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
+export function Header({
+  onMenuClick,
+  onSearchClick,
+  collapsed = false,
+  onToggleCollapse,
+}: HeaderProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
 
   const currentTool = tools.find((t) => t.href === pathname);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/40 bg-background/80 backdrop-blur-xl px-4 md:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/40 bg-background/80 backdrop-blur-xl px-4 md:px-6">
       {/* Mobile menu button */}
       <Button
         variant="ghost"
@@ -37,8 +45,25 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
         <Menu className="size-5" />
       </Button>
 
+      {/* Desktop Sidebar Collapse Toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="hidden md:flex size-8 text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
+        onClick={onToggleCollapse}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        {collapsed ? (
+          <PanelLeft className="size-4 text-purple-400" />
+        ) : (
+          <PanelLeftClose className="size-4" />
+        )}
+      </Button>
+
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm">
+
         <Link
           href="/"
           className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1.5"
