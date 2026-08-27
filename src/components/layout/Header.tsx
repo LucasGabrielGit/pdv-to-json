@@ -80,6 +80,7 @@ export function Header({
       <div className="flex items-center gap-2">
         <button
           onClick={onSearchClick}
+          aria-label="Search developer tools"
           className="hidden sm:flex items-center h-8.5 gap-2 rounded-full border border-purple-500/20 bg-muted/40 hover:bg-muted/70 hover:border-purple-500/40 px-3 text-xs text-muted-foreground transition-all cursor-pointer shadow-sm"
           title={`Search tools (${t.common.searchKbd})`}
         >
