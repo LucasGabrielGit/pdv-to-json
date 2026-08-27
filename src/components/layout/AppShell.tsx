@@ -34,27 +34,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             />
 
             <main
-              className="flex-1 relative"
-              style={{
-                background:
-                  "radial-gradient(ellipse at top, #1a1040 0%, #0f0f1a 60%)",
-              }}
+              className="flex-1 relative bg-gradient-to-b from-[#1a1040]/80 via-[#0f0f1a] to-[#0a0a14]"
             >
               <div
-                className="fixed -top-50 -left-50 w-150 h-150 rounded-full pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)",
-                  filter: "blur(40px)",
-                }}
+                className="pointer-events-none fixed -top-40 -left-40 size-96 rounded-full bg-purple-600/10 blur-3xl"
               />
               <div
-                className="fixed -bottom-50 -right-50 w-150 h-150 rounded-full pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%)",
-                  filter: "blur(40px)",
-                }}
+                className="pointer-events-none fixed -bottom-40 -right-40 size-96 rounded-full bg-cyan-500/8 blur-3xl"
               />
 
               {children}

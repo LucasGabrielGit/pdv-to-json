@@ -35,15 +35,7 @@ export default function HomePage() {
           </Badge>
         </div>
 
-        <h1
-          className="text-5xl md:text-7xl font-black mb-4 tracking-tight"
-          style={{
-            background:
-              'linear-gradient(135deg, #f1f5f9 0%, #7c3aed 50%, #06b6d4 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
+        <h1 className="text-5xl md:text-7xl font-black mb-4 tracking-tight bg-linear-to-r from-slate-100 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
           Developer Tools
         </h1>
         <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed mb-2">
