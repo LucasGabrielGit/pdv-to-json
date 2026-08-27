@@ -320,3 +320,16 @@
   margin: 1rem 0 !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
 }
+
+/* ── Pro Member 100% Ad-Free Guarantee ── */
+body.is-pro-member .adsbygoogle,
+body.is-pro-member ins.adsbygoogle,
+body.is-pro-member [data-ad-client],
+body.is-pro-member [aria-label="Advertisement"],
+body.is-pro-member iframe[id^="google_ads_iframe"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  pointer-events: none !important;
+}

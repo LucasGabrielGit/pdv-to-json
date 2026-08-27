@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ADS_CONFIG } from '@/config/ads'
+import { getUserCredits } from '@/utils/creditsManager'
 
 interface AdSenseProps {
   /** The ad unit slot ID from your AdSense dashboard */
@@ -19,45 +20,31 @@ declare global {
   }
 }
 
-/**
- * Google AdSense ad unit component.
- *
- * Usage:
- *   <AdSense slot="1234567890" />
- *
- * The AdSense script is injected once into <head> on first mount.
- * Each instance pushes its own init to the adsbygoogle queue.
- */
 export function AdSense({ slot, format = 'auto', className = '' }: AdSenseProps) {
   const initialized = useRef(false)
+  const [isPro, setIsPro] = useState(false)
 
   useEffect(() => {
-    if (!ADS_CONFIG.enabled) return
+    const creds = getUserCredits()
+    if (creds.isProSubscriber) {
+      setIsPro(true)
+      return
+    }
+
+    if (!ADS_CONFIG.enabled || slot === 'XXXXXXXXXX') return
     if (initialized.current) return
     initialized.current = true
-
-    // Inject the AdSense script into <head> if it hasn't been added yet
-    const scriptId = 'google-adsense-script'
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement('script')
-      script.id = scriptId
-      script.async = true
-      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADS_CONFIG.PUBLISHER_ID}`
-      script.crossOrigin = 'anonymous'
-      document.head.appendChild(script)
-    }
 
     // Push ad init
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({})
     } catch {
-      // AdSense may throw in dev or adblocker environments — silently ignore
+      // Silently ignore in dev or adblockers
     }
+  }, [slot])
 
-  }, [])
-
-  if (!ADS_CONFIG.enabled) return null
+  if (!ADS_CONFIG.enabled || isPro || slot === 'XXXXXXXXXX') return null
 
   return (
     <div

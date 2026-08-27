@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { AppShell } from '@/components/layout/AppShell'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import { ADS_CONFIG } from '@/config/ads'
+import { AdSenseScript } from '@/components/AdSenseScript'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -57,13 +57,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        {ADS_CONFIG.PUBLISHER_ID && (
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADS_CONFIG.PUBLISHER_ID}`}
-            crossOrigin="anonymous"
-          />
-        )}
+        <AdSenseScript />
       </head>
       <body>
         {/* Structured Data (Schema.org WebSite & Organization) */}
