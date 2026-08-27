@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { AppShell } from '@/components/layout/AppShell'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import Script from 'next/script'
 import { ADS_CONFIG } from '@/config/ads'
 import './globals.css'
 
@@ -58,18 +57,15 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-      </head>
-      <body>
-        {/* Google AdSense Script — loaded only when enabled */}
-        {ADS_CONFIG.enabled && ADS_CONFIG.PUBLISHER_ID && (
-          <Script
+        {ADS_CONFIG.PUBLISHER_ID && (
+          <script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADS_CONFIG.PUBLISHER_ID}`}
             crossOrigin="anonymous"
-            strategy="afterInteractive"
           />
         )}
-
+      </head>
+      <body>
         {/* Structured Data (Schema.org WebSite & Organization) */}
         <script
           type="application/ld+json"

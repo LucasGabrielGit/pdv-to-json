@@ -17,6 +17,6 @@ export const ADS_CONFIG = {
     betweenIO: "XXXXXXXXXX",
   },
 
-  /** Set to false to globally disable ads (e.g. in development) */
-  enabled: false,
+  /** Set to true to enable AdSense verification script and ads */
+  enabled: true,
 } as const;
