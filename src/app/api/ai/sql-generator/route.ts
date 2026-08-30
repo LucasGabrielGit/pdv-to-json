@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
 import { safeParseLlmJson } from '@/utils/safeJsonParse'
 import { createClient } from '@/lib/supabase/server'
+import {
+  verifyServerCredits,
+  deductServerCreditPostSuccess,
+} from '@/lib/serverCreditGuard'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,52 +21,14 @@ export async function POST(req: Request) {
       )
     }
 
-    // Check Supabase authentication
+    // Pre-check credits
     const supabase = await createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    // If user is authenticated and not using BYOK, verify and deduct credit
-    if (user && !customApiKey) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('free_credits_remaining, purchased_credits, is_pro')
-        .eq('id', user.id)
-        .single()
-
-      if (profile && !profile.is_pro) {
-        const total =
-          (profile.free_credits_remaining || 0) +
-          (profile.purchased_credits || 0)
-
-        if (total <= 0) {
-          return NextResponse.json(
-            {
-              error:
-                'You have reached your daily credit limit. Please enter a custom Gemini API Key or upgrade.',
-            },
-            { status: 403 }
-          )
-        }
-
-        // Deduct 1 credit
-        if (profile.free_credits_remaining > 0) {
-          await supabase
-            .from('profiles')
-            .update({
-              free_credits_remaining: profile.free_credits_remaining - 1,
-            })
-            .eq('id', user.id)
-        } else if (profile.purchased_credits > 0) {
-          await supabase
-            .from('profiles')
-            .update({
-              purchased_credits: profile.purchased_credits - 1,
-            })
-            .eq('id', user.id)
-        }
-      }
+    const creditCheck = await verifyServerCredits(supabase, customApiKey)
+    if (!creditCheck.allowed && creditCheck.errorResponse) {
+      return NextResponse.json(
+        { error: creditCheck.errorResponse.error },
+        { status: creditCheck.errorResponse.status }
+      )
     }
 
     const apiKey = (
@@ -121,6 +87,13 @@ Respond strictly in valid JSON format matching this schema:
       indexSuggestions: ['-- Index suggestions'],
       performanceTips: ['Use proper indexing on foreign keys.'],
     })
+
+    // Deduct credit only upon successful generation
+    await deductServerCreditPostSuccess(
+      supabase,
+      creditCheck,
+      'AI SQL Generator'
+    )
 
     return NextResponse.json({
       success: true,

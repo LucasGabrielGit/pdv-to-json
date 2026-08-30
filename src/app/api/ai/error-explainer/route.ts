@@ -13,16 +13,15 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
     const {
-      code = '',
-      language = 'typescript',
-      goal = 'modernize-react19',
+      errorText = '',
+      language = 'auto',
       aiMode = 'turbo',
       customApiKey,
     } = body
 
-    if (!code || !code.trim()) {
+    if (!errorText || typeof errorText !== 'string' || !errorText.trim()) {
       return NextResponse.json(
-        { error: 'Source code is required for refactoring.' },
+        { error: 'Error log, traceback, or compiler output is required.' },
         { status: 400 }
       )
     }
@@ -56,33 +55,37 @@ export async function POST(req: Request) {
 
     const ai = new GoogleGenAI({ apiKey })
 
-    const systemPrompt = `You are a Principal Software Architect and Code Optimization Specialist.
-Refactor and optimize the provided code according to the chosen objective: "${goal}".
-Language: ${language}
+    const systemPrompt = `You are a Principal Software Debugger, Runtime Engineer, and Compiler Specialist.
+Analyze the provided error message, stack trace, compiler error, or build log.
+Context/Language hint: ${language}
 
-Objectives:
-- 'modernize-react19': Update to latest React 19 hooks, Server Actions, modern ES2024 features, immutable updates, and clean state management.
-- 'optimize-performance': Minimize Big-O time and space complexity, eliminate redundant re-renders/allocations, and optimize hot paths.
-- 'convert-to-ts': Convert plain JavaScript into strictly-typed TypeScript with interfaces, generics, and zero 'any'.
-- 'clean-solid': Refactor for Clean Code, Single Responsibility, Separation of Concerns, and DRY principles.
+Your task:
+1. Identify the exact error type and framework/technology.
+2. Provide a crisp executive summary in clear Portuguese (PT-BR) explaining what went wrong without fluff.
+3. Identify the technical root cause (e.g. undefined property, missing dependency, CORS, database constraint violation, version mismatch).
+4. Provide the exact corrected code snippet or terminal command that fixes the error.
+5. Provide step-by-step guidance on applying the fix.
+6. Provide concrete prevention tips.
 
 CRITICAL: Return strictly valid parseable JSON matching this schema:
 {
-  "refactoredCode": "// Complete modernized and refactored code here",
-  "summary": "Executive summary of the refactoring...",
-  "improvements": [
-    { "title": "Reduced Big-O Complexity", "description": "Replaced O(N^2) nested loop with O(N) Map lookup." },
-    { "title": "Type Safety", "description": "Added strict TypeScript discriminated union interfaces." }
-  ],
-  "timeComplexity": "O(N) (was O(N^2))",
-  "spaceComplexity": "O(N)"
+  "errorType": "TypeError / NullPointerException / HydrationMismatch / DockerBuildFail",
+  "languageOrFramework": "TypeScript / React / Python / Docker / PostgreSQL",
+  "summary": "Resumo direto em português do problema...",
+  "rootCause": "Explicação técnica detalhada da causa raiz...",
+  "solutionCode": "// Código corrigido ou comando terminal para resolver",
+  "explanation": "Explicação passo a passo de como aplicar a correção...",
+  "preventionTips": [
+    "Dica 1 para prevenir esse erro no futuro",
+    "Dica 2..."
+  ]
 }`
 
     const selectedModel = aiMode === 'deep' ? 'gemini-2.5-pro' : 'gemini-2.5-flash'
 
     const response = await ai.models.generateContent({
       model: selectedModel,
-      contents: `${systemPrompt}\n\nCode to Refactor:\n${code.slice(0, 15000)}`,
+      contents: `${systemPrompt}\n\nError Log / Stack Trace:\n${errorText.slice(0, 15000)}`,
       config: {
         responseMimeType: 'application/json',
         temperature: 0.2,
@@ -91,18 +94,20 @@ CRITICAL: Return strictly valid parseable JSON matching this schema:
 
     const responseText = response.text || '{}'
     const resultJson = safeParseLlmJson(responseText, {
-      refactoredCode: '// Refactored code',
-      summary: 'Code refactored successfully.',
-      improvements: [],
-      timeComplexity: 'O(N)',
-      spaceComplexity: 'O(1)',
+      errorType: 'Runtime Error',
+      languageOrFramework: 'General',
+      summary: 'Erro identificado no log fornecido.',
+      rootCause: 'Falha durante a execução da rotina.',
+      solutionCode: '// Código ou comando de correção',
+      explanation: 'Verifique a compatibilidade dos dados e dependências.',
+      preventionTips: ['Adicione validação defensiva.'],
     })
 
     // Deduct credit only upon successful generation
     await deductServerCreditPostSuccess(
       supabase,
       creditCheck,
-      'AI Code Modernizer & Refactor'
+      'AI Error & Stack Trace Explainer'
     )
 
     return NextResponse.json({
@@ -110,9 +115,9 @@ CRITICAL: Return strictly valid parseable JSON matching this schema:
       data: resultJson,
     })
   } catch (err) {
-    console.error('AI Code Refactor API Error:', err)
+    console.error('AI Error Explainer API Error:', err)
     return NextResponse.json(
-      { error: (err as Error).message || 'Failed to refactor code.' },
+      { error: (err as Error).message || 'Failed to analyze error stack trace.' },
       { status: 500 }
     )
   }

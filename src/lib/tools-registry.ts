@@ -30,6 +30,9 @@ import {
   BookOpen,
   type LucideIcon,
   Database,
+  Bug,
+  GitBranch,
+  SlidersHorizontal,
 } from "lucide-react";
 
 
@@ -454,6 +457,48 @@ export const tools: Tool[] = [
       "security",
     ],
   },
+  {
+    id: "env-formatter",
+    name: ".env Formatter & .env.example",
+    description:
+      "Format, validate, sort, and align .env variables. Generate sanitized .env.example files instantly.",
+    href: "/tools/env-formatter",
+    icon: SlidersHorizontal,
+    category: "utilities",
+    status: "active",
+    keywords: [
+      "env",
+      "dotenv",
+      "formatter",
+      "environment",
+      "example",
+      "linter",
+      "config",
+      "variables",
+      "secrets",
+    ],
+  },
+  {
+    id: "gitignore-generator",
+    name: "Config & .gitignore Generator",
+    description:
+      "Create tailored .gitignore files for any stack, robots.txt SEO rules, and Docker starters.",
+    href: "/tools/gitignore-generator",
+    icon: GitBranch,
+    category: "utilities",
+    status: "active",
+    keywords: [
+      "gitignore",
+      "git",
+      "ignore",
+      "robots",
+      "docker",
+      "dockerfile",
+      "compose",
+      "template",
+      "config",
+    ],
+  },
 
   // ── AI-Powered ──
   {
@@ -617,6 +662,27 @@ export const tools: Tool[] = [
     category: "ai",
     status: "active",
     keywords: ["code", "generate", "ai", "prompt", "create"],
+  },
+  {
+    id: "ai-error-explainer",
+    name: "AI Error & Stack Trace Explainer",
+    description:
+      "Paste any runtime exception, traceback, or compiler log and get root cause analysis and copyable code fixes.",
+    href: "/tools/ai-error-explainer",
+    icon: Bug,
+    category: "ai",
+    status: "active",
+    keywords: [
+      "error",
+      "debug",
+      "stack trace",
+      "traceback",
+      "exception",
+      "fix",
+      "ai",
+      "compiler",
+      "log",
+    ],
   },
 ];
 

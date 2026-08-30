@@ -47,6 +47,8 @@ export function useProStatus() {
     hasCustomApiKey,
     purchasedCredits,
     freeCreditsRemaining,
+    userCustomApiKey: getUserCredits().userCustomApiKey,
+    userCredits: getUserCredits(),
     isProOrByok,
     isProModalOpen,
     setIsProModalOpen,
