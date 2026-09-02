@@ -8,6 +8,7 @@ import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { CommandPalette } from "./CommandPalette";
+import { FeedbackWidget } from "@/components/feedback/FeedbackWidget";
 import { Analytics } from "@vercel/analytics/next";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -51,6 +52,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+        <FeedbackWidget />
         <Toaster position="top-center" />
       </TooltipProvider>
     </I18nProvider>

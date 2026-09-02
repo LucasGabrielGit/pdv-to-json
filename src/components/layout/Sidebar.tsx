@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PanelLeftClose } from "lucide-react";
+import { PanelLeftClose, MessageSquarePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -145,6 +145,22 @@ export function Sidebar({
             );
           })}
         </nav>
+
+        {/* Sidebar Footer Link */}
+        <div className="p-3 border-t border-sidebar-border/50">
+          <Link
+            href="/feedback"
+            onClick={onClose}
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-purple-500/10 hover:text-purple-300 transition-colors",
+              collapsed && !isOpen && "justify-center px-2"
+            )}
+            title="Enviar Feedback"
+          >
+            <MessageSquarePlus className="size-4 text-purple-400 shrink-0" />
+            {(!collapsed || isOpen) && <span>Enviar Feedback</span>}
+          </Link>
+        </div>
       </aside>
     </>
   );

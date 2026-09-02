@@ -47,6 +47,9 @@ export function Footer() {
           <Link href="/tools/regex-tester" className="hover:text-foreground transition-colors">
             Regex
           </Link>
+          <Link href="/feedback" className="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold">
+            Feedback
+          </Link>
           <Link href="/privacy" className="hover:text-foreground transition-colors text-slate-400">
             {t.footer.privacyPolicy}
           </Link>

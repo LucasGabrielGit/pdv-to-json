@@ -81,3 +81,30 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- 5. User Feedbacks Table & RLS Policies
+create table if not exists public.feedbacks (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete set null,
+  email text,
+  type text not null default 'suggestion',
+  tool_id text,
+  rating integer check (rating >= 1 and rating <= 5),
+  message text not null,
+  page_url text,
+  device_info jsonb default '{}'::jsonb,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.feedbacks enable row level security;
+
+drop policy if exists "Anyone can submit feedback" on public.feedbacks;
+create policy "Anyone can submit feedback"
+  on public.feedbacks for insert
+  with check (true);
+
+drop policy if exists "Users can view own feedbacks" on public.feedbacks;
+create policy "Users can view own feedbacks"
+  on public.feedbacks for select
+  using (auth.uid() = user_id);
+
