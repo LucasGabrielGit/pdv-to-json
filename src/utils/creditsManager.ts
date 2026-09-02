@@ -142,16 +142,36 @@ export async function syncUserCreditsWithCloud(supabaseClient: SupabaseClient<an
 
     const { data: profile } = await supabaseClient
       .from('profiles')
-      .select('free_credits_remaining, purchased_credits, is_pro, user_custom_api_key')
+      .select('free_credits_remaining, purchased_credits, is_pro, user_custom_api_key, last_daily_reset_date')
       .eq('id', user.id)
       .single()
 
     if (profile) {
+      const today = getTodayString()
+      let freeCredits = profile.free_credits_remaining
+
+      // If cloud profile date is older than today, reset free credits to 5
+      if (profile.last_daily_reset_date !== today) {
+        freeCredits = DAILY_FREE_CREDITS_LIMIT
+        // Sync cloud profile in background
+        supabaseClient
+          .from('profiles')
+          .update({
+            free_credits_remaining: DAILY_FREE_CREDITS_LIMIT,
+            last_daily_reset_date: today,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id)
+          .then(() => {
+            window.dispatchEvent(new Event('devkit_credits_updated'))
+          })
+      }
+
       const synced: UserCredits = {
-        freeCreditsRemaining: profile.free_credits_remaining,
+        freeCreditsRemaining: freeCredits,
         purchasedCredits: profile.purchased_credits,
         isProSubscriber: profile.is_pro,
-        lastDailyResetDate: local.lastDailyResetDate,
+        lastDailyResetDate: today,
         userCustomApiKey: profile.user_custom_api_key || local.userCustomApiKey,
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(synced))

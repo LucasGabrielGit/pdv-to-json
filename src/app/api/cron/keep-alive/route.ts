@@ -42,9 +42,20 @@ export async function GET(req: Request) {
       )
     }
 
+    // 1. Bulk reset all profiles that haven't been reset today
+    const today = new Date().toISOString().split('T')[0]
+    await supabase
+      .from('profiles')
+      .update({
+        free_credits_remaining: 5,
+        last_daily_reset_date: today,
+        updated_at: new Date().toISOString(),
+      })
+      .neq('last_daily_reset_date', today)
+
     return NextResponse.json({
       status: 'ok',
-      message: 'Supabase PostgreSQL activity ping successful. Inactivity timer reset.',
+      message: 'Supabase PostgreSQL activity ping successful and daily credits synced.',
       timestamp: new Date().toISOString(),
       activeProfilesSampleCount: data?.length || 0,
     })

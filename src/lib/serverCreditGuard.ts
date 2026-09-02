@@ -35,7 +35,7 @@ export async function verifyServerCredits(
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('free_credits_remaining, purchased_credits, is_pro')
+    .select('free_credits_remaining, purchased_credits, is_pro, last_daily_reset_date')
     .eq('id', user.id)
     .single()
 
@@ -45,6 +45,22 @@ export async function verifyServerCredits(
 
   if (profile.is_pro) {
     return { allowed: true, user, profile }
+  }
+
+  // Automatic daily reset on the server if date has changed
+  const today = new Date().toISOString().split('T')[0]
+  if (profile.last_daily_reset_date !== today) {
+    profile.free_credits_remaining = 5
+    profile.last_daily_reset_date = today
+
+    await supabase
+      .from('profiles')
+      .update({
+        free_credits_remaining: 5,
+        last_daily_reset_date: today,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user.id)
   }
 
   const totalCredits =

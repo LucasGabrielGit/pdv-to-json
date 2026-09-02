@@ -45,6 +45,33 @@ export function UserMenu() {
       return;
     }
 
+    const fetchAndSyncProfile = async (userId: string) => {
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select(
+          "free_credits_remaining, purchased_credits, is_pro, user_custom_api_key, last_daily_reset_date",
+        )
+        .eq("id", userId)
+        .single();
+
+      if (!prof) return null;
+
+      const today = new Date().toISOString().split("T")[0];
+      if (prof.last_daily_reset_date !== today) {
+        prof.free_credits_remaining = 5;
+        prof.last_daily_reset_date = today;
+        await supabase
+          .from("profiles")
+          .update({
+            free_credits_remaining: 5,
+            last_daily_reset_date: today,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", userId);
+      }
+      return prof;
+    };
+
     async function loadUser() {
       try {
         const {
@@ -53,23 +80,13 @@ export function UserMenu() {
         setUser(currentUser);
 
         if (currentUser) {
-          const { data: prof } = await supabase
-            .from("profiles")
-            .select(
-              "free_credits_remaining, purchased_credits, is_pro, user_custom_api_key",
-            )
-            .eq("id", currentUser.id)
-            .single();
-
-          if (prof) {
-            setProfile(prof);
-          }
+          const prof = await fetchAndSyncProfile(currentUser.id);
+          if (prof) setProfile(prof);
         }
       } catch {
         // Ignore auth error in offline or unconfigured env
       }
     }
-
 
     loadUser();
 
@@ -79,14 +96,7 @@ export function UserMenu() {
       const sessionUser = session?.user ?? null;
       setUser(sessionUser);
       if (sessionUser) {
-        const { data: prof } = await supabase
-          .from("profiles")
-          .select(
-            "free_credits_remaining, purchased_credits, is_pro, user_custom_api_key",
-          )
-          .eq("id", sessionUser.id)
-          .single();
-
+        const prof = await fetchAndSyncProfile(sessionUser.id);
         if (prof) setProfile(prof);
       } else {
         setProfile(null);
@@ -96,13 +106,7 @@ export function UserMenu() {
     const handleCreditsUpdated = async () => {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser) {
-        const { data: prof } = await supabase
-          .from("profiles")
-          .select(
-            "free_credits_remaining, purchased_credits, is_pro, user_custom_api_key",
-          )
-          .eq("id", currentUser.id)
-          .single();
+        const prof = await fetchAndSyncProfile(currentUser.id);
         if (prof) setProfile(prof);
       }
     };
