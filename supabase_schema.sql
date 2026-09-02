@@ -14,6 +14,8 @@ create table if not exists public.profiles (
   is_pro boolean default false not null,
   last_daily_reset_date text default to_char(current_date, 'YYYY-MM-DD') not null,
   user_custom_api_key text,
+  favorite_tools text[] default '{}'::text[] not null,
+  recent_tools text[] default '{}'::text[] not null,
   stripe_customer_id text,
   stripe_subscription_id text,
   subscription_status text default 'none',

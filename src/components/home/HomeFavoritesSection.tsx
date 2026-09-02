@@ -13,10 +13,14 @@ export function HomeFavoritesSection() {
 
   if (!isLoaded) return null
 
-  const favoriteTools = tools.filter((t) => favorites.includes(t.id))
-  const recentTools = tools.filter(
-    (t) => recents.includes(t.id) && !favorites.includes(t.id)
-  )
+  const favoriteTools = favorites
+    .map((id) => tools.find((t) => t.id === id))
+    .filter((t): t is Tool => Boolean(t))
+
+  const recentTools = recents
+    .filter((id) => !favorites.includes(id))
+    .map((id) => tools.find((t) => t.id === id))
+    .filter((t): t is Tool => Boolean(t))
 
   if (favoriteTools.length === 0 && recentTools.length === 0) {
     return null

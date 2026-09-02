@@ -30,17 +30,19 @@ export function ToolHeader({
   const pathname = usePathname()
   const { isFavorite, toggleFavorite, addRecent } = useFavorites()
 
-  // Find tool slug from prop or current pathname
-  const currentTool = tools.find(
-    (t) => t.id === toolId || t.href === pathname || (pathname === '/' && t.id === 'json-csv')
-  )
-  const currentId = currentTool?.id || toolId || pathname.replace(/^\/tools\//, '')
+  const isHome = pathname === '/'
+
+  // Find tool slug from prop or current pathname (ignoring home page)
+  const currentTool = isHome
+    ? null
+    : tools.find((t) => t.id === toolId || t.href === pathname)
+  const currentId = currentTool?.id || (isHome ? '' : toolId || pathname.replace(/^\/tools\//, ''))
 
   useEffect(() => {
-    if (currentId) {
+    if (currentId && !isHome) {
       addRecent(currentId)
     }
-  }, [currentId, addRecent])
+  }, [currentId, isHome, addRecent])
 
   const isFav = isFavorite(currentId)
 

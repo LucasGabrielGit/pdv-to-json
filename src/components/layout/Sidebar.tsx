@@ -33,7 +33,9 @@ export function Sidebar({
   const { t } = useTranslation();
   const { favorites } = useFavorites();
 
-  const favoriteTools = tools.filter((tool) => favorites.includes(tool.id));
+  const favoriteTools = favorites
+    .map((id) => tools.find((tool) => tool.id === id))
+    .filter((t): t is (typeof tools)[number] => Boolean(t));
 
   const categoryTranslationMap: Record<string, string> = {
     converters: t.sidebar.categories.converters,

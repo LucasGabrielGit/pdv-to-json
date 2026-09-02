@@ -26,10 +26,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       return searchTools(query)
     }
     // When empty, show favorites, recents, then the rest
-    const favs = tools.filter((t) => favorites.includes(t.id))
-    const recent = tools.filter(
-      (t) => recents.includes(t.id) && !favorites.includes(t.id)
-    )
+    const favs = favorites
+      .map((id) => tools.find((t) => t.id === id))
+      .filter((t): t is Tool => Boolean(t))
+    const recent = recents
+      .filter((id) => !favorites.includes(id))
+      .map((id) => tools.find((t) => t.id === id))
+      .filter((t): t is Tool => Boolean(t))
     const others = tools.filter(
       (t) => !favorites.includes(t.id) && !recents.includes(t.id)
     )
