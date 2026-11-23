@@ -91,15 +91,15 @@ export function AiLoadingState({
       <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs">
         {isPro ? (
           <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/40 gap-1 text-[10px] shadow-sm">
-            👑 Pro Dedicated High-Speed Pipeline
+            ⚡ Chave BYOK Ativa • Acesso Direto Google AI
           </Badge>
         ) : (
           <Badge
             variant="outline"
-            className="border-amber-500/30 text-amber-300 bg-amber-500/10 gap-1 text-[10px]"
+            className="border-purple-500/30 text-purple-300 bg-purple-500/10 gap-1 text-[10px]"
           >
             <Zap className="size-3 text-amber-400" />
-            Free Shared Queue • Upgrade to Pro for instant speed
+            Comunidade Gratuita • DevKit AI Engine
           </Badge>
         )}
 

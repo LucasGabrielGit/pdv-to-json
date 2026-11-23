@@ -1,529 +1,237 @@
-"use client";
+'use client'
 
-import React, { useState, useEffect, useMemo, Suspense } from "react";
-
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { toast } from "sonner";
+import React, { useState } from 'react'
+import Link from 'next/link'
 import {
-  Check,
-  Sparkles,
-  Crown,
-  Loader2,
-  HelpCircle,
-  ArrowLeft,
-  Flame,
+  Zap,
+  Key,
   CheckCircle2,
-} from "lucide-react";
-import { STRIPE_PLANS, type PlanKey } from "@/lib/stripe";
-import { createClient } from "@/lib/supabase/client";
-import { syncUserCreditsWithCloud } from "@/utils/creditsManager";
-import { useTranslation } from "@/contexts/I18nContext";
-import { AuthModal } from "@/components/auth/AuthModal";
+  ExternalLink,
+  ShieldCheck,
+  ArrowRight,
+  Gift,
+  Heart,
+  Code2,
+  Terminal,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { GeminiApiKeyModal } from '@/components/ai/GeminiApiKeyModal'
+import { AI_STUDIO_KEY_URL } from '@/lib/creditsConfig'
+import { useAiCredits } from '@/hooks/useAiCredits'
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-function PricingContent() {
-  const searchParams = useSearchParams();
-  const { t, locale } = useTranslation();
-  const [currency, setCurrency] = useState<"usd" | "brl">(
-    locale === "pt" ? "brl" : "usd",
-  );
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [isPro, setIsPro] = useState(false);
-  const [isLoadingPortal, setIsLoadingPortal] = useState(false);
-  const supabase = useMemo(() => createClient(), []);
-
-
-  useEffect(() => {
-    if (locale === "pt") {
-      setCurrency("brl");
-    } else {
-      setCurrency("usd");
-    }
-  }, [locale]);
-
-  const isSuccess = searchParams.get("success") === "true";
-  const sessionId = searchParams.get("session_id");
-  const isCanceled = searchParams.get("canceled") === "true";
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      if (data.user) {
-        supabase
-          .from("profiles")
-          .select("is_pro")
-          .eq("id", data.user.id)
-          .single()
-          .then(({ data: profile }) => {
-            if (profile?.is_pro) setIsPro(true);
-          });
-      }
-    });
-  }, [supabase]);
-
-  useEffect(() => {
-    if (isSuccess && sessionId) {
-      // Call verify-session to immediately apply credits/Pro to user
-      fetch(`/api/checkout/verify-session?session_id=${sessionId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            toast.success(
-              data.message ||
-                "Payment verified! Your credits have been credited.",
-              { duration: 6000 },
-            );
-            // Trigger a quick reload of user session/profile and sync credits
-            syncUserCreditsWithCloud(supabase).then(() => {
-              window.dispatchEvent(new Event("devkit_credits_updated"));
-            });
-            supabase.auth.getUser().then(({ data: u }) => {
-              setUser(u.user);
-              if (data.isPro) setIsPro(true);
-            });
-          } else {
-            console.warn("Session verify note:", data.error);
-          }
-        })
-        .catch((err) => {
-          console.error("Failed to verify session:", err);
-        });
-    } else if (isSuccess) {
-      syncUserCreditsWithCloud(supabase).then(() => {
-        window.dispatchEvent(new Event("devkit_credits_updated"));
-      });
-      toast.success("Payment received! Your profile has been updated.", {
-        duration: 6000,
-      });
-    } else if (isCanceled) {
-      toast.info("Checkout was cancelled.");
-    }
-  }, [isSuccess, sessionId, isCanceled, supabase]);
-
-
-  const handleCheckout = async (planKey: PlanKey) => {
-    if (!user) {
-      setShowAuthModal(true);
-      toast.info("Please sign in or create an account to continue.");
-      return;
-    }
-
-    setLoadingPlan(planKey);
-
-    try {
-      const res = await fetch("/api/checkout/create-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          planId: planKey,
-          currency,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.url) {
-        throw new Error(data.error || "Failed to initialize checkout.");
-      }
-
-      window.location.href = data.url;
-    } catch (err) {
-      toast.error("Checkout Error", { description: (err as Error).message });
-      setLoadingPlan(null);
-    }
-  };
-
-  const handleOpenCustomerPortal = async () => {
-    setIsLoadingPortal(true);
-    try {
-      const res = await fetch("/api/checkout/customer-portal", {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        throw new Error(data.error || "Failed to open billing portal.");
-      }
-      window.location.href = data.url;
-    } catch (err) {
-      toast.error("Billing Portal Error", {
-        description: (err as Error).message,
-      });
-      setIsLoadingPortal(false);
-    }
-  };
+export default function PricingPage() {
+  const [keyModalOpen, setKeyModalOpen] = useState(false)
+  const { hasCustomApiKey, freeCreditsRemaining, dailyLimit } = useAiCredits()
 
   return (
-    <div className="min-h-screen py-10 px-4 md:px-8 max-w-7xl mx-auto space-y-12">
-      {/* Back Button */}
-      <div className="flex items-center justify-between">
-        <Link href="/">
+    <div className="w-full max-w-5xl mx-auto px-4 py-12 space-y-12">
+      {/* ── Hero Banner ── */}
+      <div className="text-center space-y-4 max-w-2xl mx-auto">
+        <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 gap-1.5 px-3 py-1 text-xs">
+          <Gift className="size-3.5 text-emerald-400" />
+          100% Gratuito &amp; Comunitário
+        </Badge>
+        <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
+          Sem assinaturas. Sem paywalls.{' '}
+          <span className="bg-linear-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
+            Feito para desenvolvedores.
+          </span>
+        </h1>
+        <p className="text-sm md:text-base text-slate-300 leading-relaxed">
+          O dev-kit.tech realizou um pivot completo: removemos todos os planos pagos e taxas de assinatura.
+          Você tem cotas diárias gratuitas de IA renovadas todo dia ou uso ilimitado trazendo sua própria chave do Google AI Studio.
+        </p>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
           <Button
-            variant="ghost"
-            size="sm"
-            className="gap-2 text-muted-foreground hover:text-foreground"
+            size="lg"
+            onClick={() => setKeyModalOpen(true)}
+            className="bg-linear-to-r from-purple-600 via-purple-500 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-bold text-xs md:text-sm h-11 px-6 shadow-xl shadow-purple-600/25 gap-2 cursor-pointer"
           >
-            <ArrowLeft className="size-4" /> {t.common.backToTools}
+            <Key className="size-4" />
+            <span>Configurar Chave Gemini (BYOK)</span>
+            <ArrowRight className="size-4 ml-1" />
           </Button>
-        </Link>
-        {isPro && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleOpenCustomerPortal}
-            disabled={isLoadingPortal}
-            className="border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/10 text-xs font-semibold gap-2"
+
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center rounded-lg border border-purple-500/30 bg-transparent text-slate-200 hover:bg-purple-500/10 text-xs md:text-sm h-11 px-6 font-semibold transition-colors"
           >
-            {isLoadingPortal ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <Crown className="size-3.5" />
-            )}
-            {t.header.manageSubscription}
-          </Button>
-        )}
+            <Code2 className="size-4 mr-1.5 text-purple-400" />
+            Explorar 35+ Ferramentas
+          </Link>
+        </div>
       </div>
 
-      {/* Success Notification Banner */}
-      {isSuccess && (
-        <Card className="border border-emerald-500/40 bg-emerald-500/10 backdrop-blur-md">
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className=" rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
-              <CheckCircle2 className="size-6 text-emerald-400" />
+      {/* ── Two Pillars Comparison ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Card 1: Free Daily Quota */}
+        <Card className="border border-purple-500/30 bg-[#16213e]/80 backdrop-blur-md relative overflow-hidden">
+          <div className="absolute top-0 right-0 size-32 rounded-full bg-purple-500/10 blur-2xl pointer-events-none" />
+          <CardContent className="p-6 md:p-8 space-y-5">
+            <div className="flex items-center justify-between">
+              <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-xs">
+                Incluso Automaticamente
+              </Badge>
+              <Zap className="size-5 text-amber-400" />
             </div>
-            <div>
-              <h2 className="text-base font-bold text-emerald-300">
-                Payment Received &amp; Verified!
-              </h2>
-              <p className="text-xs md:text-sm text-slate-300 mt-0.5">
-                Thank you for supporting dev-kit.tech! Your credits or Pro
-                membership are now active in your profile.
+
+            <div className="space-y-1">
+              <h3 className="text-xl font-bold text-white">Cota Diária Gratuita</h3>
+              <p className="text-xs text-slate-400">
+                Ideal para consultas rápidas, testes e geração casual de código.
               </p>
+            </div>
+
+            <div className="space-y-3 pt-2 text-xs text-slate-200">
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>{dailyLimit} gerações por dia</strong> com o modelo rápido (<code className="text-purple-300">gemini-2.5-flash</code>).
+                </span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Renovação automática</strong> todo dia à meia-noite (UTC).
+                </span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>35+ conversores e formatadores offline-first</strong> sem limite algum e sem tracking.
+                </span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Zero cadastro obrigatório:</strong> funciona diretamente no navegador.
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-black/40 border border-white/5 text-[11px] text-slate-400 flex items-center justify-between">
+              <span>Status atual neste dispositivo:</span>
+              <strong className="text-purple-300 font-mono">
+                {hasCustomApiKey
+                  ? 'Ilimitado (BYOK ativo)'
+                  : `${freeCreditsRemaining} / ${dailyLimit} restantes hoje`}
+              </strong>
             </div>
           </CardContent>
         </Card>
-      )}
 
-      {/* Header */}
-      <div className="text-center space-y-4 max-w-3xl mx-auto">
-        <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/40 px-3 py-1 text-xs gap-1.5 font-semibold">
-          <Sparkles className="size-3.5 text-purple-400" />
-          <span>{t.pricing.badge}</span>
-        </Badge>
-        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white">
-          {t.pricing.heroTitle}
-        </h1>
-        <p className="text-base text-slate-300 leading-relaxed">
-          {t.pricing.heroDesc}
-        </p>
-
-        {/* Currency Switcher */}
-        <div className="flex justify-center pt-4">
-          <Tabs
-            value={currency}
-            onValueChange={(v) => setCurrency(v as "usd" | "brl")}
-          >
-            <TabsList className="bg-[#16213e] border border-purple-500/30 p-1">
-              <TabsTrigger value="usd" className="text-xs font-semibold px-4">
-                {t.pricing.usdTab}
-              </TabsTrigger>
-              <TabsTrigger value="brl" className="text-xs font-semibold px-4">
-                {t.pricing.brlTab}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </div>
-
-      {/* Pricing Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Tier 1: Free Tier */}
-        <div className="rounded-3xl border border-white/10 bg-[#16213e]/40 p-6 flex flex-col justify-between space-y-6 hover:border-white/20 transition-all">
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-bold text-lg text-white">
-                {t.pricing.freeDeveloper}
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                {t.pricing.freeDesc}
-              </p>
-            </div>
-            <div className="text-3xl font-black text-white">
-              $0
-              <span className="text-xs text-slate-400 font-normal ml-1">
-                {t.pricing.forever}
-              </span>
-            </div>
-            <ul className="space-y-2.5 text-xs text-slate-300 pt-2 border-t border-white/5">
-              <li className="flex items-center gap-2">
-                <Check className="size-3.5 text-emerald-400 shrink-0" />
-                <span>All 20+ Client-side Converters</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="size-3.5 text-emerald-400 shrink-0" />
-                <span>5 Free Daily AI Credits</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="size-3.5 text-emerald-400 shrink-0" />
-                <span>Bring Your Own Key (BYOK)</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="size-3.5 text-emerald-400 shrink-0" />
-                <span>100% Client-Side Privacy</span>
-              </li>
-            </ul>
-          </div>
-
-          <Link href="/" className="w-full">
-            <Button
-              variant="outline"
-              className="w-full border-white/20 text-slate-200 hover:bg-white/10 text-xs font-semibold"
-            >
-              {t.pricing.getStartedFree}
-            </Button>
-          </Link>
-        </div>
-
-        {/* Tier 2: Starter Pack */}
-        <div className="rounded-3xl border border-purple-500/30 bg-[#16213e]/60 p-6 flex flex-col justify-between space-y-6 hover:border-purple-500/50 transition-all">
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-bold text-lg text-white">
-                {t.pricing.starterName}
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                {t.pricing.starterDesc}
-              </p>
-            </div>
-            <div className="text-3xl font-black text-purple-300">
-              {currency === "brl"
-                ? STRIPE_PLANS.starter.brl.formatted
-                : STRIPE_PLANS.starter.usd.formatted}
-              <span className="text-xs text-slate-400 font-normal ml-1.5">
-                one-time
-              </span>
-            </div>
-            <ul className="space-y-2.5 text-xs text-slate-300 pt-2 border-t border-white/5">
-              {STRIPE_PLANS.starter.features.map((f, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <Check className="size-3.5 text-purple-400 shrink-0" />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <Button
-            variant="outline"
-            onClick={() => handleCheckout("starter")}
-            disabled={loadingPlan === "starter"}
-            className="w-full border-purple-500/30 text-white hover:bg-purple-500/20 text-xs font-semibold"
-          >
-            {loadingPlan === "starter" ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              t.pricing.buyStarter
-            )}
-          </Button>
-        </div>
-
-        {/* Tier 3: Power Pack (Most Popular) */}
-        <div className="rounded-3xl border-2 border-purple-500 bg-linear-to-b from-purple-500/20 via-[#16213e]/80 to-black/60 p-6 flex flex-col justify-between space-y-6 relative shadow-2xl shadow-purple-500/20">
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-purple-600 text-white font-bold text-xs uppercase tracking-wider shadow-lg flex items-center gap-1">
-            <Flame className="size-3.5" /> Most Popular
-          </div>
-
-          <div className="space-y-4 pt-1">
-            <div>
-              <h3 className="font-bold text-lg text-white">
-                {t.pricing.powerName}
-              </h3>
-              <p className="text-xs text-slate-300 mt-1">
-                {t.pricing.powerDesc}
-              </p>
-            </div>
-            <div className="text-3xl font-black text-purple-300">
-              {currency === "brl"
-                ? STRIPE_PLANS.power.brl.formatted
-                : STRIPE_PLANS.power.usd.formatted}
-              <span className="text-xs text-slate-400 font-normal ml-1.5">
-                one-time
-              </span>
-            </div>
-            <ul className="space-y-2.5 text-xs text-slate-200 pt-2 border-t border-white/10">
-              {STRIPE_PLANS.power.features.map((f, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <Check className="size-3.5 text-cyan-400 shrink-0" />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <Button
-            onClick={() => handleCheckout("power")}
-            disabled={loadingPlan === "power"}
-            className="w-full bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-bold text-xs py-2.5 shadow-lg shadow-purple-600/30"
-          >
-            {loadingPlan === "power" ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              t.pricing.buyPower
-            )}
-          </Button>
-        </div>
-
-        {/* Tier 4: Pro Subscription */}
-        <div className="rounded-3xl border border-cyan-500/50 bg-linear-to-b from-cyan-500/15 via-[#16213e]/80 to-black/60 p-6 flex flex-col justify-between space-y-6 hover:border-cyan-400 transition-all shadow-xl shadow-cyan-500/10">
-          <div className="space-y-4">
+        {/* Card 2: BYOK (Bring Your Own Key) */}
+        <Card className="border-2 border-emerald-500/40 bg-[#16213e]/90 backdrop-blur-md relative overflow-hidden shadow-xl shadow-emerald-950/40">
+          <div className="absolute top-0 right-0 size-32 rounded-full bg-emerald-500/15 blur-2xl pointer-events-none" />
+          <CardContent className="p-6 md:p-8 space-y-5">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-white">
-                {t.pricing.proMembershipName}
-              </h3>
-              <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/40 text-[10px]">
-                👑 {t.common.unlimited}
+              <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs font-bold">
+                ⚡ Recomendado para Desenvolvedores
               </Badge>
+              <Key className="size-5 text-emerald-400" />
             </div>
-            <p className="text-xs text-slate-300">
-              {t.pricing.proMembershipDesc}
-            </p>
-            <div className="text-3xl font-black text-cyan-300">
-              {currency === "brl"
-                ? STRIPE_PLANS.pro_subscription.brl.formatted
-                : STRIPE_PLANS.pro_subscription.usd.formatted}
-            </div>
-            <ul className="space-y-2.5 text-xs text-slate-200 pt-2 border-t border-white/10">
-              {STRIPE_PLANS.pro_subscription.features.map((f, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <Check className="size-3.5 text-emerald-400 shrink-0" />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
 
-          <Button
-            onClick={() => handleCheckout("pro_subscription")}
-            disabled={loadingPlan === "pro_subscription"}
-            className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs py-2.5 shadow-lg shadow-cyan-600/30"
-          >
-            {loadingPlan === "pro_subscription" ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              t.pricing.joinPro
-            )}
-          </Button>
-        </div>
+            <div className="space-y-1">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <span>Bring Your Own Key (BYOK)</span>
+              </h3>
+              <p className="text-xs text-slate-400">
+                Uso 100% ilimitado e gratuito conectando sua própria chave do Google AI Studio.
+              </p>
+            </div>
+
+            <div className="space-y-3 pt-2 text-xs text-slate-200">
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Uso ilimitado:</strong> sem consumo de créditos diários.
+                </span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Acesso ao modelo avançado:</strong> raciocínio profundo (<code className="text-emerald-300">gemini-2.5-pro</code>).
+                </span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>100% Gratuito no Google:</strong> o Google AI Studio oferece limites generosos sem exigir cartão.
+                </span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Privacidade total:</strong> sua chave fica salva no <code className="text-slate-300">localStorage</code> do seu navegador.
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <Button
+                onClick={() => setKeyModalOpen(true)}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs h-10 gap-2 cursor-pointer"
+              >
+                <Key className="size-3.5" />
+                {hasCustomApiKey ? 'Gerenciar Chave de API' : 'Inserir Chave do Google Gemini'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Pro Pack Banner (Large Volume) */}
-      <Card className="border border-purple-500/30 bg-[#16213e]/70 backdrop-blur-md">
-        <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
-              {t.pricing.heavyUsersAgency}
-            </div>
-            <h2 className="text-2xl font-black text-white">
-              {t.pricing.needMassiveVolume}
-            </h2>
-            <p className="text-xs md:text-sm text-slate-300 max-w-xl">
-              {t.pricing.proPackDesc}
-            </p>
+      {/* ── How to get an API key ── */}
+      <Card className="border border-purple-500/20 bg-black/40 backdrop-blur-md">
+        <CardContent className="p-6 md:p-8 space-y-4">
+          <div className="flex items-center gap-2">
+            <Terminal className="size-5 text-cyan-400" />
+            <h3 className="text-base font-bold text-white">Como obter sua chave gratuita em 30 segundos</h3>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
-            <div className="text-3xl font-black text-purple-300">
-              {currency === "brl"
-                ? STRIPE_PLANS.pro_pack.brl.formatted
-                : STRIPE_PLANS.pro_pack.usd.formatted}
-            </div>
-            <Button
-              onClick={() => handleCheckout("pro_pack")}
-              disabled={loadingPlan === "pro_pack"}
-              className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-6 py-2.5"
-            >
-              {loadingPlan === "pro_pack" ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                t.pricing.buyProPack
-              )}
-            </Button>
-          </div>
+          <ol className="list-decimal list-inside space-y-2 text-xs md:text-sm text-slate-300">
+            <li>
+              Acesse o{' '}
+              <a
+                href={AI_STUDIO_KEY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-300 hover:text-cyan-200 underline font-semibold inline-flex items-center gap-0.5"
+              >
+                Google AI Studio (aistudio.google.com)
+                <ExternalLink className="size-3" />
+              </a>{' '}
+              com sua conta Google.
+            </li>
+            <li>Clique em &quot;Get API key&quot; (Criar chave de API) e copie o código iniciado por <code className="text-emerald-400 font-mono">AIzaSy...</code>.</li>
+            <li>Abra o modal de chave no dev-kit.tech, cole e clique em &quot;Salvar&quot;. Pronto!</li>
+          </ol>
         </CardContent>
       </Card>
 
-      {/* FAQ Section */}
-      <div className="space-y-6 pt-6 max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold text-white text-center flex items-center justify-center gap-2">
-          <HelpCircle className="size-5 text-purple-400" /> {t.pricing.faqTitle}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="border border-white/5 bg-black/30">
-            <CardContent className="p-5 space-y-2">
-              <h3 className="text-sm font-bold text-white">
-                {t.pricing.faq1Q}
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                {t.pricing.faq1A}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-white/5 bg-black/30">
-            <CardContent className="p-5 space-y-2">
-              <h3 className="text-sm font-bold text-white">
-                {t.pricing.faq2Q}
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                {t.pricing.faq2A}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-white/5 bg-black/30">
-            <CardContent className="p-5 space-y-2">
-              <h3 className="text-sm font-bold text-white">
-                {t.pricing.faq3Q}
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                {t.pricing.faq3A}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-white/5 bg-black/30">
-            <CardContent className="p-5 space-y-2">
-              <h3 className="text-sm font-bold text-white">
-                {t.pricing.faq4Q}
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                {t.pricing.faq4A}
-              </p>
-            </CardContent>
-          </Card>
+      {/* ── Privacy Guarantee ── */}
+      <div className="p-6 rounded-2xl bg-[#16213e]/60 border border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="flex items-center gap-3">
+          <ShieldCheck className="size-8 text-emerald-400 shrink-0" />
+          <div className="space-y-0.5">
+            <h4 className="text-sm font-bold text-white">Compromisso com Privacidade</h4>
+            <p className="text-xs text-slate-400">
+              Seus dados nunca são vendidos ou usados para treinar modelos. Ferramentas padrão rodam 100% no cliente.
+            </p>
+          </div>
+        </div>
+        <div className="text-xs text-slate-400 flex items-center gap-1 shrink-0">
+          Feito com <Heart className="size-3 text-rose-500 fill-rose-500" /> para a comunidade.
         </div>
       </div>
 
-      <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
+      <GeminiApiKeyModal
+        isOpen={keyModalOpen}
+        onClose={() => setKeyModalOpen(false)}
+        variant="settings"
+      />
     </div>
-  );
-}
-
-export default function PricingPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="p-12 text-center text-slate-400">
-          Loading Pricing...
-        </div>
-      }
-    >
-      <PricingContent />
-    </Suspense>
-  );
+  )
 }

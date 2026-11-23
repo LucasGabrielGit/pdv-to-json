@@ -18,9 +18,11 @@ import {
 } from 'lucide-react'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
-import { ProBadge } from '@/components/pro/ProBadge'
+import { ByokBadge } from '@/components/ai/ByokBadge'
+import { AiQuotaIndicator } from '@/components/ai/AiQuotaIndicator'
 import { ProGateModal } from '@/components/pro/ProGateModal'
 import { useProStatus } from '@/hooks/useProStatus'
+import { consumeCredit } from '@/utils/creditsManager'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -115,10 +117,14 @@ export default function AiErrorExplainer() {
       const json = await res.json()
 
       if (!res.ok) {
+        if (res.status === 403) {
+          setIsProModalOpen(true)
+        }
         throw new Error(json.error || 'Failed to explain error.')
       }
 
       setAnalysisResult(json.data)
+      consumeCredit()
       toast.success('Error analyzed and solution generated!')
     } catch (err) {
       toast.error((err as Error).message || 'Analysis failed.')
@@ -143,11 +149,16 @@ export default function AiErrorExplainer() {
       />
 
       {/* ── Header ── */}
-      <ToolHeader
-        title="AI Error & Stack Trace Explainer"
-        description="Paste any runtime exception, traceback, compiler error, or Docker build failure. Get root cause analysis, clear Portuguese explanations, and verified solution code."
-        badgeText="AI Debugging Engine"
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <ToolHeader
+          title="AI Error & Stack Trace Explainer"
+          description="Paste any runtime exception, traceback, compiler error, or Docker build failure. Get root cause analysis, clear Portuguese explanations, and verified solution code."
+          badgeText="AI Debugging Engine"
+        />
+        <div className="shrink-0 self-start sm:self-center">
+          <AiQuotaIndicator />
+        </div>
+      </div>
 
       {/* ── Privacy Banner ── */}
       <PrivacyBanner />
@@ -255,7 +266,7 @@ export default function AiErrorExplainer() {
                   >
                     <Sparkles className="size-3 text-cyan-400" />
                     <span>Deep (~3.5s)</span>
-                    {!isProOrByok && <ProBadge />}
+                    {!isProOrByok && <ByokBadge />}
                   </button>
                 </div>
 
@@ -371,7 +382,7 @@ export default function AiErrorExplainer() {
               )}
             </div>
           ) : (
-            <Card className="border border-purple-500/10 bg-[#16213e]/40 backdrop-blur-md flex items-center justify-center p-12 text-center h-full min-h-[420px]">
+            <Card className="border border-purple-500/10 bg-[#16213e]/40 backdrop-blur-md flex items-center justify-center p-12 text-center h-full min-h-105">
               <div className="space-y-3 max-w-sm">
                 <div className="size-12 rounded-2xl bg-purple-600/10 border border-purple-500/20 flex items-center justify-center mx-auto text-purple-400">
                   <Bug className="size-6" />

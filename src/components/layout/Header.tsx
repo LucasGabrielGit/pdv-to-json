@@ -3,11 +3,12 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search, Sparkles, PanelLeft, PanelLeftClose } from "lucide-react";
+import { Menu, Search, PanelLeft, PanelLeftClose } from "lucide-react";
 import { useTranslation } from "@/contexts/I18nContext";
 import { Button } from "@/components/ui/button";
 import { tools } from "@/lib/tools-registry";
 import { UserMenu } from "@/components/auth/UserMenu";
+import { AiCreditsBadge } from "@/components/ai/AiCreditsBadge";
 import { LanguageSelector } from "./LanguageSelector";
 import { LogoIcon } from "./Logo";
 
@@ -91,13 +92,7 @@ export function Header({
           </kbd>
         </button>
 
-        <Link
-          href="/pricing"
-          className="hidden sm:flex items-center h-8.5 gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 px-3 text-xs font-semibold text-purple-300 hover:text-white transition-all shadow-xs"
-        >
-          <Sparkles className="size-3 text-purple-400" />
-          <span>{t.common.pricing}</span>
-        </Link>
+        <AiCreditsBadge />
 
         <LanguageSelector />
 

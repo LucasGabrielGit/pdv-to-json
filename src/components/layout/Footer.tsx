@@ -32,9 +32,6 @@ export function Footer() {
 
         {/* Quick Links */}
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 font-medium">
-          <Link href="/pricing" className="text-purple-400 hover:text-purple-300 transition-colors font-bold">
-            {t.common.pricing}
-          </Link>
           <Link href="/search" className="hover:text-foreground transition-colors">
             {t.sidebar.searchTools}
           </Link>

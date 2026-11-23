@@ -8,9 +8,7 @@ import {
   Check,
   Code2,
   Copy,
-  CreditCard,
   FileCode,
-  Key,
   Lightbulb,
   RotateCcw,
   Sparkles,
@@ -26,24 +24,22 @@ import {
   canConsumeCredit,
   consumeCredit,
   getUserCredits,
-  setCustomApiKey,
   syncUserCreditsWithCloud,
   type UserCredits,
 } from '@/utils/creditsManager'
 import { createClient } from '@/lib/supabase/client'
 
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
-import { PricingModal } from '@/components/pricing/PricingModal'
+import { ByokBadge } from '@/components/ai/ByokBadge'
+import { AiQuotaIndicator } from '@/components/ai/AiQuotaIndicator'
 import { AiLoadingState } from '@/components/ai/AiLoadingState'
 import { ProGateModal } from '@/components/pro/ProGateModal'
-import { ProBadge } from '@/components/pro/ProBadge'
 import { useProStatus } from '@/hooks/useProStatus'
 import CodeEditor from '@/components/CodeEditor'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 
@@ -97,15 +93,7 @@ const SAMPLE_CODE = `async function getUserData(userId) {
 export default function CodeAnalyzer() {
   const [code, setCode] = useState(SAMPLE_CODE)
   const [language, setLanguage] = useState('typescript')
-  const [userCredits, setUserCredits] = useState<UserCredits>({
-    freeCreditsRemaining: 5,
-    purchasedCredits: 0,
-    isProSubscriber: false,
-    lastDailyResetDate: '',
-  })
-  const [customKeyInput, setCustomKeyInput] = useState('')
-  const [showKeyModal, setShowKeyModal] = useState(false)
-  const [showCreditsModal, setShowCreditsModal] = useState(false)
+  const [userCredits, setUserCredits] = useState<UserCredits>(() => getUserCredits())
   const [aiMode, setAiMode] = useState<'turbo' | 'deep'>('turbo')
 
   const [isLoading, setIsLoading] = useState(false)
@@ -123,19 +111,14 @@ export default function CodeAnalyzer() {
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
-    const creds = getUserCredits()
-    setUserCredits(creds)
-    if (creds.userCustomApiKey) {
-      setCustomKeyInput(creds.userCustomApiKey)
+    const handleUpdate = () => {
+      setUserCredits(getUserCredits())
     }
+    handleUpdate()
+    syncUserCreditsWithCloud(supabase).then(setUserCredits)
 
-    // Sync with cloud if authenticated
-    syncUserCreditsWithCloud(supabase).then((synced) => {
-      setUserCredits(synced)
-      if (synced.userCustomApiKey) {
-        setCustomKeyInput(synced.userCustomApiKey)
-      }
-    })
+    window.addEventListener('devkit_credits_updated', handleUpdate)
+    return () => window.removeEventListener('devkit_credits_updated', handleUpdate)
   }, [supabase])
 
 
@@ -164,14 +147,6 @@ export default function CodeAnalyzer() {
 
 
 
-  const handleSaveApiKey = () => {
-    setCustomApiKey(customKeyInput)
-    const updated = getUserCredits()
-    setUserCredits(updated)
-    setShowKeyModal(false)
-    toast.success('Custom Gemini API Key saved! You now have unlimited free access.')
-  }
-
   const handleAnalyze = async () => {
     if (!code.trim()) {
       toast.error('Please enter code to analyze.')
@@ -180,8 +155,8 @@ export default function CodeAnalyzer() {
 
     const check = canConsumeCredit()
     if (!check.allowed) {
-      setShowCreditsModal(true)
-      toast.error('Daily credit limit reached.', { description: check.reason })
+      setIsProModalOpen(true)
+      toast.error('Cota diária gratuita atingida.', { description: check.reason })
       return
     }
 
@@ -203,6 +178,9 @@ export default function CodeAnalyzer() {
       const data = await res.json()
 
       if (!res.ok || !data.success) {
+        if (res.status === 403) {
+          setIsProModalOpen(true)
+        }
         throw new Error(data.error || 'Failed to analyze code.')
       }
 
@@ -240,65 +218,19 @@ export default function CodeAnalyzer() {
         featureName={proModalFeature}
       />
       {/* ── Header ── */}
-      <ToolHeader
-        title="AI Code Reviewer & Architect"
-        description="Paste code to receive instant AI security vulnerability audits (OWASP), performance optimization tips, refactored clean code, and automated unit tests."
-        badgeText="AI Code Auditor"
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <ToolHeader
+          title="AI Code Reviewer & Architect"
+          description="Paste code to receive instant AI security vulnerability audits (OWASP), performance optimization tips, refactored clean code, and automated unit tests."
+          badgeText="AI Code Auditor"
+        />
+        <div className="shrink-0 self-start sm:self-center">
+          <AiQuotaIndicator />
+        </div>
+      </div>
 
       {/* ── Privacy Banner ── */}
       <PrivacyBanner />
-
-      {/* ── Credits & Settings Top Banner ── */}
-      <div className="mb-6 p-4 rounded-2xl bg-[#16213e]/90 border border-purple-500/30 backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="size-9 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center shrink-0">
-            <Zap className="size-4 text-purple-400" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-purple-300">
-                AI Generation Credits
-              </span>
-              {userCredits.userCustomApiKey ? (
-                <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
-                  BYOK Unlimited 🔑
-                </Badge>
-              ) : (
-                <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-[10px]">
-                  {userCredits.freeCreditsRemaining}/5 Free Today
-                </Badge>
-              )}
-            </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              {userCredits.userCustomApiKey
-                ? 'Using your custom Gemini API key for unlimited requests.'
-                : `${userCredits.freeCreditsRemaining} free credits left today. Reset daily.`}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            size="xs"
-            variant="outline"
-            onClick={() => setShowKeyModal(true)}
-            className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20 text-xs gap-1.5"
-          >
-            <Key className="size-3.5" />
-            {userCredits.userCustomApiKey ? 'Edit API Key' : 'Add Custom API Key'}
-          </Button>
-
-          <Button
-            size="xs"
-            onClick={() => setShowCreditsModal(true)}
-            className="bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold text-xs gap-1.5 shadow-md"
-          >
-            <CreditCard className="size-3.5" />
-            Buy Credit Pack
-          </Button>
-        </div>
-      </div>
 
       {/* ── Top Options & Action Controls Bar ── */}
       <Card className="rounded-3xl shadow-xl border border-purple-500/25 bg-[#16213e] mb-6">
@@ -369,7 +301,7 @@ export default function CodeAnalyzer() {
               >
                 <Sparkles className="size-3 text-cyan-400" />
                 <span>Deep (~3.5s)</span>
-                {!isProOrByok && <ProBadge />}
+                {!isProOrByok && <ByokBadge />}
               </button>
             </div>
 
@@ -565,60 +497,7 @@ export default function CodeAnalyzer() {
       </div>
 
 
-      {/* ── Custom API Key Modal ── */}
-      {showKeyModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#16213e] border border-purple-500/40 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center">
-              <h3 className="font-bold text-white text-base flex items-center gap-2">
-                <Key className="size-4 text-purple-400" />
-                Custom Gemini API Key
-              </h3>
-              <button
-                onClick={() => setShowKeyModal(false)}
-                className="text-slate-400 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Enter your Google Gemini API Key for 100% unlimited free AI code reviews. Your API key is stored locally in your browser and never sent to our servers.
-            </p>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="custom-gemini-key-codeanalyzer" className="text-xs text-slate-400 cursor-pointer">Gemini API Key:</Label>
-              <Input
-                id="custom-gemini-key-codeanalyzer"
-                type="password"
-                value={customKeyInput}
-                onChange={(e) => setCustomKeyInput(e.target.value)}
-                placeholder="AIzaSy..."
-                className="font-mono text-xs bg-black/40 border-purple-500/30 text-white"
-              />
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowKeyModal(false)}
-                className="text-slate-300 hover:text-white"
-              >
-                Cancel
-              </Button>
-              <Button size="sm" onClick={handleSaveApiKey} className="bg-purple-600 hover:bg-purple-500 text-white font-semibold">
-                Save Key
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Pricing & Credit Purchase Modal ── */}
-      <PricingModal
-        isOpen={showCreditsModal}
-        onClose={() => setShowCreditsModal(false)}
-      />
 
 
 

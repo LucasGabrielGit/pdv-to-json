@@ -18,8 +18,10 @@ import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
 import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import { ProGateModal } from "@/components/pro/ProGateModal";
-import { ProBadge } from "@/components/pro/ProBadge";
+import { ByokBadge } from "@/components/ai/ByokBadge";
+import { AiQuotaIndicator } from "@/components/ai/AiQuotaIndicator";
 import { useProStatus } from "@/hooks/useProStatus";
+import { canConsumeCredit, consumeCredit } from "@/utils/creditsManager";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -76,6 +78,13 @@ export default function AiSchemaMapper() {
       return;
     }
 
+    const check = canConsumeCredit();
+    if (!check.allowed) {
+      setIsProModalOpen(true);
+      toast.error("Cota diária gratuita atingida.", { description: check.reason });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const res = await fetch("/api/ai/schema-mapper", {
@@ -91,10 +100,14 @@ export default function AiSchemaMapper() {
 
       const data = await res.json();
       if (!res.ok || data.error) {
+        if (res.status === 403) {
+          setIsProModalOpen(true);
+        }
         throw new Error(data.error || "Failed to map schema.");
       }
 
       setResult(data.data);
+      consumeCredit();
       toast.success("Database schema mapped to all ORMs!");
     } catch (e) {
       toast.error("Mapping Error", {
@@ -189,12 +202,17 @@ export default function AiSchemaMapper() {
         onClose={() => setIsProModalOpen(false)}
         featureName={proModalFeature}
       />
-      <ToolHeader
-        title="AI Database Schema Mapper"
-        description="Convert SQL DDL queries, JSON models, or natural language into Prisma Schemas, Drizzle ORM, TypeORM Entities, and Zod Schemas."
-        badgeText="AI Database Architect"
-        toolId="ai-schema"
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <ToolHeader
+          title="AI Database Schema Mapper"
+          description="Convert SQL DDL queries, JSON models, or natural language into Prisma Schemas, Drizzle ORM, TypeORM Entities, and Zod Schemas."
+          badgeText="AI Database Architect"
+          toolId="ai-schema"
+        />
+        <div className="shrink-0 self-start sm:self-center">
+          <AiQuotaIndicator />
+        </div>
+      </div>
 
       <PrivacyBanner />
 
@@ -244,7 +262,7 @@ export default function AiSchemaMapper() {
               >
                 <Sparkles className="size-3 text-cyan-400" />
                 <span>Deep (~3.5s)</span>
-                {!isProOrByok && <ProBadge />}
+                {!isProOrByok && <ByokBadge />}
               </button>
             </div>
 
@@ -416,7 +434,7 @@ export default function AiSchemaMapper() {
                 >
                   <Archive className="size-3 text-amber-400" />
                   <span>Export All</span>
-                  {!isProOrByok && <ProBadge />}
+                  {!isProOrByok && <ByokBadge />}
                 </Button>
               </div>
             ) : (

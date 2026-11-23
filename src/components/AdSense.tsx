@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { ADS_CONFIG } from '@/config/ads'
-import { getUserCredits } from '@/utils/creditsManager'
 
 interface AdSenseProps {
   /** The ad unit slot ID from your AdSense dashboard */
@@ -22,15 +21,8 @@ declare global {
 
 export function AdSense({ slot, format = 'auto', className = '' }: AdSenseProps) {
   const initialized = useRef(false)
-  const [isPro, setIsPro] = useState(false)
 
   useEffect(() => {
-    const creds = getUserCredits()
-    if (creds.isProSubscriber) {
-      setIsPro(true)
-      return
-    }
-
     if (!ADS_CONFIG.enabled || slot === 'XXXXXXXXXX') return
     if (initialized.current) return
     initialized.current = true
@@ -44,7 +36,7 @@ export function AdSense({ slot, format = 'auto', className = '' }: AdSenseProps)
     }
   }, [slot])
 
-  if (!ADS_CONFIG.enabled || isPro || slot === 'XXXXXXXXXX') return null
+  if (!ADS_CONFIG.enabled || slot === 'XXXXXXXXXX') return null
 
   return (
     <div

@@ -18,8 +18,10 @@ import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
 import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import { ProGateModal } from "@/components/pro/ProGateModal";
-import { ProBadge } from "@/components/pro/ProBadge";
+import { ByokBadge } from "@/components/ai/ByokBadge";
+import { AiQuotaIndicator } from "@/components/ai/AiQuotaIndicator";
 import { useProStatus } from "@/hooks/useProStatus";
+import { canConsumeCredit, consumeCredit } from "@/utils/creditsManager";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -78,6 +80,14 @@ export default function AiCodeRefactor() {
       return;
     }
 
+    if (!customApiKey && !canConsumeCredit().allowed) {
+      setIsProModalOpen(true);
+      toast.error("Cota diária de IA atingida", {
+        description: "Adicione sua chave Gemini própria (BYOK) para continuar sem limites.",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const res = await fetch("/api/ai/code-refactor", {
@@ -93,11 +103,23 @@ export default function AiCodeRefactor() {
       });
 
       const data = await res.json();
+
+      if (res.status === 403 || data.error?.includes("Limite") || data.error?.includes("quota")) {
+        setIsProModalOpen(true);
+        toast.error("Cota diária de IA atingida", {
+          description: "Configure sua chave Gemini gratuita para uso ilimitado.",
+        });
+        return;
+      }
+
       if (!res.ok || data.error) {
         throw new Error(data.error || "Failed to refactor code.");
       }
 
       setResult(data.data);
+      if (!customApiKey) {
+        consumeCredit();
+      }
       toast.success("Code refactored and optimized!");
     } catch (e) {
       toast.error("Refactoring Error", {
@@ -150,12 +172,17 @@ export default function AiCodeRefactor() {
         onClose={() => setIsProModalOpen(false)}
         featureName={proModalFeature}
       />
-      <ToolHeader
-        title="AI Code Modernizer & Refactoring Engine"
-        description="Transform legacy code, optimize performance, modernize into React 19 / TypeScript, and enforce Clean Architecture principles."
-        badgeText="AI Code Architect"
-        toolId="ai-refactor"
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <ToolHeader
+          title="AI Code Modernizer & Refactoring Engine"
+          description="Transform legacy code, optimize performance, modernize into React 19 / TypeScript, and enforce Clean Architecture principles."
+          badgeText="AI Code Architect"
+          toolId="ai-refactor"
+        />
+        <div className="shrink-0 self-start sm:self-center">
+          <AiQuotaIndicator />
+        </div>
+      </div>
 
       <PrivacyBanner />
 
@@ -235,7 +262,7 @@ export default function AiCodeRefactor() {
               >
                 <Sparkles className="size-3 text-cyan-400" />
                 <span>Deep (~3.5s)</span>
-                {!isProOrByok && <ProBadge />}
+                {!isProOrByok && <ByokBadge />}
               </button>
             </div>
 

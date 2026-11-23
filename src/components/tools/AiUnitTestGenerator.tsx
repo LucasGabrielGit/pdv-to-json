@@ -20,8 +20,10 @@ import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
 import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import { ProGateModal } from "@/components/pro/ProGateModal";
-import { ProBadge } from "@/components/pro/ProBadge";
+import { ByokBadge } from "@/components/ai/ByokBadge";
+import { AiQuotaIndicator } from "@/components/ai/AiQuotaIndicator";
 import { useProStatus } from "@/hooks/useProStatus";
+import { canConsumeCredit, consumeCredit } from "@/utils/creditsManager";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -71,6 +73,13 @@ export default function AiUnitTestGenerator() {
       return;
     }
 
+    const check = canConsumeCredit();
+    if (!check.allowed) {
+      setIsProModalOpen(true);
+      toast.error("Cota diária gratuita atingida.", { description: check.reason });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const res = await fetch("/api/ai/unit-tests", {
@@ -88,10 +97,14 @@ export default function AiUnitTestGenerator() {
 
       const data = await res.json();
       if (!res.ok || data.error) {
+        if (res.status === 403) {
+          setIsProModalOpen(true);
+        }
         throw new Error(data.error || "Failed to generate unit tests.");
       }
 
       setResult(data.data);
+      consumeCredit();
       toast.success("Unit tests generated successfully!");
     } catch (e) {
       toast.error("Generation Error", {
@@ -150,12 +163,17 @@ export default function AiUnitTestGenerator() {
         onClose={() => setIsProModalOpen(false)}
         featureName={proModalFeature}
       />
-      <ToolHeader
-        title="AI Unit Test Generator"
-        description="Generate comprehensive unit test suites with mocks, edge-case assertions, and fixtures in Vitest, Jest, Pytest, or Go."
-        badgeText="AI QA & Test Architect"
-        toolId="ai-unit-tests"
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <ToolHeader
+          title="AI Unit Test Generator"
+          description="Generate comprehensive unit test suites with mocks, edge-case assertions, and fixtures in Vitest, Jest, Pytest, or Go."
+          badgeText="AI QA & Test Architect"
+          toolId="ai-unit-tests"
+        />
+        <div className="shrink-0 self-start sm:self-center">
+          <AiQuotaIndicator />
+        </div>
+      </div>
 
       <PrivacyBanner />
 
@@ -237,7 +255,7 @@ export default function AiUnitTestGenerator() {
               >
                 <Sparkles className="size-3 text-cyan-400" />
                 <span>Deep (~3.5s)</span>
-                {!isProOrByok && <ProBadge />}
+                {!isProOrByok && <ByokBadge />}
               </button>
             </div>
 

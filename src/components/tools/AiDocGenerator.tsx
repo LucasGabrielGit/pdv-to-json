@@ -17,8 +17,10 @@ import { ToolHeader } from "@/components/converter/ToolHeader";
 import { PrivacyBanner } from "@/components/converter/PrivacyBanner";
 import { AiLoadingState } from "@/components/ai/AiLoadingState";
 import { ProGateModal } from "@/components/pro/ProGateModal";
-import { ProBadge } from "@/components/pro/ProBadge";
+import { ByokBadge } from "@/components/ai/ByokBadge";
+import { AiQuotaIndicator } from "@/components/ai/AiQuotaIndicator";
 import { useProStatus } from "@/hooks/useProStatus";
+import { canConsumeCredit, consumeCredit } from "@/utils/creditsManager";
 import CodeEditor from "@/components/CodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,6 +72,13 @@ export default function AiDocGenerator() {
       return;
     }
 
+    const check = canConsumeCredit();
+    if (!check.allowed) {
+      setIsProModalOpen(true);
+      toast.error("Cota diária gratuita atingida.", { description: check.reason });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const res = await fetch("/api/ai/doc-generator", {
@@ -83,10 +92,14 @@ export default function AiDocGenerator() {
 
       const data = await res.json();
       if (!res.ok || data.error) {
+        if (res.status === 403) {
+          setIsProModalOpen(true);
+        }
         throw new Error(data.error || "Failed to generate API docs.");
       }
 
       setResult(data.data);
+      consumeCredit();
       toast.success("API Documentation & OpenAPI specs generated!");
     } catch (e) {
       toast.error("Doc Generation Error", {
@@ -192,12 +205,17 @@ export default function AiDocGenerator() {
         onClose={() => setIsProModalOpen(false)}
         featureName={proModalFeature}
       />
-      <ToolHeader
-        title="AI API Documentation & OpenAPI Generator"
-        description="Convert backend endpoints, Express/Next.js routes, or TypeScript interfaces into OpenAPI 3.0 specs and Markdown developer docs."
-        badgeText="AI Technical Writer"
-        toolId="ai-docs"
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <ToolHeader
+          title="AI API Documentation & OpenAPI Generator"
+          description="Convert backend endpoints, Express/Next.js routes, or TypeScript interfaces into OpenAPI 3.0 specs and Markdown developer docs."
+          badgeText="AI Technical Writer"
+          toolId="ai-docs"
+        />
+        <div className="shrink-0 self-start sm:self-center">
+          <AiQuotaIndicator />
+        </div>
+      </div>
 
       <PrivacyBanner />
 
@@ -374,7 +392,7 @@ export default function AiDocGenerator() {
                 >
                   <Archive className="size-3 text-amber-400" />
                   <span>Export All</span>
-                  {!isProOrByok && <ProBadge />}
+                  {!isProOrByok && <ByokBadge />}
                 </Button>
               </div>
             ) : (

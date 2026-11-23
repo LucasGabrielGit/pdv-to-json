@@ -8,14 +8,11 @@ import {
   Copy,
   Check,
   RotateCcw,
-  Zap,
-  Key,
   Lightbulb,
   CheckCircle2,
 } from 'lucide-react'
 import {
   getUserCredits,
-  setCustomApiKey,
   consumeCredit,
   canConsumeCredit,
   syncUserCreditsWithCloud,
@@ -24,14 +21,14 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { ToolHeader } from '@/components/converter/ToolHeader'
 import { PrivacyBanner } from '@/components/converter/PrivacyBanner'
-import { PricingModal } from '@/components/pricing/PricingModal'
+import { GeminiApiKeyModal } from '@/components/ai/GeminiApiKeyModal'
+import { AiQuotaIndicator } from '@/components/ai/AiQuotaIndicator'
 import { AiLoadingState } from '@/components/ai/AiLoadingState'
 import CodeEditor from '@/components/CodeEditor'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut'
 import {
@@ -55,42 +52,23 @@ export default function AiSqlGenerator() {
     performanceTips: string[]
   } | null>(null)
 
-  const [userCredits, setUserCredits] = useState<UserCredits>({
-    freeCreditsRemaining: 5,
-    purchasedCredits: 0,
-    isProSubscriber: false,
-    lastDailyResetDate: '',
-  })
-  const [customKeyInput, setCustomKeyInput] = useState('')
-  const [showKeyModal, setShowKeyModal] = useState(false)
-  const [showPricingModal, setShowPricingModal] = useState(false)
+  const [userCredits, setUserCredits] = useState<UserCredits>(() => getUserCredits())
+  const [keyModalOpen, setKeyModalOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 
 
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
-    const creds = getUserCredits()
-    setUserCredits(creds)
-    if (creds.userCustomApiKey) {
-      setCustomKeyInput(creds.userCustomApiKey)
+    const handleUpdate = () => {
+      setUserCredits(getUserCredits())
     }
+    handleUpdate()
+    syncUserCreditsWithCloud(supabase).then(setUserCredits)
 
-    syncUserCreditsWithCloud(supabase).then((synced) => {
-      setUserCredits(synced)
-      if (synced.userCustomApiKey) {
-        setCustomKeyInput(synced.userCustomApiKey)
-      }
-    })
+    window.addEventListener('devkit_credits_updated', handleUpdate)
+    return () => window.removeEventListener('devkit_credits_updated', handleUpdate)
   }, [supabase])
-
-  const handleSaveApiKey = () => {
-    setCustomApiKey(customKeyInput)
-    const updated = getUserCredits()
-    setUserCredits(updated)
-    setShowKeyModal(false)
-    toast.success('Custom Gemini API Key saved! Unlimited access enabled.')
-  }
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -100,8 +78,8 @@ export default function AiSqlGenerator() {
 
     const check = canConsumeCredit()
     if (!check.allowed) {
-      setShowKeyModal(true)
-      toast.error('Daily credit limit reached.', { description: check.reason })
+      setKeyModalOpen(true)
+      toast.error('Cota diária gratuita atingida.', { description: check.reason })
       return
     }
 
@@ -121,6 +99,9 @@ export default function AiSqlGenerator() {
 
       const data = await res.json()
       if (!res.ok || !data.success) {
+        if (res.status === 403) {
+          setKeyModalOpen(true)
+        }
         throw new Error(data.error || 'Failed to generate SQL query.')
       }
 
@@ -151,47 +132,18 @@ export default function AiSqlGenerator() {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
-      <ToolHeader
-        title="AI SQL Query Generator & Optimizer"
-        description="Generate complex SQL queries, analytical aggregations, subqueries, and index recommendations from natural language descriptions."
-        category="ai"
-      />
-
-      <PrivacyBanner />
-
-      {/* Credit Status Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 px-4 rounded-xl bg-purple-500/10 border border-purple-500/30 text-xs">
-        <div className="flex items-center gap-2 text-purple-300">
-          <Zap className="size-4 text-purple-400" />
-          <span>
-            {userCredits.isProSubscriber
-              ? '👑 Pro Member: Unlimited Generations'
-              : userCredits.userCustomApiKey
-              ? '🔑 Custom Key: Unlimited Access'
-              : `AI Credits Remaining: ${userCredits.freeCreditsRemaining + userCredits.purchasedCredits}`}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowKeyModal(true)}
-            className="h-7 text-xs border-purple-500/30 text-purple-300 hover:bg-purple-500/20 gap-1.5"
-          >
-            <Key className="size-3" />
-            {userCredits.userCustomApiKey ? 'Change Gemini Key' : 'Add Own Key (Free)'}
-          </Button>
-
-          <Button
-            size="sm"
-            onClick={() => setShowPricingModal(true)}
-            className="h-7 text-xs bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold gap-1.5 shadow-xs"
-          >
-            <Sparkles className="size-3" />
-            Buy Credits / Upgrade
-          </Button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <ToolHeader
+          title="AI SQL Query Generator & Optimizer"
+          description="Generate complex SQL queries, analytical aggregations, subqueries, and index recommendations from natural language descriptions."
+          category="ai"
+        />
+        <div className="shrink-0 self-start sm:self-center">
+          <AiQuotaIndicator />
         </div>
       </div>
+
+      <PrivacyBanner />
 
 
       {/* Main Form Side-by-Side */}
@@ -341,49 +293,10 @@ export default function AiSqlGenerator() {
 
 
       {/* BYOK Modal */}
-      {showKeyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-          <div className="w-full max-w-md rounded-2xl border border-purple-500/40 bg-[#16213e] p-6 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Key className="size-4 text-purple-400" /> Custom Gemini API Key (BYOK)
-            </h3>
-            <p className="text-xs text-slate-300">
-              Get your free key from{' '}
-              <a
-                href="https://aistudio.google.com/app/apikey"
-                target="_blank"
-                rel="noreferrer"
-                className="text-cyan-400 underline font-semibold"
-              >
-                Google AI Studio
-              </a>
-              . Your key is stored exclusively in your browser.
-            </p>
-            <Input
-              id="custom-byok-sql-input"
-              aria-label="Custom Gemini API Key"
-              value={customKeyInput}
-              onChange={(e) => setCustomKeyInput(e.target.value)}
-              placeholder="AIzaSy..."
-              className="bg-black/40 border-purple-500/30 text-xs font-mono text-white"
-            />
-
-            <div className="flex justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setShowKeyModal(false)}>
-                Cancel
-              </Button>
-              <Button size="sm" onClick={handleSaveApiKey} className="bg-purple-600 hover:bg-purple-500 text-white">
-                Save Key
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Pricing Modal */}
-      <PricingModal
-        isOpen={showPricingModal}
-        onClose={() => setShowPricingModal(false)}
+      <GeminiApiKeyModal
+        isOpen={keyModalOpen}
+        onClose={() => setKeyModalOpen(false)}
+        variant="settings"
       />
     </div>
   )

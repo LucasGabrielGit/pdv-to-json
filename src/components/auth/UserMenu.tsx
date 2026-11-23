@@ -1,15 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
-
 import { toast } from "sonner";
 import {
   User as UserIcon,
   LogOut,
   Zap,
-  Crown,
+  Key,
   ChevronDown,
-  Sparkles,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -17,14 +15,13 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { AuthModal } from "./AuthModal";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PricingModal } from "@/components/pricing/PricingModal";
+import { GeminiApiKeyModal } from "@/components/ai/GeminiApiKeyModal";
 import { useTranslation } from "@/contexts/I18nContext";
-import Link from "next/link";
+import { DAILY_FREE_CREDITS_LIMIT } from "@/lib/creditsConfig";
+import { getUserCredits } from "@/utils/creditsManager";
 
 interface ProfileData {
   free_credits_remaining: number;
-  purchased_credits: number;
-  is_pro: boolean;
   user_custom_api_key?: string;
 }
 
@@ -33,7 +30,7 @@ export function UserMenu() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [pricingModalOpen, setPricingModalOpen] = useState(false);
+  const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -49,7 +46,7 @@ export function UserMenu() {
       const { data: prof } = await supabase
         .from("profiles")
         .select(
-          "free_credits_remaining, purchased_credits, is_pro, user_custom_api_key, last_daily_reset_date",
+          "free_credits_remaining, user_custom_api_key, last_daily_reset_date",
         )
         .eq("id", userId)
         .single();
@@ -58,12 +55,12 @@ export function UserMenu() {
 
       const today = new Date().toISOString().split("T")[0];
       if (prof.last_daily_reset_date !== today) {
-        prof.free_credits_remaining = 5;
+        prof.free_credits_remaining = DAILY_FREE_CREDITS_LIMIT;
         prof.last_daily_reset_date = today;
         await supabase
           .from("profiles")
           .update({
-            free_credits_remaining: 5,
+            free_credits_remaining: DAILY_FREE_CREDITS_LIMIT,
             last_daily_reset_date: today,
             updated_at: new Date().toISOString(),
           })
@@ -119,7 +116,6 @@ export function UserMenu() {
     };
   }, [supabase]);
 
-
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -141,9 +137,12 @@ export function UserMenu() {
     toast.success("Signed out successfully.");
   };
 
-  const totalCredits =
-    (profile?.free_credits_remaining ?? 5) + (profile?.purchased_credits ?? 0);
-  const isPro = profile?.is_pro ?? false;
+  const localCredits = getUserCredits();
+  const hasByok = Boolean(
+    (profile?.user_custom_api_key && profile.user_custom_api_key.trim()) ||
+    (localCredits.userCustomApiKey && localCredits.userCustomApiKey.trim())
+  );
+  const remainingCredits = profile?.free_credits_remaining ?? localCredits.freeCreditsRemaining ?? DAILY_FREE_CREDITS_LIMIT;
 
   return (
     <>
@@ -171,14 +170,13 @@ export function UserMenu() {
 
             {/* Credit chip */}
             <div className="flex items-center gap-1 text-[11px] font-semibold text-purple-300">
-              {isPro ? (
-                <span className="flex items-center gap-1 text-amber-300 font-bold">
-                  <Crown className="size-3 text-amber-400" /> Pro
+              {hasByok ? (
+                <span className="flex items-center gap-1 text-emerald-300 font-bold">
+                  <Zap className="size-3 text-emerald-400" /> BYOK Ativo
                 </span>
               ) : (
                 <span className="flex items-center gap-1">
-                  <Zap className="size-3 text-purple-400" /> {totalCredits}{" "}
-                  {t.common.credits}
+                  <Zap className="size-3 text-purple-400" /> {remainingCredits} / {DAILY_FREE_CREDITS_LIMIT}
                 </span>
               )}
             </div>
@@ -192,7 +190,7 @@ export function UserMenu() {
           <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-purple-500/30 bg-[#16213e] p-3 shadow-2xl shadow-purple-950/60 space-y-3 z-50 animate-in fade-in zoom-in-95 duration-100">
             {/* User Info */}
             <div className="px-2 py-1 space-y-1">
-              <p className="text-[11px] uppercase tracking-wider text-slate-400 font-mono">
+              <p className="text-[11px] uppercase tracking-wider text-slate-400 font-mono truncate">
                 {user.email}
               </p>
             </div>
@@ -203,49 +201,41 @@ export function UserMenu() {
             <div className="rounded-xl bg-black/40 p-3 border border-purple-500/20 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400 flex items-center gap-1.5">
-                  <Zap className="size-3.5 text-purple-400" /> {t.common.credits}
+                  <Zap className="size-3.5 text-purple-400" /> Cota Diária
                 </span>
                 <span className="font-mono font-bold text-white">
-                  {isPro ? t.common.unlimited : `${totalCredits}`}
+                  {hasByok ? "Ilimitado (BYOK)" : `${remainingCredits} / ${DAILY_FREE_CREDITS_LIMIT}`}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400 flex items-center gap-1.5">
-                  <Crown className="size-3.5 text-amber-400" /> Plan
+                  <Key className="size-3.5 text-emerald-400" /> Modo de IA
                 </span>
                 <Badge
                   variant="outline"
                   className={
-                    isPro
-                      ? "bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]"
+                    hasByok
+                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]"
                       : "bg-purple-500/20 text-purple-300 border-purple-500/30 text-[10px]"
                   }
                 >
-                  {isPro ? t.common.proMember : t.common.freeTier}
+                  {hasByok ? "Chave Própria" : "Gratuito Comunitário"}
                 </Badge>
               </div>
             </div>
 
-            {/* Upgrade / Pricing Action */}
+            {/* BYOK Action */}
             <div className="space-y-1.5 pt-1">
               <button
                 onClick={() => {
                   setMenuOpen(false);
-                  setPricingModalOpen(true);
+                  setApiKeyModalOpen(true);
                 }}
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 p-2 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
               >
-                <Sparkles className="size-3.5" />
-                {isPro ? t.common.buyCredits : t.common.upgradeToPro}
+                <Key className="size-3.5" />
+                Configurar Chave Gemini
               </button>
-
-              <Link
-                href="/pricing"
-                onClick={() => setMenuOpen(false)}
-                className="block text-center text-[11px] text-slate-400 hover:text-white py-1 transition-colors"
-              >
-                {t.common.viewAllPricing}
-              </Link>
             </div>
 
             <div className="border-t border-purple-500/20" />
@@ -260,13 +250,13 @@ export function UserMenu() {
             </button>
           </div>
         )}
-
       </div>
 
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
-      <PricingModal
-        isOpen={pricingModalOpen}
-        onClose={() => setPricingModalOpen(false)}
+      <GeminiApiKeyModal
+        isOpen={apiKeyModalOpen}
+        onClose={() => setApiKeyModalOpen(false)}
+        variant="settings"
       />
     </>
   );

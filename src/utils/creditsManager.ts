@@ -1,129 +1,161 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { DAILY_FREE_CREDITS_LIMIT } from '@/lib/creditsConfig'
 
 export interface UserCredits {
   freeCreditsRemaining: number
-
-  purchasedCredits: number
-  isProSubscriber: boolean
   lastDailyResetDate: string // YYYY-MM-DD
+  /** BYOK: user's own Google Gemini key. When present the quota is bypassed. */
   userCustomApiKey?: string
 }
 
 const STORAGE_KEY = 'devkit_user_credits_v1'
-const DAILY_FREE_CREDITS_LIMIT = 5
+export const CREDITS_UPDATED_EVENT = 'devkit_credits_updated'
 
 function getTodayString(): string {
   return new Date().toISOString().split('T')[0]
 }
 
+function freshCredits(): UserCredits {
+  return {
+    freeCreditsRemaining: DAILY_FREE_CREDITS_LIMIT,
+    lastDailyResetDate: getTodayString(),
+  }
+}
+
+function persist(credits: UserCredits): void {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(credits))
+}
+
+function notifyChange(): void {
+  if (typeof window === 'undefined') return
+  window.dispatchEvent(new Event(CREDITS_UPDATED_EVENT))
+}
+
 /**
- * Retrieves the current user's credits and BYOK state
+ * Retrieves the current user's daily credits and BYOK state.
+ * Legacy fields from the old paid plans (purchased credits / Pro) are dropped.
  */
 export function getUserCredits(): UserCredits {
-  if (typeof window === 'undefined') {
-    return {
-      freeCreditsRemaining: DAILY_FREE_CREDITS_LIMIT,
-      purchasedCredits: 0,
-      isProSubscriber: false,
-      lastDailyResetDate: getTodayString(),
-    }
-  }
+  if (typeof window === 'undefined') return freshCredits()
 
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) {
-      const initial: UserCredits = {
-        freeCreditsRemaining: DAILY_FREE_CREDITS_LIMIT,
-        purchasedCredits: 0,
-        isProSubscriber: false,
-        lastDailyResetDate: getTodayString(),
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial))
+      const initial = freshCredits()
+      persist(initial)
       return initial
     }
 
-    const parsed: UserCredits = JSON.parse(raw)
+    const stored = JSON.parse(raw) as Partial<UserCredits>
     const today = getTodayString()
+    const credits: UserCredits = {
+      freeCreditsRemaining:
+        typeof stored.freeCreditsRemaining === 'number'
+          ? stored.freeCreditsRemaining
+          : DAILY_FREE_CREDITS_LIMIT,
+      lastDailyResetDate: stored.lastDailyResetDate ?? today,
+      userCustomApiKey: stored.userCustomApiKey || undefined,
+    }
 
     // Reset daily free credits if date changed
-    if (parsed.lastDailyResetDate !== today) {
-      parsed.freeCreditsRemaining = DAILY_FREE_CREDITS_LIMIT
-      parsed.lastDailyResetDate = today
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed))
+    if (credits.lastDailyResetDate !== today) {
+      credits.freeCreditsRemaining = DAILY_FREE_CREDITS_LIMIT
+      credits.lastDailyResetDate = today
+      persist(credits)
     }
 
-    return parsed
+    // Never show more than the current limit (e.g. old 5-credit state is fine, old higher is capped)
+    credits.freeCreditsRemaining = Math.min(
+      credits.freeCreditsRemaining,
+      DAILY_FREE_CREDITS_LIMIT
+    )
+
+    return credits
   } catch {
-    return {
-      freeCreditsRemaining: DAILY_FREE_CREDITS_LIMIT,
-      purchasedCredits: 0,
-      isProSubscriber: false,
-      lastDailyResetDate: getTodayString(),
-    }
+    return freshCredits()
   }
 }
 
+export function hasCustomApiKey(credits: UserCredits = getUserCredits()): boolean {
+  return Boolean(credits.userCustomApiKey && credits.userCustomApiKey.trim())
+}
+
 /**
- * Save user custom BYOK API key
+ * Save user custom BYOK API key (localStorage)
  */
 export function setCustomApiKey(key: string): void {
   if (typeof window === 'undefined') return
   const current = getUserCredits()
   current.userCustomApiKey = key.trim()
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(current))
+  persist(current)
+  notifyChange()
 }
 
 /**
- * Checks if user has enough credits or BYOK key or Pro subscription
+ * Remove the BYOK key from this browser
+ */
+export function clearCustomApiKey(): void {
+  if (typeof window === 'undefined') return
+  const current = getUserCredits()
+  delete current.userCustomApiKey
+  persist(current)
+  notifyChange()
+}
+
+/**
+ * Cascade check: BYOK (unlimited) -> daily free credits -> blocked.
  */
 export function canConsumeCredit(): { allowed: boolean; reason?: string } {
   const credits = getUserCredits()
-  if (credits.userCustomApiKey) return { allowed: true }
-  if (credits.isProSubscriber) return { allowed: true }
-
-  const total = credits.freeCreditsRemaining + credits.purchasedCredits
-  if (total > 0) return { allowed: true }
+  if (hasCustomApiKey(credits)) return { allowed: true }
+  if (credits.freeCreditsRemaining > 0) return { allowed: true }
 
   return {
     allowed: false,
-    reason: 'Daily free credits limit reached (5/5). Add your own Gemini API key or top up credits.',
+    reason: `Daily free credits limit reached (0/${DAILY_FREE_CREDITS_LIMIT}). Add your own Gemini API key to keep going for free.`,
   }
 }
 
 /**
- * Deducts 1 credit from free or purchased balance
+ * Deducts 1 daily credit. BYOK usage never consumes credits.
  */
 export function consumeCredit(): UserCredits {
   const credits = getUserCredits()
 
-  // If BYOK or Pro, no deduction
-  if (credits.userCustomApiKey || credits.isProSubscriber) {
-    return credits
-  }
+  if (hasCustomApiKey(credits)) return credits
 
   if (credits.freeCreditsRemaining > 0) {
     credits.freeCreditsRemaining -= 1
-  } else if (credits.purchasedCredits > 0) {
-    credits.purchasedCredits -= 1
-  }
-
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(credits))
+    persist(credits)
+    notifyChange()
   }
 
   return credits
 }
 
 /**
- * Adds purchased credits to balance
+ * Persists the BYOK key on the authenticated user's Supabase profile.
+ * Silently no-ops for guests / offline / unconfigured environments.
  */
-export function addPurchasedCredits(amount: number): UserCredits {
-  const credits = getUserCredits()
-  credits.purchasedCredits += amount
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(credits))
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function saveCustomApiKeyToCloud(supabaseClient: SupabaseClient<any, any, any>, key: string | null): Promise<boolean> {
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser()
+    if (!user) return false
+
+    const { error } = await supabaseClient
+      .from('profiles')
+      .update({
+        user_custom_api_key: key,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user.id)
+
+    return !error
+  } catch {
+    return false
   }
-  return credits
 }
 
 /**
@@ -134,23 +166,21 @@ export async function syncUserCreditsWithCloud(supabaseClient: SupabaseClient<an
   const local = getUserCredits()
   if (typeof window === 'undefined') return local
 
-
-
   try {
     const { data: { user } } = await supabaseClient.auth.getUser()
     if (!user) return local
 
     const { data: profile } = await supabaseClient
       .from('profiles')
-      .select('free_credits_remaining, purchased_credits, is_pro, user_custom_api_key, last_daily_reset_date')
+      .select('free_credits_remaining, user_custom_api_key, last_daily_reset_date')
       .eq('id', user.id)
       .single()
 
     if (profile) {
       const today = getTodayString()
-      let freeCredits = profile.free_credits_remaining
+      let freeCredits: number = profile.free_credits_remaining
 
-      // If cloud profile date is older than today, reset free credits to 5
+      // If cloud profile date is older than today, reset free credits
       if (profile.last_daily_reset_date !== today) {
         freeCredits = DAILY_FREE_CREDITS_LIMIT
         // Sync cloud profile in background
@@ -162,19 +192,15 @@ export async function syncUserCreditsWithCloud(supabaseClient: SupabaseClient<an
             updated_at: new Date().toISOString(),
           })
           .eq('id', user.id)
-          .then(() => {
-            window.dispatchEvent(new Event('devkit_credits_updated'))
-          })
+          .then(() => notifyChange())
       }
 
       const synced: UserCredits = {
-        freeCreditsRemaining: freeCredits,
-        purchasedCredits: profile.purchased_credits,
-        isProSubscriber: profile.is_pro,
+        freeCreditsRemaining: Math.min(freeCredits, DAILY_FREE_CREDITS_LIMIT),
         lastDailyResetDate: today,
         userCustomApiKey: profile.user_custom_api_key || local.userCustomApiKey,
       }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(synced))
+      persist(synced)
       return synced
     }
   } catch {
@@ -183,4 +209,3 @@ export async function syncUserCreditsWithCloud(supabaseClient: SupabaseClient<an
 
   return local
 }
-

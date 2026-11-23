@@ -1,54 +1,65 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
-import { getUserCredits, syncUserCreditsWithCloud } from '@/utils/creditsManager'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import {
+  getUserCredits,
+  syncUserCreditsWithCloud,
+  CREDITS_UPDATED_EVENT,
+  type UserCredits,
+} from '@/utils/creditsManager'
 import { createClient } from '@/lib/supabase/client'
+import { DAILY_FREE_CREDITS_LIMIT } from '@/lib/creditsConfig'
 
+/**
+ * Backward compatibility hook for existing tool pages.
+ * Replaced internal Pro logic with BYOK and daily community quotas.
+ */
 export function useProStatus() {
-  const [isProSubscriber, setIsProSubscriber] = useState(false)
-  const [hasCustomApiKey, setHasCustomApiKey] = useState(false)
-  const [purchasedCredits, setPurchasedCredits] = useState(0)
-  const [freeCreditsRemaining, setFreeCreditsRemaining] = useState(5)
+  const [credits, setCredits] = useState<UserCredits>(() => getUserCredits())
   const [isProModalOpen, setIsProModalOpen] = useState(false)
   const [proModalFeature, setProModalFeature] = useState('Deep Reasoning AI')
 
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
-    const creds = getUserCredits()
-    setIsProSubscriber(creds.isProSubscriber)
-    setHasCustomApiKey(Boolean(creds.userCustomApiKey && creds.userCustomApiKey.trim()))
-    setPurchasedCredits(creds.purchasedCredits)
-    setFreeCreditsRemaining(creds.freeCreditsRemaining)
+    const handleUpdate = () => {
+      setCredits(getUserCredits())
+    }
 
-    // Sync cloud state
-    syncUserCreditsWithCloud(supabase).then((synced) => {
-      setIsProSubscriber(synced.isProSubscriber)
-      setHasCustomApiKey(Boolean(synced.userCustomApiKey && synced.userCustomApiKey.trim()))
-      setPurchasedCredits(synced.purchasedCredits)
-      setFreeCreditsRemaining(synced.freeCreditsRemaining)
-    })
+    handleUpdate()
+    syncUserCreditsWithCloud(supabase).then(setCredits)
+
+    window.addEventListener(CREDITS_UPDATED_EVENT, handleUpdate)
+    return () => window.removeEventListener(CREDITS_UPDATED_EVENT, handleUpdate)
   }, [supabase])
 
-  const isProOrByok = isProSubscriber || hasCustomApiKey || purchasedCredits > 0
+  const hasCustomApiKey = Boolean(
+    credits.userCustomApiKey && credits.userCustomApiKey.trim()
+  )
+  const isProOrByok = hasCustomApiKey
+  const freeCreditsRemaining = credits.freeCreditsRemaining ?? DAILY_FREE_CREDITS_LIMIT
 
-  const requirePro = (featureName = 'Deep Reasoning AI', onAllowed?: () => void) => {
-    if (isProOrByok) {
-      if (onAllowed) onAllowed()
-      return true
-    }
-    setProModalFeature(featureName)
-    setIsProModalOpen(true)
-    return false
-  }
+  const requirePro = useCallback(
+    (featureName = 'Deep Reasoning AI', onAllowed?: () => void) => {
+      if (hasCustomApiKey) {
+        if (onAllowed) onAllowed()
+        return true
+      }
+      setProModalFeature(featureName)
+      setIsProModalOpen(true)
+      return false
+    },
+    [hasCustomApiKey]
+  )
 
   return {
-    isProSubscriber,
+    isProSubscriber: false,
     hasCustomApiKey,
-    purchasedCredits,
+    purchasedCredits: 0,
     freeCreditsRemaining,
-    userCustomApiKey: getUserCredits().userCustomApiKey,
-    userCredits: getUserCredits(),
+    dailyLimit: DAILY_FREE_CREDITS_LIMIT,
+    userCustomApiKey: credits.userCustomApiKey,
+    userCredits: credits,
     isProOrByok,
     isProModalOpen,
     setIsProModalOpen,

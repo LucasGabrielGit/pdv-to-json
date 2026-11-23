@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import {
   verifyServerCredits,
   deductServerCreditPostSuccess,
+  resolveGeminiModel,
 } from '@/lib/serverCreditGuard'
 
 export const dynamic = 'force-dynamic'
@@ -71,7 +72,7 @@ Respond strictly in valid JSON format matching this schema:
   "usageExample": "// How to call/use this code in an application"
 }`
 
-    const selectedModel = aiMode === 'deep' ? 'gemini-2.5-pro' : 'gemini-2.5-flash'
+    const selectedModel = resolveGeminiModel(aiMode, customApiKey)
 
     const response = await ai.models.generateContent({
       model: selectedModel,
